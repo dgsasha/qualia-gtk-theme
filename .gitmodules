@@ -1,0 +1,4 @@
+[submodule "dg-firefox-theme"]
+	path = dg-firefox-theme
+	url = https://github.com/dgmarie/dg-firefox-theme
+	branch = main
