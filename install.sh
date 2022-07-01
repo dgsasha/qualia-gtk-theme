@@ -8,7 +8,7 @@ GTK4_DIR="$HOME/.config/gtk-4.0"
 
 SASSC_OPT="-M -t expanded"
 
-THEME_VARIANTS=('-light' '-dark')
+THEME_VARIANTS=('light' 'dark')
 COLOR_VARIANTS=('orange' 'bark' 'sage' 'olive' 'viridian' 'prussiangreen' 'blue' 'purple' 'magenta' 'red')
 BUTTON_VARIANTS=('right' 'left')
 FIREFOX_VARIANTS=('none' 'default' 'flatpak')
@@ -29,17 +29,17 @@ EOF
 install_theme() {
   theme_tweaks
 
-  echo Installing $color$theme gtk3 configuration.
-  mkdir -p                                                 "$GTK3_DIR"
-  rm -rf                                                   "$GTK3_DIR/mac-icons"
-  cp -R $SRC_DIR/assets/mac-icons$theme                    "$GTK3_DIR/mac-icons"
-  sassc $SASSC_OPT "$SRC_DIR/main/gtk-3.0/gtk$theme.scss"  "$GTK3_DIR/gtk.css"
+  echo Installing $color$suffix gtk3 configuration.
+  mkdir -p                                                  "$GTK3_DIR"
+  rm -rf                                                    "$GTK3_DIR/mac-icons"
+  cp -R $SRC_DIR/assets/mac-icons$suffix                    "$GTK3_DIR/mac-icons"
+  sassc $SASSC_OPT "$SRC_DIR/main/gtk-3.0/gtk$suffix.scss"  "$GTK3_DIR/gtk.css"
 
-  echo Installing $color$theme gtk4 configuration.
+  echo Installing $color$suffix gtk4 configuration.
   mkdir -p                                                 "$GTK4_DIR"
   rm -rf                                                   "$GTK4_DIR/mac-icons"
-  cp -R $SRC_DIR/assets/mac-icons${theme}                  "$GTK4_DIR/mac-icons"
-  sassc $SASSC_OPT "$SRC_DIR/main/gtk-4.0/gtk$theme.scss"  "$GTK4_DIR/gtk.css"
+  cp -R $SRC_DIR/assets/mac-icons$suffix                   "$GTK4_DIR/mac-icons"
+  sassc $SASSC_OPT "$SRC_DIR/main/gtk-4.0/gtk$suffix.scss" "$GTK4_DIR/gtk.css"
 
   if [[ "$firefox" = "flatpak" ]] ; then
   FIREFOX_THEME_OPT="-f $HOME/.var/app/org.mozilla.firefox/.mozilla/firefox -c $color"
@@ -261,29 +261,31 @@ theme_tweaks() {
   fi
 }
 
+if [[ "$theme" = "light" ]] ; then
+  color_scheme='default'
+  suffix=''
+else
+  color_scheme='prefer-dark'
+  suffix='-dark'
+fi
+
 enable_theme() {
-  if [[ "$theme" = "-light" ]] ; then
-      echo Enabling light theme.
-      gsettings set org.gnome.desktop.interface color-scheme "default"
-      echo Changing gtk3 theme to adw-gtk3.
-      gsettings set org.gnome.desktop.interface gtk-theme "adw-gtk3"
-    else
-      echo Enabling dark theme.
-      gsettings set org.gnome.desktop.interface color-scheme "prefer-dark"
-      echo Changing gtk3 theme to adw-gtk3-dark.
-      gsettings set org.gnome.desktop.interface gtk-theme "adw-gtk3-dark"
-  fi
+  echo Enabling $theme theme.
+  gsettings set org.gnome.desktop.interface color-scheme "$color_scheme"
+
+  echo Changing gtk3 theme to adw-gtk3$suffix.
+  gsettings set org.gnome.desktop.interface gtk-theme "adw-gtk3$suffix"
 
   if [[ "$color" = "orange" ]] ; then
-    echo Changing icon theme to Yaru$theme.
-    gsettings set org.gnome.desktop.interface icon-theme "Yaru$theme"
-    echo Changing Gnome Shell theme to Yaru$theme.
-    gsettings set org.gnome.shell.extensions.user-theme name "Yaru$theme"
+    echo Changing icon theme to Yaru$suffix.
+    gsettings set org.gnome.desktop.interface icon-theme "Yaru$suffix"
+    echo Changing Gnome Shell theme to Yaru$suffix.
+    gsettings set org.gnome.shell.extensions.user-theme name "Yaru$suffix"
   else
-    echo Changing icon theme to Yaru-$color$theme.
-    gsettings set org.gnome.desktop.interface icon-theme "Yaru-$color$theme" 
-    echo Changing Gnome Shell theme to Yaru-$color$theme.
-    gsettings set org.gnome.shell.extensions.user-theme name "Yaru-$color$theme"
+    echo Changing icon theme to Yaru-$color$suffix.
+    gsettings set org.gnome.desktop.interface icon-theme "Yaru-$color$suffix" 
+    echo Changing Gnome Shell theme to Yaru-$color$suffix.
+    gsettings set org.gnome.shell.extensions.user-theme name "Yaru-$color$suffix"
   fi
 
   if [[ "$left" = "true" ]] ; then
