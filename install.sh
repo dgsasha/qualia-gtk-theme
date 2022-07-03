@@ -29,13 +29,13 @@ EOF
 install_theme() {
   theme_tweaks
 
-  echo Installing $color$suffix gtk3 configuration.
+  echo Installing $color$suffix gtk3 configuration in $GTK3_DIR
   mkdir -p                                                  "$GTK3_DIR"
   rm -rf                                                    "$GTK3_DIR/mac-icons"
   cp -R $SRC_DIR/assets/mac-icons$suffix                    "$GTK3_DIR/mac-icons"
   sassc $SASSC_OPT "$SRC_DIR/main/gtk-3.0/gtk$suffix.scss"  "$GTK3_DIR/gtk.css"
 
-  echo Installing $color$suffix gtk4 configuration.
+  echo Installing $color$suffix gtk4 configuration in $GTK4_DIR
   mkdir -p                                                 "$GTK4_DIR"
   rm -rf                                                   "$GTK4_DIR/mac-icons"
   cp -R $SRC_DIR/assets/mac-icons$suffix                   "$GTK4_DIR/mac-icons"

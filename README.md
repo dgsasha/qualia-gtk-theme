@@ -45,7 +45,7 @@ cd dg-gnome-theme
 
 #### Example:
 ```
-./install.sh -t dark -a orange -b left -f default
+./install.sh -t dark -a purple -b left -f default
 ```
 **Log out and log back in for everything to be updated.**
 
