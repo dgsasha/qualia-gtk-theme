@@ -1,9 +1,5 @@
 $asset_suffix: if($variant == 'dark', '-dark', '');
 
-/* Yaru accent color */
-@define-color accent_bg_color #{$accent_color};
-@define-color accent_color #{$accent_color};
-
 /* macOS window buttons */
 windowcontrols {
   button {

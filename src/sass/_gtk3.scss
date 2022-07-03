@@ -1,9 +1,5 @@
 $asset_suffix: if($variant == 'dark', '-dark', '');
 
-/* Yaru accent color */
-@define-color accent_bg_color #{$accent_color};
-@define-color accent_color #{$accent_color};
-
 /* macOS window buttons */
 headerbar {
   button.titlebutton {
@@ -15,6 +11,10 @@ headerbar {
     color: transparent;
     min-width: 16px;
     min-height: 16px;
+
+    &:backdrop {
+      opacity: 0.5;
+    }
 
     @each $k in ('close', 'maximize', 'minimize') {
       @each $l, $m in ('',''), (':backdrop','-backdrop'), (':backdrop:hover','-backdrop-hover'), (':hover','-hover'), (':active','-active') {
@@ -35,6 +35,7 @@ headerbar {
     }
   }
 }
+
 @if $button_placement == 'left' {
   headerbar {
   padding-left: 8px;

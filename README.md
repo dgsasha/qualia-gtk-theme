@@ -6,6 +6,8 @@
 ![Screenshot of the theme](Screenshot.png)
 
 ## Dependencies
+Ubuntu: `sassc` `git` `gnome-shell-extensions`
+
 Fedora: `sassc` `git` `gnome-shell-extension-user-theme` `yaru-theme`
 
 Arch: `sassc` `git` `gnome-shell-extensions` 
