@@ -270,6 +270,8 @@ else
 fi
 
 enable_theme() {
+  gnome-extensions enable user-theme@gnome-shell-extensions.gcampax.github.com
+
   echo Enabling $theme theme.
   gsettings set org.gnome.desktop.interface color-scheme "$color_scheme"
 
