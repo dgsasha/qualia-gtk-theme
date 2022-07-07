@@ -21,7 +21,6 @@ OPTIONS:
   -a, --accent-color VARIANT      Specify yaru accent color variant [orange|bark|sage|olive|viridian|prussiangreen|blue|purple|magenta|red] (Default: orange)
   -b, --button-placement VARIANT  Specify window titlebar button placement [right|left] (Default: right)
   -f, --firefox-theme VARIANT     Specify where to install the firefox theme [none|default|flatpak] (Default: none)
-  -r, --remove                    Remove this theme
   -h, --help                      Show help
 EOF
 }
@@ -54,18 +53,6 @@ install_theme() {
     cd $REPO_DIR/dg-firefox-theme
     ./scripts/install.sh $FIREFOX_THEME_OPT
   fi
-}
-
-remove_theme() {
-echo Removing gtk3 configuration.
-rm -rf $GTK3_DIR/mac-icons $GTK3_DIR/gtk.css
-
-echo Removing gtk4 configuration.
-rm -rf $GTK4_DIR/mac-icons $GTK4_DIR/gtk.css
-
-echo Removing Firefox theme.
-rm -rf $HOME/.var/app/org.mozilla.firefox/.mozilla/firefox/*/chrome $HOME/.mozilla/firefox/*/chrome
-rm -f $HOME/.var/app/org.mozilla.firefox/.mozilla/firefox/*/user.js $HOME/.mozilla/firefox/*/user.js
 }
 
 theme=()
@@ -206,11 +193,6 @@ while [[ $# -gt 0 ]]; do
         esac
       done
       ;;
-    -r|--remove)
-      remove=yes
-      remove_theme
-      exit 0
-      ;;
     -h|--help)
       usage
       exit 0
@@ -299,9 +281,7 @@ enable_theme() {
   fi
 }
 
-if [[ "$remove" != "yes" ]] ; then
-  variables_temp && install_theme && enable_theme
-fi
+variables_temp && install_theme && enable_theme
 
 rm -rf $SRC_DIR/sass/_variables-temp.scss
 

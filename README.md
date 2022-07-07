@@ -38,14 +38,12 @@ cd dg-gnome-theme
 - `-f, --firefox-theme` `[none|default|flatpak]`
 	- Specify where to install the firefox theme
 	- Default: `none`
-- `-r, --remove`
-	- Remove this theme
 - `-h, --help`
 	- Show help
 
 #### Example:
 ```
-./install.sh -t dark -a purple -b left -f default
+./install.sh -t dark -a purple -b left -f flatpak
 ```
 **Log out and log back in for everything to be updated.**
 
@@ -73,7 +71,7 @@ And then run installation script again
 
 ## Uninstalling
 ```
-./install.sh --remove
+./uninstall.sh
 ```
 
 ## Extra Stuff
