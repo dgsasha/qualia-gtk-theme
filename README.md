@@ -51,7 +51,10 @@ The preferences being changed are `org.gnome.desktop.interface color-scheme` `or
 
 **Also, if you later decide to change the titlebar button placement in GNOME, run the install script again afterwards or else the padding will be messed up**
 
-## Flatpak
+### Firefox
+I highly recommend to install the included Firefox theme if you use Firefox, because without it Firefox doesn't follow the theme properly.
+
+## Flatpak apps
 Install adw-gtk3 as a Flatpak:
 ```
 flatpak install org.gtk.Gtk3theme.adw-gtk3 org.gtk.Gtk3theme.adw-gtk3-dark
