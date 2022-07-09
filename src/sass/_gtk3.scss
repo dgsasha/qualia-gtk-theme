@@ -38,23 +38,19 @@ headerbar {
 
 @if $button_placement == 'left' {
 	headerbar {
-	padding-left: 8px;
-		button.titlebutton.close {
-			margin-left: +6px;
-		}
-		button.titlebutton.maximize {
-			margin-right: +7px;
+		padding-left: 8px;
+		box.horizontal.left,
+		box.horizontal.right {
+			padding: 0 6px 0 5px;
 		}
 	}
 }
 @else {
 	headerbar {
-	padding-right: 8px;
-		button.titlebutton.minimize {
-			margin-left: +7px;
-		}
-		button.titlebutton.close {
-			margin-right: +6px;
+		padding-right: 8px;
+		box.horizontal.left,
+		box.horizontal.right {
+			padding: 0 5px 0 6px;
 		}
 	}
 }

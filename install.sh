@@ -10,7 +10,6 @@ SASSC_OPT="-M -t expanded"
 
 THEME_VARIANTS=('light' 'dark')
 COLOR_VARIANTS=('orange' 'bark' 'sage' 'olive' 'viridian' 'prussiangreen' 'blue' 'purple' 'magenta' 'red')
-BUTTON_VARIANTS=('right' 'left')
 FIREFOX_VARIANTS=('none' 'default' 'flatpak')
 
 usage() {
@@ -19,7 +18,6 @@ Usage: $0 [OPTION]...
 OPTIONS:
 	-t, --theme VARIANT             Specify theme variant [light|dark] (Default: light)
 	-a, --accent-color VARIANT      Specify yaru accent color variant [orange|bark|sage|olive|viridian|prussiangreen|blue|purple|magenta|red] (Default: orange)
-	-b, --button-placement VARIANT  Specify window titlebar button placement [right|left] (Default: right)
 	-f, --firefox-theme VARIANT     Specify where to install the firefox theme [none|default|flatpak] (Default: none)
 	-h, --help                      Show help
 EOF
@@ -57,7 +55,6 @@ install_theme() {
 
 theme=()
 color=()
-button=()
 firefox=()
 
 while [[ $# -gt 0 ]]; do
@@ -130,35 +127,11 @@ while [[ $# -gt 0 ]]; do
 						color=("${COLOR_VARIANTS[9]}")
 						shift
 						;;
-					-*)
-						break
-						;;
-					*)
-						echo "ERROR: Unrecognized accent color variant '$1'."
-						echo "Try '$0 --help' for more information."
-						exit 1
-						;;
-				esac
-			done
-			;;
-    -b|--button-placement)
-			shift
-			for variant in "${@}"; do
-				case "${variant}" in
-					right)
-						button=("${BUTTON_VARIANTS[0]}")
-						shift
-						;;
-					left)
-						left='true'
-						button=("${BUTTON_VARIANTS[1]}")
-						shift
-						;;
 					-*|--*)
 						break
 						;;
 					*)
-						echo "ERROR: Unrecognized button placement '$1'."
+						echo "ERROR: Unrecognized accent color variant '$1'."
 						echo "Try '$0 --help' for more information."
 						exit 1
 						;;
@@ -186,7 +159,7 @@ while [[ $# -gt 0 ]]; do
 						break
 						;;
 					*)
-						echo "ERROR: Unrecognized button placement '$1'."
+						echo "ERROR: Unrecognized Firefox theme variant '$1'."
 						echo "Try '$0 --help' for more information."
 						exit 1
 						;;
@@ -213,10 +186,6 @@ if [[ "${#color[@]}" -eq 0 ]] ; then
 	color=("${COLOR_VARIANTS[0]}")
 fi
 
-if [[ "${#button[@]}" -eq 0 ]] ; then
-	button=("${BUTTON_VARIANTS[0]}")
-fi
-
 if [[ "${#firefox[@]}" -eq 0 ]] ; then
 	firefox=("${FIREFOX_VARIANTS[0]}")
 fi
@@ -234,6 +203,13 @@ accent_color() {
 }
 
 theme_tweaks() {
+	button_layout=$(gsettings get org.gnome.desktop.wm.preferences button-layout)
+	case $button_layout in
+		*":appmenu"*)
+			left="true"
+		;;
+	esac
+
 	if [[ "$accent" = "true" ]] ; then
 		accent_color
 	fi
@@ -270,14 +246,6 @@ enable_theme() {
 		gsettings set org.gnome.desktop.interface icon-theme "Yaru-$color$suffix" 
 		echo Changing Gnome Shell theme to Yaru-$color$suffix.
 		gsettings set org.gnome.shell.extensions.user-theme name "Yaru-$color$suffix"
-	fi
-
-	if [[ "$left" = "true" ]] ; then
-		echo Changing window titlebar button placement to left.
-		gsettings set org.gnome.desktop.wm.preferences button-layout 'close,minimize,maximize:appmenu'
-	else
-		echo Changing window titlebar button placement to right.
-		gsettings set org.gnome.desktop.wm.preferences button-layout 'appmenu:minimize,maximize,close'
 	fi
 }
 

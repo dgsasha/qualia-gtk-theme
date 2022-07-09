@@ -32,9 +32,6 @@ cd dg-gnome-theme
 - `-a, --accent-color` `[orange|bark|sage|olive|viridian|prussiangreen|blue|purple|magenta|red]`
 	- Specify yaru accent color variant
 	- Default: `orange`
-- `-b, --button-placement` `[right|left]`
-	- Specify window titlebar button placement
-	- Default: `right`
 - `-f, --firefox-theme` `[none|default|flatpak]`
 	- Specify where to install the firefox theme
 	- Default: `none`
@@ -43,15 +40,16 @@ cd dg-gnome-theme
 
 #### Example:
 ```
-./install.sh -t dark -a purple -b left -f flatpak
+./install.sh -t dark -a purple -f flatpak
 ```
 **Log out and log back in for everything to be updated.**
 
 ### Warning!
-
 **The installation script changes some preferences in GNOME depending on the options you choose.**
 
-The preferences being changed are `org.gnome.desktop.interface color-scheme` `org.gnome.desktop.interface icon-theme` `org.gnome.desktop.interface gtk-theme` `org.gnome.shell.extensions.user-theme name` and `org.gnome.desktop.wm.preferences button-layout`.
+The preferences being changed are `org.gnome.desktop.interface color-scheme` `org.gnome.desktop.interface icon-theme` `org.gnome.desktop.interface gtk-theme` and `org.gnome.shell.extensions.user-theme name`.
+
+**Also, if you later decide to change the titlebar button placement in GNOME, run the install script again afterwards or else the padding will be messed up**
 
 ## Flatpak
 Install adw-gtk3 as a Flatpak:

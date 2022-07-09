@@ -3,7 +3,7 @@ $asset_suffix: if($variant == 'dark', '-dark', '');
 /* macOS window buttons */
 windowcontrols {
 	button {
-		margin: 0 1px 0 1px;
+		margin: 0 1px 0 0;
 		padding: 0;
 		background-position: center;
 		background-repeat: no-repeat;
@@ -34,27 +34,21 @@ windowcontrols {
 }
 @if $button_placement == 'left' {
 	windowcontrols {
-		button.close {
-			margin-left: 7px;
+		&.start {
+			margin: 0 6px 0 7px;
 		}
-		button.minimize {
-			margin-left: 1px;
-		}
-		button.maximize {
-			margin: 0 7px 0 1px;
+		button {
+			margin: 0 1px 0 0;
 		}
 	}
 }
 @else {
 	windowcontrols {
-		button.minimize {
-			margin: 0 1px 0 7px;
+		&.end {
+			margin: 0 7px 0 6px;
 		}
-		button.maximize {
-			margin-right: 1px;
-		}
-		button.close {
-			margin-right: 7px;
+		button {
+			margin: 0 0 0 1px;
 		}
 	}
 }
