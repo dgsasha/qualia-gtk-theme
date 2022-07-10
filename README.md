@@ -50,6 +50,7 @@ cd dg-gnome-theme
 The preferences being changed are `org.gnome.desktop.interface color-scheme` `org.gnome.desktop.interface icon-theme` `org.gnome.desktop.interface gtk-theme` and `org.gnome.shell.extensions.user-theme name`.
 
 **Also, if you later decide to change the titlebar button placement in GNOME, run the install script again afterwards or else the padding will be messed up**
+
 **And if you want to change between light and dark theme, run the install script with the "--theme" option to update the configuration**
 ### Firefox
 I highly recommend to install the included Firefox theme if you use Firefox, because without it Firefox doesn't follow the theme properly.
