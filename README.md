@@ -15,7 +15,7 @@ Arch: `sassc` `git` `gnome-shell-extensions`
 
 Open a pull request if you want to add the dependencies for the distro you use :) 
 
-**This isn't really much of a theme, it's mostly just a configuration for Libadwaita and adw-gtk3, so you also need to have [adw-gtk3](https://github.com/lassekongo83/adw-gtk3) installed.**
+**You also need to have [adw-gtk3](https://github.com/lassekongo83/adw-gtk3) installed.**
 
 ## Installation
 ```
