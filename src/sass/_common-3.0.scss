@@ -39,8 +39,7 @@ headerbar {
 @if $button_placement == 'left' {
 	headerbar {
 		padding-left: 8px;
-		box.horizontal.left,
-		box.horizontal.right {
+		box.horizontal.left {
 			padding: 0 6px 0 5px;
 		}
 	}
@@ -48,7 +47,6 @@ headerbar {
 @else {
 	headerbar {
 		padding-right: 8px;
-		box.horizontal.left,
 		box.horizontal.right {
 			padding: 0 5px 0 6px;
 		}
