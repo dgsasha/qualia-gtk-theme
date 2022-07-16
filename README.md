@@ -44,7 +44,7 @@ cd dg-gnome-theme
 
 The preferences being changed are `org.gnome.desktop.interface icon-theme` `org.gnome.desktop.interface gtk-theme` and `org.gnome.shell.extensions.user-theme name`.
 
-**And if you change between light and dark theme in the settings app, run the install script again afterwards to update everything.**
+**Also if you change between light and dark theme in the settings app, run the install script again to update everything.**
 
 ## Flatpak apps
 Run this command to let Flatpak apps access this theme:
