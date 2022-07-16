@@ -15,8 +15,6 @@ Arch: `sassc` `git` `gnome-shell-extensions` `ninja` `meson`
 
 Open a pull request if you want to add the dependencies for the distro you use :) 
 
-**You also need to have [adw-gtk3](https://github.com/lassekongo83/adw-gtk3) installed.**
-
 ## Installation
 ```
 git clone https://github.com/dgmarie/dg-gnome-theme
@@ -26,9 +24,6 @@ cd dg-gnome-theme
 ./install.sh
 ```
 #### OPTIONS:
-- `-t, --theme` `[light|dark]`     
-	- Specify theme variant
-	- Default: `light`
 - `-a, --accent-color` `[orange|bark|sage|olive|viridian|prussiangreen|blue|purple|magenta|red]`
 	- Specify yaru accent color variant
 	- Default: `orange`
@@ -40,29 +35,21 @@ cd dg-gnome-theme
 
 #### Example:
 ```
-./install.sh -t dark -a purple -f flatpak
+./install.sh -a purple -f flatpak
 ```
 **Log out and log back in for everything to be updated.**
 
 ### Warning!
 **The installation script changes some preferences in GNOME depending on the options you choose.**
 
-The preferences being changed are `org.gnome.desktop.interface color-scheme` `org.gnome.desktop.interface icon-theme` `org.gnome.desktop.interface gtk-theme` and `org.gnome.shell.extensions.user-theme name`.
+The preferences being changed are `org.gnome.desktop.interface icon-theme` `org.gnome.desktop.interface gtk-theme` and `org.gnome.shell.extensions.user-theme name`.
 
-**Also, if you later decide to change the titlebar button placement in GNOME, run the install script again afterwards or else the padding will be messed up.**
-
-**And if you want to change between light and dark theme, run the install script with the "--theme" option to update the configuration.**
-### Firefox
-I highly recommend to install the included Firefox theme if you use Firefox, because without it Firefox doesn't follow the theme properly.
+**And if you change between light and dark theme in the settings app, run the install script again afterwards to update everything.**
 
 ## Flatpak apps
-Install adw-gtk3 as a Flatpak:
+Run this command to let Flatpak apps access this theme:
 ```
-flatpak install org.gtk.Gtk3theme.adw-gtk3 org.gtk.Gtk3theme.adw-gtk3-dark
-```
-Also let flatpak access the configuration for this theme:
-```
-flatpak override --user --filesystem=xdg-config/gtk-4.0 && flatpak override --user --filesystem=xdg-config/gtk-3.0
+flatpak override --user --filesystem=xdg-config/gtk-4.0 --filesystem=xdg-config/gtk-3.0 --filesystem=xdg-data/themes
 ```
 
 ## Updating

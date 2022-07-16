@@ -1,6 +1,5 @@
 #! /usr/bin/env bash
 
-GTK3_DIR="$HOME/.config/gtk-3.0"
 GTK4_DIR="$HOME/.config/gtk-4.0"
 
 echo Removing dg-adw-gtk3.
