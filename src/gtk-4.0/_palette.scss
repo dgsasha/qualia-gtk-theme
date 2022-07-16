@@ -43,10 +43,7 @@ $dark_2: #5D5D5D; // Yaru slate
 $dark_3: #3D3D3D; // Yaru inkstone
 $dark_4: #181818; // Yaru jet
 $dark_5: #000000;
-
 $yaru_accent_bg_color: $accent_color;
-@define-color yaru_accent_bg_color #{$accent_color};
-
 
 // Sass thinks we're using the colors in the variables as strings and may shoot
 // warning, it's innocuous and can be defeated by using #{$var}.
@@ -96,3 +93,4 @@ $yaru_accent_bg_color: $accent_color;
 @define-color dark_3 #{$dark_3};
 @define-color dark_4 #{$dark_4};
 @define-color dark_5 #{$dark_5};
+@define-color yaru_accent_bg_color #{$yaru_accent_bg_color};

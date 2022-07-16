@@ -32,23 +32,14 @@ windowcontrols {
 		}
 	}
 }
-@if $button_placement == 'left' {
-	windowcontrols {
-		&.start {
-			margin: 0 6px 0 7px;
-		}
-		button {
-			margin: 0 1px 0 0;
-		}
+windowcontrols {
+	&.start {
+		margin: 0 6px 0 7px;
 	}
-}
-@else {
-	windowcontrols {
-		&.end {
-			margin: 0 7px 0 6px;
-		}
-		button {
-			margin: 0 0 0 1px;
-		}
+	&.end {
+		margin: 0 6px 0 7px;
+	}
+	button {
+		margin: 0 1px 0 0;
 	}
 }

@@ -1,6 +1,6 @@
-/* GTK NAMED COLORS
-   ----------------
-   use responsibly! */
+// GTK NAMED COLORS
+// ----------------
+// use responsibly!
 
 // Sass thinks we're using the colors in the variables as strings and may shoot
 // warning, it's innocuous and can be defeated by using #{$var}.
@@ -32,22 +32,29 @@
 @define-color error_color @red_4;
 
 // Window
-@define-color window_bg_color #{if($variant == 'light', #fafafa, lighten(#181818, 6%))};
+@define-color window_bg_color #{if($variant == 'light', #fafafa, lighten(#181818, 8%))};
 @define-color window_fg_color #{if($variant=='light', transparentize(black, .2), white)};
 
 // Views - e.g. text view or tree view
-@define-color view_bg_color #{if($variant == 'light', #ffffff, lighten(#181818, 7%))};
+@define-color view_bg_color #{if($variant == 'light', #ffffff, lighten(#181818, 6%))};
 @define-color view_fg_color #{if($variant == 'light', #000000, #ffffff)};
 
 // Header bar, search bar, tab bar
 @define-color headerbar_bg_color #{if($variant == 'light', #ebebeb, darken(#2c2c2c, 4%))};
 @define-color headerbar_fg_color #{if($variant == 'light', transparentize(black, .2), white)};
+@define-color headerbar_border_color #{if($variant == 'light', transparentize(black, .2), white)};
 @define-color headerbar_backdrop_color @window_bg_color;
+@define-color headerbar_shade_color #{if($variant == 'light', transparentize(black, .93), transparentize(black, .64))};
 
 // Cards, boxed lists
 @define-color card_bg_color #{if($variant == 'light', #ffffff, transparentize(white, .92))};
-@define-color card_fg_color #{if($variant == 'light', transparentize(black, .2), white)};
+@define-color card_fg_color #{if($variant == 'light', #323232, white)};
+@define-color card_shade_color #{if($variant == 'light', transparentize(black, .93), transparentize(black, .64))};
 
 // Popovers
 @define-color popover_bg_color #{if($variant == 'light', #fafafa, lighten($dark_4, 2%))};
 @define-color popover_fg_color #{if($variant == 'light', transparentize(black, .2), white)};
+
+// Miscellaneous
+@define-color shade_color #{if($variant == 'light', transparentize(black, .93), transparentize(black, .64))};
+@define-color scrollbar_outline_color #{if($variant == 'light', white, transparentize(black, .5))};

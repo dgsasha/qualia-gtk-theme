@@ -3,8 +3,8 @@
 GTK3_DIR="$HOME/.config/gtk-3.0"
 GTK4_DIR="$HOME/.config/gtk-4.0"
 
-echo Removing gtk3 configuration.
-rm -rf $GTK3_DIR/mac-icons $GTK3_DIR/gtk.css
+echo Removing dg-adw-gtk3.
+rm -rf $HOME/.local/share/themes/dg-adw-gtk3*
 
 echo Removing gtk4 configuration.
 rm -rf $GTK4_DIR/mac-icons $GTK4_DIR/gtk.css

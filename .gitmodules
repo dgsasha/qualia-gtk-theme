@@ -2,3 +2,6 @@
 	path = dg-firefox-theme
 	url = https://github.com/dgmarie/dg-firefox-theme
 	branch = main
+[submodule "dg-adw-gtk3"]
+	path = dg-adw-gtk3
+	url = https://github.com/dgmarie/dg-adw-gtk3

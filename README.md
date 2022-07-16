@@ -6,11 +6,11 @@
 ![Screenshot of the theme](Screenshot.png)
 
 ## Dependencies
-Ubuntu: `sassc` `git` `gnome-shell-extensions`
+Ubuntu: `sassc` `git` `gnome-shell-extensions` `ninja-build` `meson`
 
-Fedora: `sassc` `git` `gnome-shell-extension-user-theme` `yaru-theme`
+Fedora: `sassc` `git` `gnome-shell-extension-user-theme` `yaru-theme` `ninja-build` `meson`
 
-Arch: `sassc` `git` `gnome-shell-extensions` 
+Arch: `sassc` `git` `gnome-shell-extensions` `ninja` `meson`
 - You will also need `yaru` from the AUR.
 
 Open a pull request if you want to add the dependencies for the distro you use :) 
