@@ -32,12 +32,12 @@ install_theme() {
 	meson configure -Daccent=$color build > /dev/null
 	ninja -C build install > /dev/null
 
-	echo Installing dg-yaru theme in ${HOME}/.local/share
+	echo Installing dg-yaru theme in /usr/share
 	cd $YARU_SRC_DIR
 	if [ ! -d "$YARU_SRC_DIR/build" ] ; then
-		meson -Dprefix="${HOME}/.local" build > /dev/null
+		meson build > /dev/null
 	fi
-	ninja -C build install > /dev/null
+	sudo ninja -C build install > /dev/null
 	cd $REPO_DIR
 
 	echo Installing $color gtk4 configuration in $GTK4_DIR
@@ -197,6 +197,10 @@ enable_theme() {
 		dg_yaru="dg-yaru-$color$suffix"
 	fi
 
+	echo Changing cursor theme to dg-yaru.
+	gsettings set org.gnome.desktop.interface cursor-theme dg-yaru
+	echo Changing sound theme to dg-yaru.
+	gsettings set org.gnome.desktop.sound theme-name dg-yaru
 	echo Changing icon theme to $dg_yaru.
 	gsettings set org.gnome.desktop.interface icon-theme $dg_yaru
 	echo Changing Gnome Shell theme to $dg_yaru.

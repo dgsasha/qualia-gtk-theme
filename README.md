@@ -59,7 +59,7 @@ And then run installation script again
 
 ## Uninstalling
 ```
-./uninstall.sh
+sudo ./uninstall.sh
 ```
 
 ## Extra Stuff
