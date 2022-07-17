@@ -3,6 +3,7 @@
 REPO_DIR="$(pwd)"
 SRC_DIR="${REPO_DIR}/src"
 GTK3_SRC_DIR="${REPO_DIR}/dg-adw-gtk3"
+YARU_SRC_DIR="${REPO_DIR}/dg-yaru"
 GTK4_DIR="$HOME/.config/gtk-4.0"
 
 SASSC_OPT="-M -t expanded"
@@ -23,12 +24,19 @@ EOF
 install_theme() {
 	git submodule init dg-adw-gtk3 && git submodule update
 
-	echo Installing $color dg-adw-gtk theme
+	echo Installing $color dg-adw-gtk3 theme in ${HOME}/.local/share
 	cd $GTK3_SRC_DIR
 	if [ ! -d "$GTK3_SRC_DIR/build" ] ; then
 		meson -Dprefix="${HOME}/.local" build > /dev/null
 	fi
 	meson configure -Daccent=$color build > /dev/null
+	ninja -C build install > /dev/null
+
+	echo Installing dg-yaru theme in ${HOME}/.local/share
+	cd $YARU_SRC_DIR
+	if [ ! -d "$YARU_SRC_DIR/build" ] ; then
+		meson -Dprefix="${HOME}/.local" build > /dev/null
+	fi
 	ninja -C build install > /dev/null
 	cd $REPO_DIR
 
@@ -184,16 +192,15 @@ enable_theme() {
 	gsettings set org.gnome.desktop.interface gtk-theme "dg-adw-gtk3$suffix"
 
 	if [ "$color" = "orange" ] ; then
-		echo Changing icon theme to Yaru$suffix.
-		gsettings set org.gnome.desktop.interface icon-theme "Yaru$suffix"
-		echo Changing Gnome Shell theme to Yaru$suffix.
-		gsettings set org.gnome.shell.extensions.user-theme name "Yaru$suffix"
+		dg_yaru="dg-yaru$suffix"
 	else
-		echo Changing icon theme to Yaru-$color$suffix.
-		gsettings set org.gnome.desktop.interface icon-theme "Yaru-$color$suffix" 
-		echo Changing Gnome Shell theme to Yaru-$color$suffix.
-		gsettings set org.gnome.shell.extensions.user-theme name "Yaru-$color$suffix"
+		dg_yaru="dg-yaru-$color$suffix"
 	fi
+
+	echo Changing icon theme to $dg_yaru.
+	gsettings set org.gnome.desktop.interface icon-theme $dg_yaru
+	echo Changing Gnome Shell theme to $dg_yaru.
+	gsettings set org.gnome.shell.extensions.user-theme name $dg_yaru
 }
 
 accent_color && install_theme && enable_theme

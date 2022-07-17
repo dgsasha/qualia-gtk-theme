@@ -2,6 +2,12 @@
 
 GTK4_DIR="$HOME/.config/gtk-4.0"
 
+echo Removing dg-yaru.
+rm -rf $HOME/.local/share/themes/dg-yaru*
+rm -rf $HOME/.local/share/icons/dg-yaru*
+rm -rf $HOME/.local/share/gnome-shell/theme/dg-yaru*
+rm -rf $HOME/.local/share/sounds/dg-yaru
+
 echo Removing dg-adw-gtk3.
 rm -rf $HOME/.local/share/themes/dg-adw-gtk3*
 

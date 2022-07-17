@@ -8,10 +8,9 @@
 ## Dependencies
 Ubuntu: `sassc` `git` `gnome-shell-extensions` `ninja-build` `meson`
 
-Fedora: `sassc` `git` `gnome-shell-extension-user-theme` `yaru-theme` `ninja-build` `meson`
+Fedora: `sassc` `git` `gnome-shell-extension-user-theme` `ninja-build` `meson`
 
 Arch: `sassc` `git` `gnome-shell-extensions` `ninja` `meson`
-- You will also need `yaru` from the AUR.
 
 Open a pull request if you want to add the dependencies for the distro you use :) 
 
@@ -49,7 +48,7 @@ The preferences being changed are `org.gnome.desktop.interface icon-theme` `org.
 ## Flatpak apps
 Run this command to let Flatpak apps access this theme:
 ```
-flatpak override --user --filesystem=xdg-config/gtk-4.0 --filesystem=xdg-config/gtk-3.0 --filesystem=xdg-data/themes
+flatpak override --user --filesystem=xdg-config/gtk-4.0 --filesystem=xdg-data/themes
 ```
 
 ## Updating
@@ -66,7 +65,7 @@ And then run installation script again
 ## Extra Stuff
 I'm using [Dash to Dock for Cosmic](https://extensions.gnome.org/extension/5004/dash-to-dock-for-cosmic) as the dock
 
-I would also recommend using [gdm-tools](https://github.com/realmazharhussain/gdm-tools) to change the GDM theme to Yaru
+I would also recommend using [gdm-tools](https://github.com/realmazharhussain/gdm-tools) to change the GDM theme to dg-yaru
 
 ## Credits
 Thanks to Ubuntu for [Yaru](https://github.com/ubuntu/yaru), [vinceliuice](https://github.com/vinceliuice) for [WhiteSur-gtk-theme](https://github.com/vinceliuice/WhiteSur-gtk-theme) and [Colloid-gtk-theme](https://github.com/vinceliuice/Colloid-gtk-theme), [rafaelmardojai](https://github.com/rafaelmardojai) for [firefox-gnome-theme](https://github.com/rafaelmardojai/firefox-gnome-theme) and [lassekongo83](https://github.com/lassekongo83) for [adw-gtk3](https://github.com/lassekongo83/adw-gtk3)
