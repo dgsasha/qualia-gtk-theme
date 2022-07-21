@@ -22,7 +22,7 @@ EOF
 }
 
 install_theme() {
-	git submodule init dg-adw-gtk3 dg-yaru
+	git submodule init dg-adw-gtk3 dg-yaru && git submodule update
 
 	echo Installing $color dg-adw-gtk3 theme in ${HOME}/.local/share
 	cd $GTK3_SRC_DIR
