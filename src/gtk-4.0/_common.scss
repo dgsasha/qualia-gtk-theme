@@ -15,7 +15,8 @@ windowcontrols:not(.empty) {
 		@each $k in ('close', 'maximize', 'minimize') {
 			@each $l, $m in ('',''), (':backdrop','-backdrop'), (':backdrop:hover','-backdrop-hover'), (':hover','-hover'), (':active','-active') {
 				&.#{$k}#{$l} {
-					background-image: url('mac-icons/titlebutton-#{$k}#{$m}#{$asset_suffix}.svg');
+					background-image: -gtk-scaled(url('mac-icons/titlebutton-#{$k}#{$m}#{$asset_suffix}.png'),
+																			 url('mac-icons/titlebutton-#{$k}#{$m}#{$asset_suffix}@2.png'));
 				}
 			}
 		}
@@ -26,7 +27,8 @@ windowcontrols:not(.empty) {
 		button {
 			@each $l, $m in ('',''), (':backdrop','-backdrop'), (':backdrop:hover','-backdrop-hover'), (':hover','-hover'), (':active','-active') {
 				&.maximize#{$l} {
-					background-image: url('mac-icons/titlebutton-restore#{$m}#{$asset_suffix}.svg');
+					background-image: -gtk-scaled(url('mac-icons/titlebutton-#{$m}#{$asset_suffix}.png'),
+																			 url('mac-icons/titlebutton-#{$m}#{$asset_suffix}@2.png'));
 				}
 			}
 		}

@@ -5,6 +5,8 @@
 [submodule "dg-adw-gtk3"]
 	path = dg-adw-gtk3
 	url = https://github.com/dgmarie/dg-adw-gtk3
+	branch = main
 [submodule "dg-yaru"]
 	path = dg-yaru
 	url = https://github.com/dgmarie/dg-yaru
+	branch = main

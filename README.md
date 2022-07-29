@@ -59,13 +59,11 @@ And then run installation script again
 
 ## Uninstalling
 ```
-sudo ./uninstall.sh
+./uninstall.sh
 ```
 
 ## Extra Stuff
-I'm using [Dash to Dock for Cosmic](https://extensions.gnome.org/extension/5004/dash-to-dock-for-cosmic) as the dock
-
-I would also recommend using [gdm-tools](https://github.com/realmazharhussain/gdm-tools) to change the GDM theme to dg-yaru
+I recommend using [gdm-tools](https://github.com/realmazharhussain/gdm-tools) to change the GDM theme to dg-yaru
 
 ## Credits
 Thanks to Ubuntu for [Yaru](https://github.com/ubuntu/yaru), [vinceliuice](https://github.com/vinceliuice) for [WhiteSur-gtk-theme](https://github.com/vinceliuice/WhiteSur-gtk-theme) and [Colloid-gtk-theme](https://github.com/vinceliuice/Colloid-gtk-theme), [rafaelmardojai](https://github.com/rafaelmardojai) for [firefox-gnome-theme](https://github.com/rafaelmardojai/firefox-gnome-theme) and [lassekongo83](https://github.com/lassekongo83) for [adw-gtk3](https://github.com/lassekongo83/adw-gtk3)

@@ -4,9 +4,7 @@ REPO_DIR="$(pwd)"
 SRC_DIR="${REPO_DIR}/src"
 GTK3_SRC_DIR="${REPO_DIR}/dg-adw-gtk3"
 YARU_SRC_DIR="${REPO_DIR}/dg-yaru"
-GTK4_DIR="$HOME/.config/gtk-4.0"
-
-SASSC_OPT="-M -t expanded"
+GTK4_DIR="${HOME}/.config/gtk-4.0"
 
 COLOR_VARIANTS=('orange' 'bark' 'sage' 'olive' 'viridian' 'prussiangreen' 'blue' 'purple' 'magenta' 'red')
 FIREFOX_VARIANTS=('none' 'default' 'flatpak')
@@ -24,40 +22,40 @@ EOF
 install_theme() {
 	git submodule init dg-adw-gtk3 dg-yaru && git submodule update
 
-	echo Installing $color dg-adw-gtk3 theme in ${HOME}/.local/share
-	cd $GTK3_SRC_DIR
-	if [ ! -d "$GTK3_SRC_DIR/build" ] ; then
-		meson -Dprefix="${HOME}/.local" build > /dev/null
+	echo "Installing ${color} dg-adw-gtk3 theme in ${HOME}/.local/share"
+	cd "$GTK3_SRC_DIR" || exit
+	if [ ! -d "${GTK3_SRC_DIR}/build" ] ; then
+		meson "-Dprefix=${HOME}/.local" build > /dev/null
 	fi
-	meson configure -Daccent=$color build > /dev/null
+	meson configure "-Daccent=${color}" build > /dev/null
 	ninja -C build install > /dev/null
 
-	echo Installing dg-yaru theme in /usr/share
-	cd $YARU_SRC_DIR
+	echo "Installing dg-yaru theme in /usr/share"
+	cd "$YARU_SRC_DIR" || exit
 	if [ ! -d "$YARU_SRC_DIR/build" ] ; then
 		meson build > /dev/null
 	fi
 	sudo ninja -C build install > /dev/null
-	cd $REPO_DIR
+	cd "$REPO_DIR" || exit
 
-	echo Installing $color gtk4 configuration in $GTK4_DIR
-	mkdir -p                                            "$GTK4_DIR"
-	rm -rf                                              "$GTK4_DIR/mac-icons"
-	cp -R $SRC_DIR/assets/mac-icons$suffix              "$GTK4_DIR/mac-icons"
-	sassc $SASSC_OPT "$SRC_DIR/gtk-4.0/gtk$suffix.scss" "$GTK4_DIR/gtk.css"
+	echo "Installing ${color} gtk4 configuration in ${GTK4_DIR}"
+	mkdir -p                                                    "$GTK4_DIR"
+	rm -rf                                                      "${GTK4_DIR}/mac-icons"
+	cp -R "${SRC_DIR}/assets/mac-icons${suffix}"                "${GTK4_DIR}/mac-icons"
+	sassc -M -t expanded "${SRC_DIR}/gtk-4.0/gtk${suffix}.scss" "${GTK4_DIR}/gtk.css"
 
 	if [ "$firefox" = "flatpak" ] ; then
-	FIREFOX_THEME_OPT="-f $HOME/.var/app/org.mozilla.firefox/.mozilla/firefox -c $color"
+	firefox_opt="-f ${HOME}/.var/app/org.mozilla.firefox/.mozilla/firefox -c ${color}"
 	else
-	FIREFOX_THEME_OPT="-c $color"
+	firefox_opt="-c ${color}"
 	fi
 
 	if [ "$firefox" = "none" ] ; then
 		echo Not installing Firefox theme.
 	else
 		git submodule init dg-firefox-theme && git submodule update
-		cd $REPO_DIR/dg-firefox-theme
-		./scripts/install.sh $FIREFOX_THEME_OPT
+		cd "${REPO_DIR}/dg-firefox-theme" || exit
+		./scripts/install.sh $firefox_opt
 	fi
 }
 
@@ -67,7 +65,6 @@ firefox=()
 while [ $# -gt 0 ]; do
 	case "${1}" in
 		-a|--accent-color)
-			accent='true'
 			shift
 			for variant in "$@"; do
 				case "$variant" in
@@ -111,7 +108,7 @@ while [ $# -gt 0 ]; do
 						color=("${COLOR_VARIANTS[9]}")
 						shift
 						;;
-					-*|--*)
+					-*)
 						break
 						;;
 					*)
@@ -135,11 +132,10 @@ while [ $# -gt 0 ]; do
 						shift
 						;;
 					flatpak)
-						flatpak='true'
 						firefox=("${FIREFOX_VARIANTS[2]}")
 						shift
 						;;
-					-*|--*)
+					-*)
 						break
 						;;
 					*)
@@ -181,35 +177,35 @@ case $theme in
 esac
 
 accent_color() {
-	cp -rf $SRC_DIR/gtk-4.0/_accent-colors.scss $SRC_DIR/gtk-4.0/_accent-colors-temp.scss
-	sed -i "/\$accent_color:/s/orange/$color/" $SRC_DIR/gtk-4.0/_accent-colors-temp.scss
+	cp -rf "${SRC_DIR}/gtk-4.0/_accent-colors.scss" "${SRC_DIR}/gtk-4.0/_accent-colors-temp.scss"
+	sed -i "/\$accent_color:/s/orange/${color}/" "${SRC_DIR}/gtk-4.0/_accent-colors-temp.scss"
 }
 
 enable_theme() {
 	gnome-extensions enable user-theme@gnome-shell-extensions.gcampax.github.com
 
-	echo Changing gtk3 theme to dg-adw-gtk3$suffix.
-	gsettings set org.gnome.desktop.interface gtk-theme "dg-adw-gtk3$suffix"
+	echo "Changing gtk3 theme to dg-adw-gtk3${suffix}".
+	gsettings set org.gnome.desktop.interface gtk-theme "dg-adw-gtk3${suffix}"
 
 	if [ "$color" = "orange" ] ; then
-		dg_yaru="dg-yaru$suffix"
+		dg_yaru="dg-yaru${suffix}"
 	else
-		dg_yaru="dg-yaru-$color$suffix"
+		dg_yaru="dg-yaru-${color}${suffix}"
 	fi
 
-	echo Changing cursor theme to dg-yaru.
+	echo "Changing cursor theme to dg-yaru."
 	gsettings set org.gnome.desktop.interface cursor-theme dg-yaru
-	echo Changing sound theme to dg-yaru.
+	echo "Changing sound theme to dg-yaru."
 	gsettings set org.gnome.desktop.sound theme-name dg-yaru
-	echo Changing icon theme to $dg_yaru.
-	gsettings set org.gnome.desktop.interface icon-theme $dg_yaru
-	echo Changing Gnome Shell theme to $dg_yaru.
-	gsettings set org.gnome.shell.extensions.user-theme name $dg_yaru
+	echo "Changing icon theme to ${dg_yaru}."
+	gsettings set org.gnome.desktop.interface icon-theme "$dg_yaru"
+	echo "Changing Gnome Shell theme to ${dg_yaru}."
+	gsettings set org.gnome.shell.extensions.user-theme name "$dg_yaru"
 }
 
 accent_color && install_theme && enable_theme
 
-rm -rf $SRC_DIR/gtk-4.0/_accent-colors-temp.scss
+rm -rf "${SRC_DIR}/gtk-4.0/_accent-colors-temp.scss"
 
-echo Done.
-echo 'Log out and log back in for everything to be updated :)'
+echo "Done."
+echo "Log out and log back in for everything to be updated :)"
