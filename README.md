@@ -14,7 +14,7 @@ Fedora: `sudo dnf install sassc git gnome-shell-extension-user-theme ninja-build
 
 openSUSE: `sudo zypper install sassc git gnome-shell-extension-user-theme ninja meson`
 
-Log out and log back in after installing `gnome-shell-extension-user-theme` before you proceed.
+If `gnome-shell-extension-user-theme` wasn't already installed, log out and log back in before you proceed.
 
 ## Installation
 ```
