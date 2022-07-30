@@ -6,13 +6,13 @@
 ![Screenshot of the theme](Screenshot.png)
 
 ## Installing Dependencies
-Arch based distros: `sudo pacman -S sassc git gnome-shell-extensions ninja meson`
+- Arch based distros: `sudo pacman -S sassc git gnome-shell-extensions ninja meson`
 
-Debian and Ubuntu based distros: `sudo apt-get install sassc git gnome-shell-extensions ninja-build meson`
+- Debian and Ubuntu based distros: `sudo apt-get install sassc git gnome-shell-extensions ninja-build meson`
 
-Fedora: `sudo dnf install sassc git gnome-shell-extension-user-theme ninja-build meson`
+- Fedora: `sudo dnf install sassc git gnome-shell-extension-user-theme ninja-build meson`
 
-openSUSE: `sudo zypper install sassc git gnome-shell-extension-user-theme ninja meson`
+- openSUSE: `sudo zypper install sassc git gnome-shell-extension-user-theme ninja meson`
 
 If `gnome-shell-extension-user-theme` wasn't already installed, log out and log back in before you proceed.
 
