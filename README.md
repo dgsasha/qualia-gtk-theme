@@ -14,7 +14,7 @@
 
 - openSUSE: `sudo zypper install sassc git gnome-shell-extension-user-theme ninja meson`
 
-If `gnome-shell-extension-user-theme` wasn't already installed, log out and log back in before you proceed.
+**If `gnome-shell-extension-user-theme` wasn't already installed, log out and log back in before you proceed.**
 
 ## Installation
 ```
