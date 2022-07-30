@@ -5,14 +5,16 @@
 
 ![Screenshot of the theme](Screenshot.png)
 
-## Dependencies
-Ubuntu: `sassc` `git` `gnome-shell-extensions` `ninja-build` `meson`
+## Installing Dependencies
+Arch based distros: `sudo pacman -S sassc git gnome-shell-extensions ninja meson`
 
-Fedora: `sassc` `git` `gnome-shell-extension-user-theme` `ninja-build` `meson`
+Debian and Ubuntu based distros: `sudo apt-get install sassc git gnome-shell-extensions ninja-build meson`
 
-Arch: `sassc` `git` `gnome-shell-extensions` `ninja` `meson`
+Fedora: `sudo dnf install sassc git gnome-shell-extension-user-theme ninja-build meson`
 
-Open a pull request if you want to add the dependencies for the distro you use :) 
+openSUSE: `sudo zypper install sassc git gnome-shell-extension-user-theme ninja meson`
+
+Log out and log back in after installing `gnome-shell-extension-user-theme` before you proceed.
 
 ## Installation
 ```
@@ -62,7 +64,7 @@ And then run installation script again
 ./uninstall.sh
 ```
 
-## Extra Stuff
+## GDM Theme
 I recommend using [gdm-tools](https://github.com/realmazharhussain/gdm-tools) to change the GDM theme to dg-yaru
 
 ## Credits
