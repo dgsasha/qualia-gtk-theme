@@ -25,10 +25,10 @@ cd dg-gnome-theme
 ./install.sh
 ```
 #### OPTIONS:
-- `-a, --accent-color` `[orange|bark|sage|olive|viridian|prussiangreen|blue|purple|magenta|red]`
+- `-a, --accent` `[orange|bark|sage|olive|viridian|prussiangreen|blue|purple|magenta|red]`
 	- Specify yaru accent color variant
 	- Default: `orange`
-- `-f, --firefox-theme` `[none|default|flatpak]`
+- `-f, --firefox` `[none|default|flatpak]`
 	- Specify where to install the firefox theme
 	- Default: `none`
 - `-h, --help`

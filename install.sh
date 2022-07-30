@@ -13,9 +13,9 @@ usage() {
 cat << EOF
 Usage: $0 [OPTION]...
 OPTIONS:
-	-a, --accent-color VARIANT      Specify yaru accent color variant [orange|bark|sage|olive|viridian|prussiangreen|blue|purple|magenta|red] (Default: orange)
-	-f, --firefox-theme VARIANT     Specify where to install the firefox theme [none|default|flatpak] (Default: none)
-	-h, --help                      Show help
+	-a, --accent VARIANT      Specify yaru accent color variant [orange|bark|sage|olive|viridian|prussiangreen|blue|purple|magenta|red] (Default: orange)
+	-f, --firefox VARIANT     Specify where to install the firefox theme [none|default|flatpak] (Default: none)
+	-h, --help                Show help
 EOF
 }
 
@@ -64,7 +64,7 @@ firefox=()
 
 while [ $# -gt 0 ]; do
 	case "${1}" in
-		-a|--accent-color)
+		-a|--accent)
 			shift
 			for variant in "$@"; do
 				case "$variant" in
@@ -119,7 +119,7 @@ while [ $# -gt 0 ]; do
 				esac
 			done
 			;;
-		-f|--firefox-theme)
+		-f|--firefox)
 			shift
 			for variant in "${@}"; do
 				case "${variant}" in
