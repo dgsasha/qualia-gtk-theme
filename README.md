@@ -1,5 +1,5 @@
 # dg GNOME theme
-**A Libadwaita + macOS + Yaru theme for GNOME**
+**A Libadwaita + macOS + Yaru theme for GNOME 42**
 
 *Kinda crazy but I like the look of it.*
 
