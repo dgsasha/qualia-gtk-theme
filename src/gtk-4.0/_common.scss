@@ -27,8 +27,8 @@ windowcontrols:not(.empty) {
 		button {
 			@each $l, $m in ('',''), (':backdrop','-backdrop'), (':backdrop:hover','-backdrop-hover'), (':hover','-hover'), (':active','-active') {
 				&.maximize#{$l} {
-					background-image: -gtk-scaled(url('mac-icons/titlebutton-restore-#{$m}#{$asset_suffix}.png'),
-																			 url('mac-icons/titlebutton-restore-#{$m}#{$asset_suffix}@2.png'));
+					background-image: -gtk-scaled(url('mac-icons/titlebutton-restore#{$m}#{$asset_suffix}.png'),
+																			 url('mac-icons/titlebutton-restore#{$m}#{$asset_suffix}@2.png'));
 				}
 			}
 		}
