@@ -76,6 +76,7 @@ git pull
 And then run installation script again
 
 ## Uninstalling
+Before uninstalling, use GNOME Tweaks to change themes to something else to avoid any issues. After doing that run the uninstall script.
 ```
 ./uninstall.sh
 ```
