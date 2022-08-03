@@ -38,13 +38,15 @@ cd dg-gnome-theme
 
 #### Available Options:
 - `-a, --accent` `[orange|bark|sage|olive|viridian|prussiangreen|blue|purple|magenta|red]`
-	- Specify yaru accent color variant
+	- Specify yaru accent color variant (See image below)
 	- Default: `orange`
 - `-f, --firefox` `[none|default|flatpak]`
 	- Specify where to install the firefox theme
 	- Default: `none`
 - `-h, --help`
 	- Show help
+
+![Accent Colors](accents.svg)
 
 #### Example:
 ```
