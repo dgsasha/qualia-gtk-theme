@@ -1,3 +1,5 @@
+<div align="center">
+
 # dg GNOME theme
 **A Libadwaita + macOS + Yaru theme for GNOME 42**
 
@@ -5,7 +7,12 @@
 
 ![Screenshot of the theme](Screenshot.png)
 
+# How to install
+
+</div>
+
 ## Installing Dependencies
+
 - Arch based distros: `sudo pacman -S sassc git gnome-shell-extensions ninja meson`
 
 - Debian and Ubuntu based distros: `sudo apt-get install sassc git gnome-shell-extensions ninja-build meson`
@@ -16,15 +23,20 @@
 
 **If `gnome-shell-extension-user-theme` wasn't already installed, log out and log back in before you proceed.**
 
-## Installation
+## Downloading and Installing
+
 ```
 git clone https://github.com/dgmarie/dg-gnome-theme
-
+```
+```
 cd dg-gnome-theme
-
+```
+```
 ./install.sh
 ```
-#### OPTIONS:
+**Log out and log back in after installing for everything to be updated.**
+
+#### Available Options:
 - `-a, --accent` `[orange|bark|sage|olive|viridian|prussiangreen|blue|purple|magenta|red]`
 	- Specify yaru accent color variant
 	- Default: `orange`
@@ -38,7 +50,6 @@ cd dg-gnome-theme
 ```
 ./install.sh -a purple -f flatpak
 ```
-**Log out and log back in for everything to be updated.**
 
 ### Warning!
 **The installation script changes some preferences in GNOME depending on the options you choose.**
