@@ -1,33 +1,33 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Created with Inkscape (http://www.inkscape.org/) -->
-<svg width="140mm" height="50mm" version="1.1" viewBox="0 0 140 50" xmlns="http://www.w3.org/2000/svg">
+<svg width="120mm" height="55mm" version="1.1" viewBox="0 0 120 55" xmlns="http://www.w3.org/2000/svg">
  <g>
   <g stroke-width=".26458">
-   <circle cx="10" cy="10" r="10" fill="#e95420"/>
-   <circle cx="40" cy="10" r="10" fill="#787859"/>
-   <circle cx="70" cy="10" r="10" fill="#657b69"/>
-   <circle cx="100" cy="10" r="10" fill="#4b8501"/>
-   <circle cx="130" cy="10" r="10" fill="#03875b"/>
+   <circle cx="10" cy="15" r="10" fill="#e95420"/>
+   <circle cx="35" cy="15" r="10" fill="#787859"/>
+   <circle cx="60" cy="15" r="10" fill="#657b69"/>
+   <circle cx="85" cy="15" r="10" fill="#4b8501"/>
+   <circle cx="110" cy="15" r="10" fill="#03875b"/>
    <circle cx="10" cy="40" r="10" fill="#308280"/>
-   <circle cx="40" cy="40" r="10" fill="#0073e5"/>
-   <circle cx="70" cy="40" r="10" fill="#7764d8"/>
-   <circle cx="100" cy="40" r="10" fill="#b34cb3"/>
-   <circle cx="130" cy="40" r="10" fill="#da3450"/>
+   <circle cx="35" cy="40" r="10" fill="#0073e5"/>
+   <circle cx="60" cy="40" r="10" fill="#7764d8"/>
+   <circle cx="85" cy="40" r="10" fill="#b34cb3"/>
+   <circle cx="110" cy="40" r="10" fill="#da3450"/>
   </g>
   <text transform="scale(.26458)" fill="#da3450" style="shape-inside:url(#rect10671);white-space:pre" xml:space="preserve"/>
   <g fill="#000000" font-family="Cantarell" font-weight="bold">
    <text transform="scale(.26458)" font-size="17.333px" text-align="center" style="shape-inside:url(#rect16048);white-space:pre" xml:space="preserve"/>
-   <g font-size="4.5861px" stroke-width=".26458" text-anchor="middle">
-    <text x="39.809673" y="11.671634" text-align="center" xml:space="preserve"><tspan x="39.809673" y="11.671634" stroke-width=".26458">Bark</tspan></text>
-    <text x="70.027512" y="11.084613" text-align="center" xml:space="preserve"><tspan x="70.027512" y="11.084613" stroke-width=".26458">Sage</tspan></text>
-    <text x="99.995415" y="11.671634" text-align="center" xml:space="preserve"><tspan x="99.995415" y="11.671634" stroke-width=".26458">Olive</tspan></text>
-    <text x="10.137579" y="41.671635" text-align="center" xml:space="preserve"><tspan x="10.137579" y="41.671635" stroke-width=".26458">Viridian</tspan></text>
-    <text x="129.95872" y="8.791563" text-align="center" xml:space="preserve"><tspan x="129.95872" y="8.791563">Prussian</tspan><tspan x="129.95872" y="14.524188">Green</tspan></text>
-    <text x="39.912861" y="41.671635" text-align="center" xml:space="preserve"><tspan x="39.912861" y="41.671635" stroke-width=".26458">Blue</tspan></text>
-    <text x="69.912865" y="41.196972" text-align="center" xml:space="preserve"><tspan x="69.912865" y="41.196972" stroke-width=".26458">Purple</tspan></text>
-    <text x="99.958717" y="41.063976" text-align="center" xml:space="preserve"><tspan x="99.958717" y="41.063976" stroke-width=".26458">Magenta</tspan></text>
-    <text x="129.97935" y="41.671635" text-align="center" xml:space="preserve"><tspan x="129.97935" y="41.671635" stroke-width=".26458">Red</tspan></text>
-    <text x="9.9954109" y="11.084613" text-align="center" xml:space="preserve"><tspan x="9.9954109" y="11.084613" stroke-width=".26458">Orange</tspan></text>
+   <g font-size="4.2333px" stroke-width=".26458" text-anchor="middle">
+    <text x="34.809673" y="16.671635" text-align="center" xml:space="preserve"><tspan x="34.809673" y="16.671635" font-size="4.2333px" stroke-width=".26458">Bark</tspan></text>
+    <text x="60.027512" y="16.084614" text-align="center" xml:space="preserve"><tspan x="60.027512" y="16.084614" font-size="4.2333px" stroke-width=".26458">Sage</tspan></text>
+    <text x="84.995415" y="16.671635" text-align="center" xml:space="preserve"><tspan x="84.995415" y="16.671635" font-size="4.2333px" stroke-width=".26458">Olive</tspan></text>
+    <text x="10.137579" y="41.671635" text-align="center" xml:space="preserve"><tspan x="10.137579" y="41.671635" font-size="4.2333px" stroke-width=".26458">Viridian</tspan></text>
+    <text x="109.95872" y="13.791563" text-align="center" xml:space="preserve"><tspan x="109.95872" y="13.791563">Prussian</tspan><tspan x="109.95872" y="19.083225">Green</tspan></text>
+    <text x="34.912861" y="41.671635" text-align="center" xml:space="preserve"><tspan x="34.912861" y="41.671635" font-size="4.2333px" stroke-width=".26458">Blue</tspan></text>
+    <text x="59.912865" y="41.196972" text-align="center" xml:space="preserve"><tspan x="59.912865" y="41.196972" font-size="4.2333px" stroke-width=".26458">Purple</tspan></text>
+    <text x="84.958717" y="41.063976" text-align="center" xml:space="preserve"><tspan x="84.958717" y="41.063976" font-size="4.2333px" stroke-width=".26458">Magenta</tspan></text>
+    <text x="109.97935" y="41.671635" text-align="center" xml:space="preserve"><tspan x="109.97935" y="41.671635" font-size="4.2333px" stroke-width=".26458">Red</tspan></text>
+    <text x="9.9954109" y="16.084614" text-align="center" xml:space="preserve"><tspan x="9.9954109" y="16.084614" font-size="4.2333px" stroke-width=".26458">Orange</tspan></text>
    </g>
   </g>
  </g>
