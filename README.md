@@ -7,6 +7,7 @@
 
 ![Screenshot of the theme](Screenshot.png)
 
+**This repo contains a gtk3 theme, a configuration for Libadwaita, a Firefox theme, and a GNOME Shell theme. The Yaru icon, cursor, and sound themes are also included.**
 # How to install
 
 </div>
