@@ -43,6 +43,8 @@ cd dg-gnome-theme
 - `-f, --firefox` `[none|default|flatpak]`
 	- Specify where to install the firefox theme
 	- Default: `none`
+- `-v, --verbose`
+	- Shows meson output, use this option in case something isn't working and you want to know why
 - `-h, --help`
 	- Show help
 

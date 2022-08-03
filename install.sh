@@ -15,6 +15,7 @@ Usage: $0 [OPTION]...
 OPTIONS:
 	-a, --accent VARIANT      Specify yaru accent color variant [orange|bark|sage|olive|viridian|prussiangreen|blue|purple|magenta|red] (Default: orange)
 	-f, --firefox VARIANT     Specify where to install the firefox theme [none|default|flatpak] (Default: none)
+	-v, --verbose             Shows meson output, use this option in case something isn't working and you want to know why
 	-h, --help                Show help
 EOF
 }
@@ -24,18 +25,37 @@ install_theme() {
 
 	echo "Installing ${color} dg-adw-gtk3 theme in ${HOME}/.local/share"
 	cd "$GTK3_SRC_DIR" || exit
-	if [ ! -d "${GTK3_SRC_DIR}/build" ] ; then
-		meson "-Dprefix=${HOME}/.local" build > /dev/null
+
+	if [ "$verbose" = "true" ] ; then
+		if [ ! -d "${GTK3_SRC_DIR}/build" ] ; then
+			meson "-Dprefix=${HOME}/.local" build
+		fi
+		meson configure "-Daccent=${color}" build
+		ninja -C build install
+	else
+		if [ ! -d "${GTK3_SRC_DIR}/build" ] ; then
+			meson "-Dprefix=${HOME}/.local" build > /dev/null
+		fi
+		meson configure "-Daccent=${color}" build > /dev/null
+		ninja -C build install > /dev/null
 	fi
-	meson configure "-Daccent=${color}" build > /dev/null
-	ninja -C build install > /dev/null
 
 	echo "Installing dg-yaru theme in /usr/share"
-	cd "$YARU_SRC_DIR" || exit
-	if [ ! -d "$YARU_SRC_DIR/build" ] ; then
-		meson build > /dev/null
+
+	if [ "$verbose" = "true" ] ; then
+		cd "$YARU_SRC_DIR" || exit
+		if [ ! -d "$YARU_SRC_DIR/build" ] ; then
+			meson build
+		fi
+		sudo ninja -C build install
+	else
+		cd "$YARU_SRC_DIR" || exit
+		if [ ! -d "$YARU_SRC_DIR/build" ] ; then
+			meson build > /dev/null
+		fi
+		sudo ninja -C build install > /dev/null
 	fi
-	sudo ninja -C build install > /dev/null
+
 	cd "$REPO_DIR" || exit
 
 	echo "Installing ${color} gtk4 configuration in ${GTK4_DIR}"
@@ -145,6 +165,10 @@ while [ $# -gt 0 ]; do
 						;;
 				esac
 			done
+			;;
+		-v|--verbose)
+			shift
+			verbose="true"
 			;;
 		-h|--help)
 			usage
