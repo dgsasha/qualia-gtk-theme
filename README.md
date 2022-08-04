@@ -5,7 +5,9 @@
 
 *Kinda crazy but I like the look of it.*
 
-![Screenshot of the theme](Screenshot.png)
+![Screenshot of the dark theme](images/dark.png)
+
+![Screenshot of the light theme](images/light.png)
 
 **This repo contains a gtk3 theme, a configuration for Libadwaita, a Firefox theme, and a GNOME Shell theme. The Yaru icon, cursor, and sound themes are also included.**
 # How to install
@@ -49,7 +51,7 @@ cd dg-gnome-theme
 - `-h, --help`
 	- Show help
 
-![Accent Colors](accents.svg)
+![Accent Colors](images/accents.svg)
 
 #### Example:
 ```
