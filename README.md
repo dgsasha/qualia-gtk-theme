@@ -51,7 +51,7 @@ cd dg-gnome-theme
 - `-h, --help`
 	- Show help
 
-![Accent Colors](images/accents.svg)
+![Accent Colors](images/accents.png)
 
 #### Example:
 ```
