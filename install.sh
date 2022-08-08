@@ -31,13 +31,17 @@ install_theme() {
 			meson "-Dprefix=${HOME}/.local" build
 		fi
 		meson configure "-Daccent=${color}" build
-		ninja -C build install
+		if ninja -C build --verbose install | grep -q -E "ERROR|FAILED"; then
+		  exit 0
+		fi
 	else
 		if [ ! -d "${GTK3_SRC_DIR}/build" ] ; then
 			meson "-Dprefix=${HOME}/.local" build > /dev/null
 		fi
 		meson configure "-Daccent=${color}" build > /dev/null
-		ninja -C build install > /dev/null
+		if ninja -C build install | grep --color='auto' -E "ERROR|FAILED"; then
+		  exit 0
+		fi
 	fi
 
 	echo "Installing dg-yaru theme in /usr/share"
@@ -47,13 +51,17 @@ install_theme() {
 		if [ ! -d "$YARU_SRC_DIR/build" ] ; then
 			meson build
 		fi
-		sudo ninja -C build install
+		if sudo ninja -C build --verbose install | grep -q -E "ERROR|FAILED"; then
+		  exit 0
+		fi
 	else
 		cd "$YARU_SRC_DIR" || exit
 		if [ ! -d "$YARU_SRC_DIR/build" ] ; then
 			meson build > /dev/null
 		fi
-		sudo ninja -C build install > /dev/null
+		if sudo ninja -C build install | grep --color='auto' -E "ERROR|FAILED"; then
+		  exit 0
+		fi
 	fi
 
 	cd "$REPO_DIR" || exit
