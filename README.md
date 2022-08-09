@@ -21,7 +21,7 @@
 - Arch based distros: `sudo pacman -S sassc git gnome-shell-extensions ninja meson`
 	- Also install `yaru-icon-theme` from AUR if using Snaps
 
-- Debian and Ubuntu based distros: `sudo apt-get install sassc git gnome-shell-extensions ninja-build meson`
+- Debian and Ubuntu based distros: `sudo apt install sassc git gnome-shell-extensions ninja-build meson`
 	- Also install `yaru-theme-icon` if using Snaps
 
 - Fedora: `sudo dnf install sassc git gnome-shell-extension-user-theme ninja-build meson`
