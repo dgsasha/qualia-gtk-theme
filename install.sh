@@ -7,14 +7,24 @@ YARU_SRC_DIR="${REPO_DIR}/dg-yaru"
 GTK4_DIR="${HOME}/.config/gtk-4.0"
 
 COLOR_VARIANTS=('orange' 'bark' 'sage' 'olive' 'viridian' 'prussiangreen' 'blue' 'purple' 'magenta' 'red')
-FIREFOX_VARIANTS=('none' 'default' 'flatpak')
+FIREFOX_VARIANTS=('none' 'default' 'flatpak' 'snap')
+
+NC='\033[0m'
+BOLD='\033[1m'
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[0;33m'
+BRED='\033[1;31m'
+BGREEN='\033[1;32m'
+BYELLOW='\033[1;33m'
 
 usage() {
 cat << EOF
 Usage: $0 [OPTION]...
 OPTIONS:
 	-a, --accent VARIANT      Specify yaru accent color variant [orange|bark|sage|olive|viridian|prussiangreen|blue|purple|magenta|red] (Default: orange)
-	-f, --firefox VARIANT     Specify where to install the firefox theme [none|default|flatpak] (Default: none)
+	-f, --firefox VARIANT     Specify where to install the firefox theme [none|default|flatpak|snap] (Default: none)
+	-s, --snap                Use this option if you want to use the GTK3 theme with applications installed as snaps
 	-v, --verbose             Shows meson output, use this option in case something isn't working and you want to know why
 	-h, --help                Show help
 EOF
@@ -23,67 +33,74 @@ EOF
 install_theme() {
 	git submodule init dg-adw-gtk3 dg-yaru && git submodule update
 
-	echo "Installing ${color} dg-adw-gtk3 theme in ${HOME}/.local/share"
+	echo -e "${GREEN}Installing ${BGREEN}dg-adw-gtk3${GREEN} theme${NC} in ${BOLD}${HOME}/.local/share"
 	cd "$GTK3_SRC_DIR" || exit
 
 	if [ "$verbose" = "true" ] ; then
 		if [ ! -d "${GTK3_SRC_DIR}/build" ] ; then
 			meson "-Dprefix=${HOME}/.local" build
 		fi
-		meson configure "-Daccent=${color}" build
-		if ninja -C build --verbose install | grep -q -E "ERROR|FAILED"; then
-		  exit 0
-		fi
+		ninja -C build --verbose install
 	else
 		if [ ! -d "${GTK3_SRC_DIR}/build" ] ; then
 			meson "-Dprefix=${HOME}/.local" build > /dev/null
 		fi
-		meson configure "-Daccent=${color}" build > /dev/null
-		if ninja -C build install | grep --color='auto' -E "ERROR|FAILED"; then
+		if ninja -C build install | grep --color -E "ERROR|FAILED"; then
 		  exit 0
 		fi
 	fi
 
-	echo "Installing dg-yaru theme in /usr/share"
+	echo -e "${GREEN}Installing ${BGREEN}dg-yaru${GREEN} theme${NC} in ${BOLD}/usr/share"
 
 	if [ "$verbose" = "true" ] ; then
 		cd "$YARU_SRC_DIR" || exit
 		if [ ! -d "$YARU_SRC_DIR/build" ] ; then
 			meson build
 		fi
-		if sudo ninja -C build --verbose install | grep -q -E "ERROR|FAILED"; then
-		  exit 0
-		fi
+		sudo ninja -C build --verbose install
 	else
 		cd "$YARU_SRC_DIR" || exit
 		if [ ! -d "$YARU_SRC_DIR/build" ] ; then
 			meson build > /dev/null
 		fi
-		if sudo ninja -C build install | grep --color='auto' -E "ERROR|FAILED"; then
+		if sudo ninja -C build install | grep --color -E "ERROR|FAILED"; then
 		  exit 0
 		fi
 	fi
 
 	cd "$REPO_DIR" || exit
 
-	echo "Installing ${color} gtk4 configuration in ${GTK4_DIR}"
+	echo -e "${GREEN}Installing ${BGREEN}${color}${GREEN} gtk4 configuration${NC} in ${BOLD}${GTK4_DIR}${NC}"
 	mkdir -p                                                    "$GTK4_DIR"
 	rm -rf                                                      "${GTK4_DIR}/mac-icons"
 	cp -R "${SRC_DIR}/assets/mac-icons${suffix}"                "${GTK4_DIR}/mac-icons"
 	sassc -M -t expanded "${SRC_DIR}/gtk-4.0/gtk${suffix}.scss" "${GTK4_DIR}/gtk.css"
 
 	if [ "$firefox" = "flatpak" ] ; then
-	firefox_opt="-f ${HOME}/.var/app/org.mozilla.firefox/.mozilla/firefox -c ${color}"
+	  firefox_opt="-f ${HOME}/.var/app/org.mozilla.firefox/.mozilla/firefox -c ${color}"
+	elif [ "$firefox" = "snap" ] ; then
+	  firefox_opt="-f ${HOME}/snap/firefox/common/.mozilla/firefox -c ${color}"
 	else
-	firefox_opt="-c ${color}"
+	  firefox_opt="-c ${color}"
 	fi
 
 	if [ "$firefox" = "none" ] ; then
-		echo Not installing Firefox theme.
+		echo "Not installing Firefox theme."
 	else
 		git submodule init dg-firefox-theme && git submodule update
 		cd "${REPO_DIR}/dg-firefox-theme" || exit
 		./scripts/install.sh $firefox_opt
+	fi
+
+	if [ "$snap" = "true" ] ; then
+	  if ! snap info dg-adw-gtk3-theme | grep "installed" > /dev/null ; then
+	    echo -e "${GREEN}Installing ${BGREEN}dg-adw-gtk3-theme${GREEN} snap.${NC}"
+	    sudo snap install dg-adw-gtk3-theme
+	  fi
+	  echo -e "${GREEN}Connecting ${BGREEN}dg-adw-gtk3-theme${GREEN} to installed snaps.${NC}"
+	  for i in $(snap connections | grep gtk-common-themes:gtk-3-themes | awk '{print $2}' | cut -f1 -d: | sort -u); do
+	    sudo snap connect "${i}:gtk-3-themes" "dg-adw-gtk3-theme:gtk-3-themes"
+	  done
 	fi
 }
 
@@ -163,6 +180,10 @@ while [ $# -gt 0 ]; do
 						firefox=("${FIREFOX_VARIANTS[2]}")
 						shift
 						;;
+					snap)
+						firefox=("${FIREFOX_VARIANTS[3]}")
+						shift
+						;;
 					-*)
 						break
 						;;
@@ -173,6 +194,10 @@ while [ $# -gt 0 ]; do
 						;;
 				esac
 			done
+			;;
+		-s|--snap)
+			shift
+			snap="true"
 			;;
 		-v|--verbose)
 			shift
@@ -216,22 +241,30 @@ accent_color() {
 enable_theme() {
 	gnome-extensions enable user-theme@gnome-shell-extensions.gcampax.github.com
 
-	echo "Changing gtk3 theme to dg-adw-gtk3${suffix}".
-	gsettings set org.gnome.desktop.interface gtk-theme "dg-adw-gtk3${suffix}"
+	echo -e "${YELLOW}Changing gtk3 theme to "${BYELLOW}dg-adw-gtk3${suffix}"${YELLOW}."
+	gsettings set org.gnome.desktop.interface gtk-theme "dg-adw-gtk3-${color}${suffix}"
+
+	if [ "$snap" = "true" ] ; then
+	  cursor="Yaru"
+  else
+    cursor="dg-yaru"
+  fi
 
 	if [ "$color" = "orange" ] ; then
+		icon="${cursor}${suffix}"
 		dg_yaru="dg-yaru${suffix}"
 	else
+		icon="${cursor}-${color}${suffix}"
 		dg_yaru="dg-yaru-${color}${suffix}"
 	fi
 
-	echo "Changing cursor theme to dg-yaru."
-	gsettings set org.gnome.desktop.interface cursor-theme dg-yaru
-	echo "Changing sound theme to dg-yaru."
+	echo -e "${YELLOW}Changing cursor theme to ${BYELLOW}${cursor}${YELLOW}."
+	gsettings set org.gnome.desktop.interface cursor-theme "$cursor"
+	echo -e "${YELLOW}Changing sound theme to ${BYELLOW}dg-yaru${YELLOW}."
 	gsettings set org.gnome.desktop.sound theme-name dg-yaru
-	echo "Changing icon theme to ${dg_yaru}."
-	gsettings set org.gnome.desktop.interface icon-theme "$dg_yaru"
-	echo "Changing Gnome Shell theme to ${dg_yaru}."
+	echo -e "${YELLOW}Changing icon theme to ${BYELLOW}${icon}${YELLOW}."
+	gsettings set org.gnome.desktop.interface icon-theme "$icon"
+	echo -e "${YELLOW}Changing Gnome Shell theme to ${BYELLOW}${dg_yaru}${YELLOW}."
 	gsettings set org.gnome.shell.extensions.user-theme name "$dg_yaru"
 }
 
@@ -239,5 +272,4 @@ accent_color && install_theme && enable_theme
 
 rm -rf "${SRC_DIR}/gtk-4.0/_accent-colors-temp.scss"
 
-echo "Done."
-echo "Log out and log back in for everything to be updated :)"
+echo -e "${BRED}Log out and log back in for everything to be updated${NC}"

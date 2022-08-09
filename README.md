@@ -1,5 +1,7 @@
 <div align="center">
 
+<img src="images/icon.png" alt="dg-gnome-theme">
+
 # dg GNOME theme
 **A Libadwaita + macOS + Yaru theme for GNOME 42**
 
@@ -17,12 +19,16 @@
 ## Installing Dependencies
 
 - Arch based distros: `sudo pacman -S sassc git gnome-shell-extensions ninja meson`
+	- Also install `yaru-icon-theme` from AUR if using Snaps
 
 - Debian and Ubuntu based distros: `sudo apt-get install sassc git gnome-shell-extensions ninja-build meson`
+	- Also install `yaru-theme-icon` if using Snaps
 
 - Fedora: `sudo dnf install sassc git gnome-shell-extension-user-theme ninja-build meson`
+	- Also install `yaru-icon-theme` if using Snaps
 
 - openSUSE: `sudo zypper install sassc git gnome-shell-extension-user-theme ninja meson`
+	- Also install `yaru-icon-theme` if using Snaps
 
 **If `gnome-shell-extension-user-theme` wasn't already installed, log out and log back in before you proceed.**
 
@@ -37,15 +43,16 @@ cd dg-gnome-theme
 ```
 ./install.sh
 ```
-**Log out and log back in after installing for everything to be updated.**
 
 #### Available Options:
 - `-a, --accent` `[orange|bark|sage|olive|viridian|prussiangreen|blue|purple|magenta|red]`
 	- Specify yaru accent color variant (See image below)
 	- Default: `orange`
-- `-f, --firefox` `[none|default|flatpak]`
+- `-f, --firefox` `[none|default|flatpak|snap]`
 	- Specify where to install the firefox theme
 	- Default: `none`
+- `-s, --snap`
+	- Use this option if you want to use the GTK3 theme with applications installed as snaps
 - `-v, --verbose`
 	- Shows meson output, use this option in case something isn't working and you want to know why
 - `-h, --help`
@@ -69,6 +76,14 @@ The preferences being changed are `org.gnome.desktop.interface icon-theme` `org.
 Run this command to let Flatpak apps access this theme:
 ```
 flatpak override --user --filesystem=xdg-config/gtk-4.0 --filesystem=xdg-data/themes
+```
+
+## Snap apps
+If you use Snap apps, make sure to run the install script with the `--snap` option.
+
+Also, run this command if you want Snaps to access the libadwaita configuration, replacing `SNAP-NAME` with the name of the Snap.
+```
+sudo mount --bind --mkdir ~/.config/gtk-4.0 ~/snap/SNAP-NAME/current/.config/gtk-4.0
 ```
 
 ## Updating
