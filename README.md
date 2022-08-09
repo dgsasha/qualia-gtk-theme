@@ -1,7 +1,5 @@
 <div align="center">
 
-<img src="images/icon.png" alt="dg-gnome-theme">
-
 # dg GNOME theme
 **A Libadwaita + macOS + Yaru theme for GNOME 42**
 
