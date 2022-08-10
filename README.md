@@ -17,16 +17,12 @@
 ## Installing Dependencies
 
 - Arch based distros: `sudo pacman -S sassc git gnome-shell-extensions ninja meson`
-	- Also install `yaru-icon-theme` from AUR if using Snaps
 
 - Debian based distros: `sudo apt install sassc git gnome-shell-extensions ninja-build meson`
-	- Also install `yaru-theme-icon` if using Snaps
 
 - Fedora: `sudo dnf install sassc git gnome-shell-extension-user-theme ninja-build meson`
-	- Also install `yaru-icon-theme` if using Snaps
 
 - openSUSE: `sudo zypper install sassc git gnome-shell-extension-user-theme ninja meson`
-	- Also install `yaru-icon-theme` if using Snaps
 
 **If `gnome-shell-extension-user-theme` wasn't already installed, log out and log back in before you proceed.**
 
