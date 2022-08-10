@@ -44,7 +44,7 @@ cd dg-gnome-theme
 	- Specify where to install the firefox theme
 	- Default: `none`
 - `-s, --snap`
-	- Use this option if you want to use the GTK3 theme with applications installed as snaps
+	- Use this option if you want to use the GTK3 theme with applications installed as Snaps
 - `-v, --verbose`
 	- Shows meson output, use this option in case something isn't working and you want to know why
 - `-h, --help`
