@@ -3,8 +3,6 @@
 # dg GNOME theme
 **A Libadwaita + macOS + Yaru theme for GNOME 42**
 
-*Kinda crazy but I like the look of it.*
-
 ![Screenshot of the dark theme](images/dark.png)
 
 ![Screenshot of the light theme](images/light.png)
