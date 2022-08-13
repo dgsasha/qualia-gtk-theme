@@ -21,7 +21,7 @@ echo -e "${RED}Removing ${NC}${BOLD}dg-yaru${NC}."
 sudo rm -rf /usr/share/themes/dg-yaru* /usr/share/icons/dg-yaru* /usr/share/gnome-shell/theme/dg-yaru* /usr/share/sounds/dg-yaru
 
 if snap info dg-adw-gtk3-theme | grep -q "installed"; then
-  echo -e "${YELLOW}Disconnecting ${NC}${BOLD}dg-adw-gtk3-theme${NC} from installed snaps."
+  echo -e "${RED}Disconnecting ${NC}${BOLD}dg-adw-gtk3-theme${NC} from installed snaps."
   for i in $(snap connections | grep gtk-common-themes:gtk-3-themes | awk '{print $2}' | cut -f1 -d: | sort -u); do
 	  sudo snap disconnect "${i}:gtk-3-themes" "dg-adw-gtk3-theme:gtk-3-themes"
 	done

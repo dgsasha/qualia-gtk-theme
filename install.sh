@@ -98,7 +98,7 @@ install_theme() {
 	    echo -e "Checking if ${BOLD}dg-adw-gtk3-theme${NC} snap can be updated."
 	    sudo snap refresh dg-adw-gtk3-theme
 	  fi
-	  echo -e "${YELLOW}Connecting ${NC}${BOLD}dg-adw-gtk3-theme${NC} to installed snaps."
+	  echo -e "${GREEN}Connecting ${NC}${BOLD}dg-adw-gtk3-theme${NC} to installed snaps."
 	  for i in $(snap connections | grep gtk-common-themes:gtk-3-themes | awk '{print $2}' | cut -f1 -d: | sort -u); do
 	    sudo snap connect "${i}:gtk-3-themes" "dg-adw-gtk3-theme:gtk-3-themes"
 	  done
