@@ -83,7 +83,7 @@ install_theme() {
 	fi
 
 	if [ "$firefox" = "none" ] ; then
-		echo "Not installing Firefox theme."
+		echo -e "${YELLOW}Not installing Firefox theme.${NC}"
 	else
 		git submodule init dg-firefox-theme && git submodule update
 		cd "${REPO_DIR}/dg-firefox-theme" || exit
