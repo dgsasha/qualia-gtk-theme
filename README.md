@@ -7,7 +7,7 @@
 
 ![Screenshot of the light theme](.github/images/light.png)
 
-**This repo contains a gtk3 theme, a configuration for GTK4/Libadwaita, a Firefox theme, and a GNOME Shell theme. The Yaru icon, cursor, and sound themes are also included.**
+**This repo contains a GTK3 theme, a configuration for Libadwaita, a Firefox theme, and a GNOME Shell theme. The Yaru icon, cursor, and sound themes are also included.**
 
 # How to install
 
@@ -23,7 +23,7 @@
 
 - openSUSE: `sudo zypper install sassc git gnome-shell-extension-user-theme ninja meson`
 
-**If `gnome-shell-extension`/`gnome-shell-extension-user-theme` wasn't already installed, log out and log back in before you proceed. If you aren't using GNOME or aren't going to install the GNOME Shell theme, you can skip installing it.**
+**If `gnome-shell-extensions`/`gnome-shell-extension-user-theme` wasn't already installed, log out and log back in before you proceed. If you aren't using GNOME or aren't going to install the GNOME Shell theme, you can skip installing it.**
 
 ## Downloading and Installing
 Download the repository and run the install script to configure and install the theme:
@@ -51,13 +51,14 @@ This script allows you to configure, install, and update the theme.
 ```
 
 ### Warning!
-The themes won't automatically update if you change the light/dark theme preference in GNOME. You will either have to use `./install.sh --reconfigure` to switch between the light/dark themes, or if you set the theme to `auto` during configuration, just run `install.sh` and it will update the theme using the light/dark preference in GNOME.
+The themes won't automatically update if you change the light/dark theme preference in GNOME. You will either have to use `./install.sh --reconfigure` to switch between the light/dark themes, or if you set the theme to `auto` during configuration, just run `install.sh` and it will update the themes using the current light/dark preference in GNOME.
 
 ## Updating
 The install script will handle updating the themes.
 
 Your previous configuration will be used again unless you use the `--reconfigure` option.
 
+Only the themes that have changes will be updated, if you want to reinstall all of the themes, use the `--force` option.
 ```
 git pull
 ```
@@ -66,7 +67,7 @@ git pull
 ```
 
 ## Uninstalling
-Before uninstalling, use GNOME Tweaks to change themes to something else to avoid any issues. 
+Before uninstalling, use GNOME Tweaks to change the themes to something else to avoid any issues. 
 
 After doing that, run the uninstall script:
 ```
@@ -101,7 +102,7 @@ Or run './uninstall.sh' with no arguments to uninstall the entire theme."
 ```
 
 ## Flatpak apps
-Run this command to let Flatpak apps access this theme:
+Run this command to let Flatpak apps access the themes:
 ```
 flatpak override --user --filesystem=xdg-config/gtk-4.0 --filesystem=xdg-data/themes
 ```
