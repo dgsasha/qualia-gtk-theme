@@ -63,7 +63,7 @@ uninstall_gtk3() {
 }
 
 uninstall_gtk4() {
-  if [[ -d "${gtk4_dir}/mac-icons" && -d "${gtk4_dir}/gtk.css" ||
+  if [[ -d "${gtk4_dir}/mac-icons" && -f "${gtk4_dir}/gtk.css" ||
   ( -s "${installed_versions}" && ( "$(grep "^dg-libadwaita" "${installed_versions}")" ||
   "$(grep "^enabled" "${installed_versions}" | grep "gtk4")" ) ) ]]; then
     echo -e "${red}Removing ${nc}${bold}dg-libadwaita${nc}."
@@ -76,9 +76,9 @@ uninstall_gtk4() {
 }
 
 uninstall_firefox_standard() {
-  if [[ "$(compgen -G "${HOME}"/.mozilla/firefox/*/chrome)" &&
-  "$(compgen -G "${HOME}"/.mozilla/firefox/*/user.js)" ||
-  ( -s "${installed_versions}" && "$(grep "^firefox" "${installed_versions}" | grep "standard")" ) ]]; then
+  if [[ "$(compgen -G "${HOME}"/.mozilla/firefox/*/chrome/dg-firefox-theme)" ||
+  ( -s "${installed_versions}" && ( "$(grep "^firefox" "${installed_versions}" | grep "standard")" ||
+  "$(grep "^dg-firefox-theme-standard:" "${installed_versions}")" ) ) ]]; then
     echo -e "${red}Removing${nc} standard variant of ${bold}dg-firefox-theme${nc}."
     rm -rf "${HOME}"/.mozilla/firefox/*/chrome
     rm -f "${HOME}"/.mozilla/firefox/*/user.js
@@ -90,9 +90,9 @@ uninstall_firefox_standard() {
 }
 
 uninstall_firefox_snap() {
-  if [[ "$(compgen -G "${HOME}"/snap/firefox/common/.mozilla/firefox/*/chrome)" &&
-  "$(compgen -G "${HOME}"/snap/firefox/common/.mozilla/firefox/*/user.js)" ||
-  ( -s "${installed_versions}" && "$(grep "^firefox:" "${installed_versions}" | grep "snap")" ) ]]; then
+  if [[ "$(compgen -G "${HOME}"/snap/firefox/common/.mozilla/firefox/*/chrome/dg-firefox-theme)" ||
+  ( -s "${installed_versions}" && ( "$(grep "^firefox:" "${installed_versions}" | grep "snap")" ||
+  "$(grep "^dg-firefox-theme-snap:" "${installed_versions}")" ) ) ]]; then
     echo -e "${red}Removing${nc} snap variant of ${bold}dg-firefox-theme${nc}."
     rm -rf "${HOME}"/snap/firefox/common/.mozilla/firefox/*/chrome
     rm -f "${HOME}"/snap/firefox/common/.mozilla/firefox/*/user.js
@@ -104,9 +104,9 @@ uninstall_firefox_snap() {
 }
 
 uninstall_firefox_flatpak() {
-  if [[ "$(compgen -G "${HOME}"/.var/app/org.mozilla.firefox/.mozilla/firefox/*/chrome)" &&
-  "$(compgen -G "${HOME}"/.var/app/org.mozilla.firefox/.mozilla/firefox/*/user.js)" ||
-  ( -s "${installed_versions}" && "$(grep "^firefox:" "${installed_versions}" | grep "flatpak")" ) ]]; then
+  if [[ "$(compgen -G "${HOME}"/.var/app/org.mozilla.firefox/.mozilla/firefox/*/chrome/dg-firefox-theme)" ||
+  ( -s "${installed_versions}" && ( "$(grep "^firefox:" "${installed_versions}" | grep "flatpak")" ||
+  "$(grep "^dg-firefox-theme-flatpak:" "${installed_versions}")" ) ) ]]; then
     echo -e "${red}Removing${nc} flatpak variant of ${bold}dg-firefox-theme${nc}."
     rm -rf "${HOME}"/.var/app/org.mozilla.firefox/.mozilla/firefox/*/chrome
     rm -f "${HOME}"/.var/app/org.mozilla.firefox/.mozilla/firefox/*/user.js
@@ -135,7 +135,7 @@ uninstall_shell() {
 }
 
 uninstall_icons() {
-  if [[ -d "/usr/share/icons/dg-yaru/index.theme" || "$(compgen -G /usr/share/icons/dg-yaru-*)" || 
+  if [[ -f "/usr/share/icons/dg-yaru/index.theme" || "$(compgen -G /usr/share/icons/dg-yaru-*)" ||
   ( -s "${installed_versions}" && ( "$(grep "^dg-yaru" "${installed_versions}" | grep "icons")" ||
   "$(grep "^enabled" "${installed_versions}" | grep "icons")" ) ) ]]; then
     echo -e "${red}Removing ${nc}${bold}dg-yaru${nc} icon theme."
@@ -163,7 +163,7 @@ uninstall_icons() {
 }
 
 uninstall_cursors() {
-  if [[ ( -d "/usr/share/icons/dg-yaru/cursor.theme" || -d "/usr/share/icons/dg-yaru/cursors" ) ||
+  if [[ ( -f "/usr/share/icons/dg-yaru/cursor.theme" || -d "/usr/share/icons/dg-yaru/cursors" ) ||
   ( -s "${installed_versions}" && ( "$(grep "^dg-yaru" "${installed_versions}" | grep "cursors")" ||
   "$(grep "^enabled" "${installed_versions}" | grep "cursors")" ) ) ]]; then
     echo -e "${red}Removing ${nc}${bold}dg-yaru${nc} cursor theme."
@@ -236,11 +236,11 @@ while [[ $# -gt 0 ]]; do
       uninstall_icons
       shift
       ;;
-    -c|cursors)
+    -c|--cursors)
       uninstall_cursors
       shift
       ;;
-    -s|sounds)
+    -s|--sounds)
       uninstall_sounds
       shift
       ;;

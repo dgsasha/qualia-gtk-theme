@@ -372,12 +372,12 @@ if [[ -s "${installed_versions}" && ( "${color}" != "$(grep "^dg-libadwaita:" "$
 fi
 
 for p in "${dg_yaru_parts[@]}"; do
-  if printf '%s\0' "${enabled_themes[@]}" | grep -Fxqz -- "${p}" && [[ -n "${previously_enabled_themes[*]}" ]]; then
-    if ! printf '%s\0' "${previously_enabled_themes[@]}" | grep -Fxqz -- "${p}"; then
+  if printf '%s\0' "${enabled_themes[@]}" | grep -Fxqz -- "${p}" && [[ -s "${installed_versions}" ]]; then
+    if ! grep "^dg-yaru: " "${installed_versions}" | cut -f 3- -d ' ' | grep -q "${p}"; then
       dg_yaru_changed="true"
     fi
-  elif [[ -n "${previously_enabled_themes[*]}" ]]; then
-    if printf '%s\0' "${previously_enabled_themes[@]}" | grep -Fxqz -- "${p}"; then
+  elif [[ -s "${installed_versions}" ]]; then
+    if grep "^dg-yaru: " "${installed_versions}" | cut -f 3- -d ' ' | grep -q "${p}"; then
       dg_yaru_changed="true"
     fi
   fi
@@ -425,7 +425,7 @@ install_dg_adw_gtk3() {
     if ninja -C build install | grep --color -E "ERROR|FAILED"; then
       echo ""
       echo -e "Run ${bold}${0} --verbose${nc} to see full log."
-      echo -e "You can also try removing the build directory in ${bold}${gtk3_src_dir}${nc} and then run ${bold}${0}${nc} again."
+      echo -e "You can also try running ${bold}${0} --clean${nc} and then run ${bold}${0}${nc} again."
       exit 1
     fi
   fi
@@ -443,38 +443,6 @@ install_dg_yaru() {
   else
     echo -e "${green}Installing ${nc}${bold}dg-yaru${nc} theme in ${bold}/usr/share${nc}"
   fi
-  if ! printf '%s\0' "${enabled_themes[@]}" | grep -Fxqz -- "gnome-shell"; then
-    if [[ "${update}" != "true" ]]; then
-      echo -e "${yellow}Not installing ${nc}${bold}dg-yaru${nc} GNOME Shell theme."
-    fi
-    if grep "^dg-yaru" "${installed_versions}" | grep -q "gnome-shell"; then
-      echo -e "Use './uninstall.sh --gnome-shell' to remove ${bold}dg-yaru${nc} GNOME Shell theme, which was previously installed."
-    fi
-  fi
-  if ! printf '%s\0' "${enabled_themes[@]}" | grep -Fxqz -- "icons"; then
-    if [[ "${update}" != "true" ]]; then
-      echo -e "${yellow}Not installing ${nc}${bold}dg-yaru${nc} icon theme."
-    fi
-    if grep "^dg-yaru" "${installed_versions}" | grep -q "icons"; then
-      echo -e "Use './uninstall.sh --icons' to remove ${bold}dg-yaru${nc} icon theme, which was previously installed."
-    fi
-  fi
-  if ! printf '%s\0' "${enabled_themes[@]}" | grep -Fxqz -- "cursors"; then
-    if [[ "${update}" != "true" ]]; then
-      echo -e "${yellow}Not installing ${nc}${bold}dg-yaru${nc} cursor theme."
-    fi
-    if grep "^dg-yaru" "${installed_versions}" | grep -q "cursors"; then
-      echo -e "Use './uninstall.sh --cursors' to remove ${bold}dg-yaru${nc} cursor theme, which was previously installed."
-    fi
-  fi
-  if ! printf '%s\0' "${enabled_themes[@]}" | grep -Fxqz -- "sounds"; then
-    if [[ "${update}" != "true" ]]; then
-      echo -e "${yellow}Not installing ${nc}${bold}dg-yaru${nc} sound theme."
-    fi
-    if grep "^dg-yaru" "${installed_versions}" | grep -q "sounds"; then
-      echo -e "Use './uninstall.sh --sounds' to remove ${bold}dg-yaru${nc} sound theme, which was previously installed."
-    fi
-  fi
   git submodule update --init "src/dg-yaru"
   cd "${dg_yaru_src_dir}" || exit
   dg_yaru_version="$(git rev-parse HEAD)"
@@ -484,12 +452,13 @@ install_dg_yaru() {
     meson build > /dev/null
   fi
   for part in "${dg_yaru_parts[@]}"; do
-    if ! grep "^enabled:" "${installed_versions}" | grep -q "${part}" && [[ -n "$(meson configure build | awk -v part="${part}" '$1=="part"' | awk '$2=="true"')" ]]; then
+    if ! printf '%s\0' "${enabled_themes[@]}" | grep -Fxqz -- "${part}" && [[ -n "$(meson configure build | awk -v part="${part}" '$1=="part"' | awk '$2=="true"')" ]]; then
       meson configure build "-D${part}=false"
-    elif grep "^enabled:" "${installed_versions}" | grep -q "${part}" && [[ -n "$(meson configure build | awk -v part="${part}" '$1=="part"' | awk '$2=="false"')" ]]; then
+    elif printf '%s\0' "${enabled_themes[@]}" | grep -Fxqz -- "${part}" && [[ -n "$(meson configure build | awk -v part="${part}" '$1=="part"' | awk '$2=="false"')" ]]; then
       meson configure build "-D${part}=true"
     fi
   done
+
   # Enable correct shell theme version if not already enabled
   if [[ -n "${gnome_version}" && -n "$(meson configure build | awk '$1=="gnome-shell-version"' | awk -v ver="${gnome_version}" '$2=="ver"')" ]]; then
     meson configure build "-Dgnome-shell-version=${gnome_version}"
@@ -500,7 +469,7 @@ install_dg_yaru() {
     if sudo ninja -C build install | grep --color -E "ERROR|FAILED"; then
       echo ""
       echo -e "Run ${bold}${0} --verbose${nc} to see full log."
-      echo -e "You can also try removing the build directory in ${bold}${dg_yaru_src_dir}${nc} and then run ${bold}${0}${nc} again."
+      echo -e "You can also try running ${bold}${0} --clean${nc} and then run ${bold}${0}${nc} again."
       exit 1
     fi
   fi
@@ -614,7 +583,7 @@ if printf '%s\0' "${enabled_themes[@]}" | grep -Fxqz -- "gtk3"; then
     install_dg_adw_gtk3
   fi
 else
-  if grep -q "^dg-adw-gtk3" "${installed_versions}"; then
+  if [[ "$(compgen -G "${HOME}"/.local/share/themes/dg-adw-gtk3*)" ]]; then
     echo -e "Use './uninstall.sh --gtk3' to remove ${bold}dg-adw-gtk3${nc}, which was previously installed."
   fi
 fi
@@ -632,6 +601,26 @@ if printf '%s\0' "${enabled_themes[@]}" | grep -Exqz -- "gnome-shell|icons|curso
     install_dg_yaru
   fi
 fi
+if ! printf '%s\0' "${enabled_themes[@]}" | grep -Fxqz -- "gnome-shell"; then
+  if [[ "$(compgen -G /usr/share/themes/dg-yaru*)" || "$(compgen -G /usr/share/gnome-shell/theme/dg-yaru*)" ]]; then
+    echo -e "Use './uninstall.sh --gnome-shell' to remove ${bold}dg-yaru${nc} GNOME Shell theme, which was previously installed."
+  fi
+fi
+if ! printf '%s\0' "${enabled_themes[@]}" | grep -Fxqz -- "icons"; then
+  if [[ -d "/usr/share/icons/dg-yaru/index.theme" || "$(compgen -G /usr/share/icons/dg-yaru-*)" ]]; then
+    echo -e "Use './uninstall.sh --icons' to remove ${bold}dg-yaru${nc} icon theme, which was previously installed."
+  fi
+fi
+if ! printf '%s\0' "${enabled_themes[@]}" | grep -Fxqz -- "cursors"; then
+  if [[ -d "/usr/share/icons/dg-yaru/cursor.theme" || -d "/usr/share/icons/dg-yaru/cursors" ]]; then
+    echo -e "Use './uninstall.sh --cursors' to remove ${bold}dg-yaru${nc} cursor theme, which was previously installed."
+  fi
+fi
+if ! printf '%s\0' "${enabled_themes[@]}" | grep -Fxqz -- "sounds"; then
+  if [[ -d "/usr/share/sounds/dg-yaru" ]]; then
+    echo -e "Use './uninstall.sh --sounds' to remove ${bold}dg-yaru${nc} sound theme, which was previously installed."
+  fi
+fi
 
 # Install dg-libadwaita if it's enabled
 if printf '%s\0' "${enabled_themes[@]}" | grep -Fxqz -- "gtk4"; then
@@ -647,7 +636,7 @@ if printf '%s\0' "${enabled_themes[@]}" | grep -Fxqz -- "gtk4"; then
     install_dg_libadwaita
   fi
 else
-  if ! printf '%s\0' "${enabled_themes[@]}" | grep -Fxqz -- "gtk4" && grep -q "^dg-libadwaita" "${installed_versions}"; then
+  if [[ -d "${gtk4_dir}/mac-icons" && -s "${gtk4_dir}/gtk.css" ]]; then
     echo -e "Use './uninstall.sh --gtk4' to remove ${bold}dg-libadwaita${nc}, which was previously installed."
   fi
 fi
@@ -675,19 +664,22 @@ if [[ -n "${firefox[*]}" && "${installed_firefox}" != "true" ]]; then
 elif [[ -n "${firefox[*]}" ]]; then
   did_update="true"
 fi
-for f in "${firefox_variants[@]}"; do
-  if ! printf '%s\0' "${firefox[@]}" | grep -Fxqz -- "${f}" && grep -q "^dg-firefox-theme-${f}" "${installed_versions}"; then
-    echo -e "Use './uninstall.sh -f ${f}' to remove the ${f} variant of ${bold}dg-firefox-theme${nc}, which was previously installed."
-  fi
-done
+if ! printf '%s\0' "${firefox[@]}" | grep -Fxqz -- "standard" && [[ "$(compgen -G "${HOME}"/.mozilla/firefox/*/chrome/dg-firefox-theme)" ]]; then
+  echo -e "Use './uninstall.sh -f standard' to remove the standard variant of ${bold}dg-firefox-theme${nc}, which was previously installed."
+fi
+if ! printf '%s\0' "${firefox[@]}" | grep -Fxqz -- "snap" && [[ "$(compgen -G "${HOME}"/snap/firefox/common/.mozilla/firefox/*/chrome/dg-firefox-theme)" ]]; then
+  echo -e "Use './uninstall.sh -f snap' to remove the Snap variant of ${bold}dg-firefox-theme${nc}, which was previously installed."
+fi
+if ! printf '%s\0' "${firefox[@]}" | grep -Fxqz -- "flatpak" && [[ "$(compgen -G "${HOME}"/.var/app/org.mozilla.firefox/.mozilla/firefox/*/chrome/dg-firefox-theme)" ]]; then
+  echo -e "Use './uninstall.sh -f flatpak' to remove the Flatpak variant of ${bold}dg-firefox-theme${nc}, which was previously installed."
+fi
 
 # Install dg-adw-gtk3-theme snap if it's enabled
 if printf '%s\0' "${enabled_themes[@]}" | grep -Fxqz -- "snap" && [[ "$(command -v snap)" ]]; then
   install_snap
 elif printf '%s\0' "${enabled_themes[@]}" | grep -Fxqz -- "snap" && [[ ! "$(command -v snap)" ]]; then
   echo -e "${byellow}WARNING:${nc} ${bold}'snap'${nc} is not installed, not installing ${bold}dg-adw-gtk3-theme${nc} snap"
-  sed -i '/^enabled/s/ snap//' "${installed_versions}"
-elif ! printf '%s\0' "${enabled_themes[@]}" | grep -Fxqz -- "snap" && grep "^enabled" "${installed_versions}" | grep -q "snap"; then
+elif ! printf '%s\0' "${enabled_themes[@]}" | grep -Fxqz -- "snap" && snap list | grep -q "dg-adw-gtk3-theme"; then
   echo -e "Use './uninstall.sh --snap' to remove ${bold}dg-adw-gtk3-theme${nc} snap, which was previously installed."
 fi
 
