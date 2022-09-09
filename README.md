@@ -1,7 +1,9 @@
 <div align="center">
 
 # dg GNOME theme
-**A Libadwaita + macOS + Yaru theme for GNOME 42+**
+**A Libadwaita + macOS + Yaru theme designed to provide a consistent experience on GNOME 42+**
+
+*Other desktops should work, see [this section](#other-desktop-environments) for more information*
 
 ![Screenshot of the dark theme](.github/images/dark.png)
 
@@ -23,20 +25,16 @@
 
 - openSUSE: `sudo zypper install sassc git gnome-shell-extension-user-theme ninja meson`
 
-**If `gnome-shell-extensions`/`gnome-shell-extension-user-theme` wasn't already installed, log out and log back in before you proceed. If you aren't using GNOME or aren't going to install the GNOME Shell theme, you can skip installing it.**
+**If `gnome-shell-extensions` / `gnome-shell-extension-user-theme` wasn't already installed, log out and log back in before you proceed. If you aren't using GNOME or aren't going to install the GNOME Shell theme, you can skip installing it.**
 
 ## Downloading and Installing
-Download the repository and run the install script to configure and install the theme:
+Download the repository and run the install script to configure and install the theme. When configuring the theme you get to choose an [accent color](#available-accent-colors), choose between the light/dark variant, and choose which themes you want to install.
 ```
 git clone https://github.com/dgmarie/dg-gnome-theme && cd dg-gnome-theme
 ```
 ```
 ./install.sh
 ```
-These are the available accent colors:
-
-![Accent Colors](.github/images/accents.png)
-
 ```
 Usage: ./install.sh [OPTION]...
 
@@ -50,7 +48,11 @@ OPTIONS:
 This script allows you to configure, install, and update the theme.
 ```
 
-### Warning!
+#### Available accent colors:
+
+![Accent Colors](.github/images/accents.png)
+
+### Important!
 The themes won't automatically update if you change the light/dark theme preference in GNOME. You will either have to use `./install.sh --reconfigure` to switch between the light/dark themes, or if you set the theme to `auto` during configuration, just run `install.sh` and it will update the themes using the current light/dark preference in GNOME.
 
 ## Updating
@@ -119,13 +121,13 @@ For this to persist after reboot, you need to add the following line to /etc/fst
 /home/USERNAME/.config/gtk-4.0  /home/USERNAME/snap/SNAP-NAME/current/.config/gtk-4.0  none  bind  0  0
 ```
 
-## Other Desktop Environments
-GNOME versions before 42 and other DEs should work as well, the GNOME Shell theme just won't be installed. If you aren't using GNOME, the install script will also skip enabling the themes.
-
 ## GDM Theme
 I recommend using [gdm-tools](https://github.com/realmazharhussain/gdm-tools) to change the GDM theme to dg-yaru.
 
 If you change the GDM theme and later choose to uninstall the theme, first use gdm-tools to reset the GDM theme or else you will encounter issues.
+
+## Other Desktop Environments
+GNOME versions before 42 and other DEs should work as well, the GNOME Shell theme just won't be installed. If gsettings is not installed, the install script will also skip enabling most of the themes.
 
 ## Copying
 The scripts in this repository are licensed under the GPL v3.0, but the themes each have their own licensing (you can access each repository through GitHub under the src directory).
