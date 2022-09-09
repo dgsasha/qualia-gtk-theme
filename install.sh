@@ -135,8 +135,11 @@ configure() {
   echo "  4.  Olive		9.  Magenta"
   echo "  5.  Viridian		10. Red"
   while ! [[ "${num}" -ge 1 && "${num}" -le 10 ]]; do
-    echo -en "${bold}Enter the number corresponding to the accent color you want: ${nc}"
+    echo -en "${bold}Enter the number corresponding to the accent color you want [Default: 1]: ${nc}"
     read -r num
+    if [[ -z "${num}" ]]; then
+      num=1
+    fi
   done
   array_num="$(("${num}" - 1))"
   color="${color_variants["${array_num}"]}"
@@ -149,8 +152,11 @@ configure() {
   while true; do
     failed=""
     while ! [[ "${num}" -ge 1 && "${num}" -le 3 ]]; do
-      echo -en "${bold}Enter the number corresponding to the theme variant you want: ${nc}"
+      echo -en "${bold}Enter the number corresponding to the theme variant you want [Default: 1]: ${nc}"
       read -r num
+      if [[ -z "${num}" ]]; then
+        num=1
+      fi
     done
     array_num="$(("${num}" - 1))"
     theme="${theme_variants["${array_num}"]}"
@@ -272,12 +278,12 @@ configure() {
   if [[ -d "${HOME}/.mozilla/firefox" ]]; then
     yn=""
     while true; do
-      echo -ne "${blgreen}Do you want to install the ${nc}${bold}Firefox${blgreen} theme in ${nc}${bold}${HOME}/.mozilla${nc}${blgreen}?${nc} ${bold}[y/N]: ${nc}"
+      echo -ne "${blgreen}Do you want to install the ${nc}${bold}Firefox${blgreen} theme in ${nc}${bold}${HOME}/.mozilla${nc}${blgreen}?${nc} ${bold}[Y/n]: ${nc}"
       read -r yn
-      if [[ "$(echo "${yn}" | tr '[:upper:]' '[:lower:]')" == "y" ]]; then
+      if [[ -z "${yn}" || "$(echo "${yn}" | tr '[:upper:]' '[:lower:]')" == "y" ]]; then
         firefox+=("standard")
         break
-      elif [[ -z "${yn}" || "$(echo "${yn}" | tr '[:upper:]' '[:lower:]')" == "n" ]]; then
+      elif [[ "$(echo "${yn}" | tr '[:upper:]' '[:lower:]')" == "n" ]]; then
         break
       fi
     done
@@ -286,12 +292,12 @@ configure() {
   if [[ -d "${HOME}/snap/firefox/common/.mozilla/firefox" ]]; then
     yn=""
     while true; do
-      echo -ne "${blgreen}Do you want to install the ${nc}${bold}Firefox${blgreen} theme in ${nc}${bold}${HOME}/snap/firefox${blgreen}?${nc} ${bold}[y/N]: ${nc}"
+      echo -ne "${blgreen}Do you want to install the ${nc}${bold}Firefox${blgreen} theme in ${nc}${bold}${HOME}/snap/firefox${blgreen}?${nc} ${bold}[Y/n]: ${nc}"
       read -r yn
-      if [[ "$(echo "${yn}" | tr '[:upper:]' '[:lower:]')" == "y" ]]; then
+      if [[ -z "${yn}" || "$(echo "${yn}" | tr '[:upper:]' '[:lower:]')" == "y" ]]; then
         firefox+=("snap")
         break
-      elif [[ -z "${yn}" || "$(echo "${yn}" | tr '[:upper:]' '[:lower:]')" == "n" ]]; then
+      elif [[ "$(echo "${yn}" | tr '[:upper:]' '[:lower:]')" == "n" ]]; then
         break
       fi
     done
@@ -300,12 +306,12 @@ configure() {
   if [[ -d "${HOME}/.var/app/org.mozilla.firefox/.mozilla/firefox" ]]; then
     yn=""
     while true; do
-      echo -ne "${blgreen}Do you want to install the ${nc}${bold}Firefox${blgreen} theme in ${nc}${bold}${HOME}/.var/app/org.mozilla.firefox${blgreen}?${nc} ${bold}[y/N]: ${nc}"
+      echo -ne "${blgreen}Do you want to install the ${nc}${bold}Firefox${blgreen} theme in ${nc}${bold}${HOME}/.var/app/org.mozilla.firefox${blgreen}?${nc} ${bold}[Y/n]: ${nc}"
       read -r yn
-      if [[ "$(echo "${yn}" | tr '[:upper:]' '[:lower:]')" == "y" ]]; then
+      if [[ -z "${yn}" || "$(echo "${yn}" | tr '[:upper:]' '[:lower:]')" == "y" ]]; then
         firefox+=("flatpak")
         break
-      elif [[ -z "${yn}" ||  "$(echo "${yn}" | tr '[:upper:]' '[:lower:]')" == "n" ]]; then
+      elif [[ "$(echo "${yn}" | tr '[:upper:]' '[:lower:]')" == "n" ]]; then
         break
       fi
     done
@@ -314,12 +320,12 @@ configure() {
   if [[ "$(command -v snap)" ]]; then
     yn=""
     while true; do
-      echo -ne "${blgreen}Do you want to enable ${nc}${bold}Snap${blgreen} support?${nc} ${bold}[y/N]: ${nc}"
+      echo -ne "${blgreen}Do you want to enable ${nc}${bold}Snap${blgreen} support?${nc} ${bold}[Y/n]: ${nc}"
       read -r yn
-      if [[ "$(echo "${yn}" | tr '[:upper:]' '[:lower:]')" == "y" ]]; then
+      if [[ -z "${yn}" || "$(echo "${yn}" | tr '[:upper:]' '[:lower:]')" == "y" ]]; then
         enabled_themes+=("snap")
         break
-    elif [[ -z "${yn}" || "$(echo "${yn}" | tr '[:upper:]' '[:lower:]')" == "n" ]]; then
+    elif [[ "$(echo "${yn}" | tr '[:upper:]' '[:lower:]')" == "n" ]]; then
         break
       fi
     done
