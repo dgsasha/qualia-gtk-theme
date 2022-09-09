@@ -3,7 +3,7 @@
 # dg GNOME theme
 **A Libadwaita + macOS + Yaru theme designed to provide a consistent experience on GNOME 42+**
 
-*Other desktops should work, see [this section](#other-desktop-environments) for more information*
+*Other desktops should work, see [this section](#other-desktop-environments) for more information.*
 
 ![Screenshot of the dark theme](.github/images/dark.png)
 
@@ -28,7 +28,9 @@
 **If `gnome-shell-extensions` / `gnome-shell-extension-user-theme` wasn't already installed, log out and log back in before you proceed. If you aren't using GNOME or aren't going to install the GNOME Shell theme, you can skip installing it.**
 
 ## Downloading and Installing
-Download the repository and run the install script to configure and install the theme. When configuring the theme you get to choose an [accent color](#available-accent-colors), choose between the light/dark variant, and choose which themes you want to install.
+Download the repository and run the install script with no options to configure and install the theme.
+
+When configuring the theme you get to choose an [accent color](#available-accent-colors), choose between the light/dark variant, and choose which themes you want to install.
 ```
 git clone https://github.com/dgmarie/dg-gnome-theme && cd dg-gnome-theme
 ```
@@ -49,7 +51,6 @@ This script allows you to configure, install, and update the theme.
 ```
 
 #### Available accent colors:
-
 ![Accent Colors](.github/images/accents.png)
 
 ### Important!
@@ -104,7 +105,7 @@ Or run './uninstall.sh' with no arguments to uninstall the entire theme."
 ```
 
 ## Flatpak apps
-Run this command to let Flatpak apps access the themes:
+Run this command once to let all Flatpak apps access the themes:
 ```
 flatpak override --user --filesystem=xdg-config/gtk-4.0 --filesystem=xdg-data/themes
 ```
