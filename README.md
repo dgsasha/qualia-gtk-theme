@@ -1,6 +1,6 @@
 <div align="center">
 
-# dg GNOME theme
+# dg GNOME Theme
 **A Libadwaita + macOS + Yaru theme designed to provide a consistent experience on GNOME 42+**
 
 *Other desktops should work, see [this section](#other-desktop-environments) for more information.*
@@ -11,7 +11,7 @@
 
 **This repo contains a GTK3 theme, a configuration for Libadwaita, a Firefox theme, and a GNOME Shell theme. The Yaru icon, cursor, and sound themes are also included.**
 
-# How to install
+# How to Install
 
 </div>
 
@@ -104,13 +104,13 @@ Run './uninstall.sh' with any number of the above options to choose which parts 
 Or run './uninstall.sh' with no arguments to uninstall the entire theme."
 ```
 
-## Flatpak apps
+## Flatpak Apps
 Run this command once to let all Flatpak apps access the themes:
 ```
 flatpak override --user --filesystem=xdg-config/gtk-4.0 --filesystem=xdg-data/themes
 ```
 
-## Snap apps
+## Snap Apps
 If Snap is installed you can enable Snap support when configuring the theme.
 
 If you really want Snaps to access the GTK4/Libadwaita configuration, you will have to run this command, replacing `SNAP-NAME` with the name of the Snap:
