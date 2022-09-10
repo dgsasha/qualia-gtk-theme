@@ -32,7 +32,7 @@ Download the repository and run the install script with no options to configure 
 
 When configuring the theme you get to choose an [accent color](#available-accent-colors), choose between the light/dark variant, and choose which themes you want to install.
 ```
-git clone https://github.com/dgmarie/dg-gnome-theme && cd dg-gnome-theme
+git clone https://github.com/dgmarie/dg-gnome-theme -b main && cd dg-gnome-theme
 ```
 ```
 ./install.sh
