@@ -93,7 +93,7 @@ uninstall_firefox_snap() {
   if [[ "$(compgen -G "${HOME}"/snap/firefox/common/.mozilla/firefox/*/chrome/dg-firefox-theme)" ||
   ( -s "${installed_versions}" && ( "$(grep "^firefox:" "${installed_versions}" | grep "snap")" ||
   "$(grep "^dg-firefox-theme-snap:" "${installed_versions}")" ) ) ]]; then
-    echo -e "${red}Removing${nc} snap variant of ${bold}dg-firefox-theme${nc}."
+    echo -e "${red}Removing${nc} Snap variant of ${bold}dg-firefox-theme${nc}."
     rm -rf "${HOME}"/snap/firefox/common/.mozilla/firefox/*/chrome
     rm -f "${HOME}"/snap/firefox/common/.mozilla/firefox/*/user.js
     if [[ -s "${installed_versions}" ]]; then
@@ -107,7 +107,7 @@ uninstall_firefox_flatpak() {
   if [[ "$(compgen -G "${HOME}"/.var/app/org.mozilla.firefox/.mozilla/firefox/*/chrome/dg-firefox-theme)" ||
   ( -s "${installed_versions}" && ( "$(grep "^firefox:" "${installed_versions}" | grep "flatpak")" ||
   "$(grep "^dg-firefox-theme-flatpak:" "${installed_versions}")" ) ) ]]; then
-    echo -e "${red}Removing${nc} flatpak variant of ${bold}dg-firefox-theme${nc}."
+    echo -e "${red}Removing${nc} Flatpak variant of ${bold}dg-firefox-theme${nc}."
     rm -rf "${HOME}"/.var/app/org.mozilla.firefox/.mozilla/firefox/*/chrome
     rm -f "${HOME}"/.var/app/org.mozilla.firefox/.mozilla/firefox/*/user.js
     if [[ -s "${installed_versions}" ]]; then
