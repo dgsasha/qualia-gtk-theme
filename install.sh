@@ -173,12 +173,14 @@ configure() {
     if [[ -z "${yn}" || "$(echo "${yn}" | tr '[:upper:]' '[:lower:]')" == "y" ]]; then
       if [[ ! "$(command -v meson)" ]]; then
         echo -e "${bold}'meson'${bred} not found, can't install GTK3 theme.${nc}"
+        continue
       fi
       if [[ "$(command -v ninja)" ]]; then
         enabled_themes+=("gtk3")
         break
       else
          echo -e "${bold}'ninja'${bred} not found, can't install GTK3 theme.${nc}"
+         continue
       fi
    elif [[ "$(echo "${yn}" | tr '[:upper:]' '[:lower:]')" == "n" ]]; then
       break
@@ -205,12 +207,14 @@ configure() {
       if [[ -z "${yn}" || "$(echo "${yn}" | tr '[:upper:]' '[:lower:]')" == "y" ]]; then
         if [[ ! "$(command -v meson)" ]]; then
           echo -e "${bold}'meson'${bred} not found, can't install GNOME Shell theme.${nc}"
+          continue
         fi
         if [[ "$(command -v ninja)" ]]; then
           enabled_themes+=("gnome-shell")
           break
         else
            echo -e "${bold}'ninja'${bred} not found, can't install GNOME Shell theme.${nc}"
+           continue
         fi
     elif [[ "$(echo "${yn}" | tr '[:upper:]' '[:lower:]')" == "n" ]]; then
         break
@@ -225,12 +229,14 @@ configure() {
     if [[ -z "${yn}" || "$(echo "${yn}" | tr '[:upper:]' '[:lower:]')" == "y" ]]; then
       if [[ ! "$(command -v meson)" ]]; then
         echo -e "${bold}'meson'${bred} not found, can't install icon theme.${nc}"
+        continue
       fi
       if [[ "$(command -v ninja)" ]]; then
         enabled_themes+=("icons")
         break
       else
          echo -e "${bold}'ninja'${bred} not found, can't install icon theme.${nc}"
+         continue
       fi
    elif [[ "$(echo "${yn}" | tr '[:upper:]' '[:lower:]')" == "n" ]]; then
       break
@@ -244,12 +250,14 @@ configure() {
     if [[ -z "${yn}" || "$(echo "${yn}" | tr '[:upper:]' '[:lower:]')" == "y" ]]; then
       if [[ ! "$(command -v meson)" ]]; then
         echo -e "${bold}'meson'${bred} not found, can't install cursor theme.${nc}"
+        continue
       fi
       if [[ "$(command -v ninja)" ]]; then
         enabled_themes+=("cursors")
         break
       else
          echo -e "${bold}'ninja'${bred} not found, can't install cursor theme.${nc}"
+         continue
       fi
    elif [[ "$(echo "${yn}" | tr '[:upper:]' '[:lower:]')" == "n" ]]; then
       break
@@ -263,12 +271,14 @@ configure() {
     if [[ -z "${yn}" || "$(echo "${yn}" | tr '[:upper:]' '[:lower:]')" == "y" ]]; then
       if [[ ! "$(command -v meson)" ]]; then
         echo -e "${bold}'meson'${bred} not found, can't install sound theme.${nc}"
+        continue
       fi
       if [[ "$(command -v ninja)" ]]; then
         enabled_themes+=("sounds")
         break
       else
         echo -e "${bold}'ninja'${bred} not found, can't install sound theme.${nc}"
+        continue
       fi
    elif [[ "$(echo "${yn}" | tr '[:upper:]' '[:lower:]')" == "n" ]]; then
       break
