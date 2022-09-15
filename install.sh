@@ -466,7 +466,7 @@ install_dg_yaru() {
   done
 
   # Enable correct shell theme version if not already enabled
-  if [[ -n "${gnome_version}" && -n "$(meson configure build | awk '$1=="gnome-shell-version"' | awk -v ver="${gnome_version}" '$2=="ver"')" ]]; then
+  if [[ -n "${gnome_version}" && -z "$(meson configure build | awk '$1=="gnome-shell-version"' | awk -v ver="${gnome_version}" '$2=="ver"')" ]]; then
     meson configure build "-Dgnome-shell-version=${gnome_version}"
   fi
   if [[ "$verbose" == "true" ]]; then
