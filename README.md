@@ -123,12 +123,12 @@ For this to persist after reboot, you need to add the following line to /etc/fst
 ```
 
 ## GDM Theme
-I recommend using [gdm-tools](https://github.com/realmazharhussain/gdm-tools) to change the GDM theme to dg-yaru.
+I recommend using [gdm-tools](https://github.com/realmazharhussain/gdm-tools) or [Login Manager Settings](https://flathub.org/apps/details/io.github.realmazharhussain.GdmSettings) to change the GDM theme to dg-yaru.
 
-If you change the GDM theme and later choose to uninstall the theme, first use gdm-tools to reset the GDM theme or else you will encounter issues.
+If you change the GDM theme and later choose to uninstall the theme, reset the GDM theme to default first or you might encounter issues.
 
 ## Other Desktop Environments
-GNOME versions before 42 and other DEs should work as well, the GNOME Shell theme just won't be installed. If gsettings is not installed, the install script will also skip enabling most of the themes.
+GNOME versions before 42 and other DEs should work as well, the GNOME Shell theme just won't be installed. If your desktop doesn't use gsettings, the install script will also skip enabling most of the themes.
 
 ## Copying
 The scripts in this repository are licensed under the GPL v3.0, but the themes each have their own licensing (you can access each repository through GitHub under the src directory).
