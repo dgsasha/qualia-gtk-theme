@@ -373,6 +373,10 @@ for f in "${firefox[@]}"; do
   fi
 done
 
+if [[ -s "${installed_versions}" && "${gnome_version}" != "$(grep "^gnome-shell:" "${installed_versions}" | awk '{print $2}')" ]]; then
+  gnome_shell_changed="true"
+fi
+
 if [[ -s "${installed_versions}" && ( "${color}" != "$(grep "^dg-libadwaita:" "${installed_versions}" | awk '{print $3}')" || "${suffix}" != "$(grep "^dg-libadwaita" "${installed_versions}" | awk '{print $4}')" ) ]]; then
   gtk4_changed="true"
 fi
@@ -402,12 +406,34 @@ if [[ ! -s "${installed_versions}" ]]; then
     echo "theme: ${theme}"
     echo "enabled: ${enabled_themes[*]}"
     echo "firefox: ${firefox[*]}"
+    echo "gnome-shell: ${gnome_version}"
   } >> "${installed_versions}"
 else
-  sed -i "/^color/c\color: ${color}" "${installed_versions}"
-  sed -i "/^theme/c\theme: ${theme}" "${installed_versions}"
-  sed -i "/^enabled/c\enabled: ${enabled_themes[*]}" "${installed_versions}"
-  sed -i "/^firefox/c\firefox: ${firefox[*]}" "${installed_versions}"
+  if grep -q "^color" "${installed_versions}"; then
+    sed -i "/^color/c\color: ${color}" "${installed_versions}"
+  else
+    echo "color: ${color}" >> "${installed_versions}"
+  fi
+  if grep -q "^theme" "${installed_versions}"; then
+    sed -i "/^theme/c\theme: ${theme}" "${installed_versions}"
+  else
+    echo "theme: ${theme}" >> "${installed_versions}"
+  fi
+  if grep -q "^enabled" "${installed_versions}"; then
+    sed -i "/^enabled/c\enabled: ${enabled_themes[*]}" "${installed_versions}"
+  else
+    echo "enabled: ${enabled_themes[*]}" >> "${installed_versions}"
+  fi
+  if grep -q "^firefox" "${installed_versions}"; then
+    sed -i "/^firefox/c\firefox: ${firefox[*]}" "${installed_versions}"
+  else
+    echo "firefox: ${firefox[*]}" >> "${installed_versions}"
+  fi
+  if grep -q "^gnome-shell" "${installed_versions}"; then
+    sed -i "/^gnome-shell/c\gnome-shell: ${gnome_version}" "${installed_versions}"
+  else
+    echo "gnome-shell: ${gnome_version}" >> "${installed_versions}"
+  fi
 fi
 
 install_dg_adw_gtk3() {
@@ -597,7 +623,7 @@ fi
 # Install dg-yaru if it's enabled
 if printf '%s\0' "${enabled_themes[@]}" | grep -Exqz -- "gnome-shell|icons|cursors|sounds"; then
   if [[ "${update}" == "true" ]]; then
-    if [[ ( "$(git submodule status "src/dg-yaru" | tr -d '+' | awk '{print $1}' )" != "$(grep "^dg-yaru" "${installed_versions}" | awk '{print $2}')" ) || ( "${dg_yaru_changed}" == "true" ) ]]; then
+    if [[ "$(git submodule status "src/dg-yaru" | tr -d '+' | awk '{print $1}' )" != "$(grep "^dg-yaru" "${installed_versions}" | awk '{print $2}')" || "${dg_yaru_changed}" == "true" || "${gnome_shell_changed}" == "true" ]]; then
       install_dg_yaru
       did_update="true"
     else
