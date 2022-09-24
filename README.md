@@ -30,7 +30,7 @@
 ## Downloading and Installing
 Download the repository and run the install script with no options to configure and install the theme.
 
-When configuring the theme you get to choose an [accent color](#available-accent-colors), choose between the [light or dark variant](#lightdark-theme), and choose which themes you want to install.
+When configuring the theme you get to choose an [accent color](#available-accent-colors), choose between the [light and dark variants](#light-and-dark-variants), and choose which themes you want to install.
 ```
 git clone https://github.com/dgmarie/dg-gnome-theme -b main && cd dg-gnome-theme
 ```
@@ -53,7 +53,7 @@ This script allows you to configure, install, and update the theme.
 #### Available Accent Colors:
 ![Accent Colors](.github/images/accents.png)
 
-### Light/Dark Theme
+### Light and Dark Variants
 The themes won't automatically update if you change the light/dark theme preference in GNOME. It is recommended to set the theme to `auto` during configuration, so when you change the light/dark theme preference in GNOME you can just run `./install.sh` afterwards to update the themes using the new preference.
 
 ## Updating
