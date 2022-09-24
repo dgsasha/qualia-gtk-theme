@@ -30,7 +30,7 @@
 ## Downloading and Installing
 Download the repository and run the install script with no options to configure and install the theme.
 
-When configuring the theme you get to choose an [accent color](#available-accent-colors), choose between the light/dark variant, and choose which themes you want to install.
+When configuring the theme you get to choose an [accent color](#available-accent-colors), choose between the [light or dark variant](#lightdark-theme), and choose which themes you want to install.
 ```
 git clone https://github.com/dgmarie/dg-gnome-theme -b main && cd dg-gnome-theme
 ```
@@ -50,24 +50,24 @@ OPTIONS:
 This script allows you to configure, install, and update the theme.
 ```
 
-#### Available accent colors:
+#### Available Accent Colors:
 ![Accent Colors](.github/images/accents.png)
 
-### Important!
-The themes won't automatically update if you change the light/dark theme preference in GNOME. You will either have to use `./install.sh --reconfigure` to switch between the light/dark themes, or if you set the theme to `auto` during configuration, just run `install.sh` and it will update the themes using the current light/dark preference in GNOME.
+### Light/Dark Theme
+The themes won't automatically update if you change the light/dark theme preference in GNOME. It is recommended to set the theme to `auto` during configuration, so when you change the light/dark theme preference in GNOME you can just run `./install.sh` afterwards to update the themes using the new preference.
 
 ## Updating
 The install script will handle updating the themes.
-
-Your previous configuration will be used again unless you use the `--reconfigure` option.
-
-Only the themes that have changes will be updated, if you want to reinstall all of the themes, use the `--force` option.
 ```
 git pull
 ```
 ```
 ./install.sh
 ```
+
+Your previous configuration will be used again unless you use the `--reconfigure` option.
+
+Only the themes that have changes will be updated, if you want to reinstall all of the themes, use the `--force` option.
 
 ## Uninstalling
 Before uninstalling, use GNOME Tweaks to change the themes to something else to avoid any issues. 
@@ -123,7 +123,7 @@ For this to persist after reboot, you need to add the following line to /etc/fst
 ```
 
 ## GDM Theme
-I recommend using [gdm-tools](https://github.com/realmazharhussain/gdm-tools) or [Login Manager Settings](https://flathub.org/apps/details/io.github.realmazharhussain.GdmSettings) to change the GDM theme to dg-yaru.
+I recommend using [Login Manager Settings](https://github.com/realmazharhussain/gdm-settings) to change the GDM theme to dg-yaru.
 
 If you change the GDM theme and later choose to uninstall the theme, reset the GDM theme to default first or you might encounter issues.
 
@@ -134,11 +134,11 @@ GNOME versions before 42 and other DEs should work as well, the GNOME Shell them
 The scripts in this repository are licensed under the GPL v3.0, but the themes each have their own licensing (you can access each repository through GitHub under the src directory).
 
 ## Issues
-If you have any issues, open one here and specify which part of the theme is causing it. Please try to make sure it is only an issue with one of my themes and not with the upstream project it is based on. If the issue also exists upstream, open it there instead.
+If you have any issues, open one here and try to be specific and provide as much information as possible. Please try to make sure it is only an issue with one of my themes and not with the upstream project it is based on. If the issue also exists upstream, open it there instead.
 
 ## Credits
 A huge thanks to:
 - [Ubuntu](https://ubuntu.com/) for [Yaru](https://github.com/ubuntu/yaru)
-- [vinceliuice](https://github.com/vinceliuice) for [WhiteSur-gtk-theme](https://github.com/vinceliuice/WhiteSur-gtk-theme) and [Colloid-gtk-theme](https://github.com/vinceliuice/Colloid-gtk-theme)
+- [vinceliuice](https://github.com/vinceliuice) for [WhiteSur-gtk-theme](https://github.com/vinceliuice/WhiteSur-gtk-theme)
 - [rafaelmardojai](https://github.com/rafaelmardojai) for [firefox-gnome-theme](https://github.com/rafaelmardojai/firefox-gnome-theme)
 - [lassekongo83](https://github.com/lassekongo83) for [adw-gtk3](https://github.com/lassekongo83/adw-gtk3)
