@@ -1,16 +1,16 @@
 [submodule "src/dg-adw-gtk3"]
 	path = src/dg-adw-gtk3
-	url = https://github.com/dgmarie/dg-adw-gtk3
+	url = https://github.com/dgsasha/dg-adw-gtk3
 	branch = main
 [submodule "src/dg-firefox-theme"]
 	path = src/dg-firefox-theme
-	url = https://github.com/dgmarie/dg-firefox-theme
+	url = https://github.com/dgsasha/dg-firefox-theme
 	branch = main
 [submodule "src/dg-yaru"]
 	path = src/dg-yaru
-	url = https://github.com/dgmarie/dg-yaru
+	url = https://github.com/dgsasha/dg-yaru
 	branch = main
 [submodule "src/dg-libadwaita"]
 	path = src/dg-libadwaita
-	url = https://github.com/dgmarie/dg-libadwaita
+	url = https://github.com/dgsasha/dg-libadwaita
 	branch = main
