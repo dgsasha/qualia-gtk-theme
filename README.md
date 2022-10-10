@@ -1,7 +1,7 @@
 <div align="center">
 
 # dg GNOME Theme
-**A Libadwaita + macOS + Yaru theme designed to provide a consistent experience on GNOME 42+**
+**A Yaru inspired theme designed to provide a consistent experience on GNOME 42+**
 
 *Other desktops should work, see [this section](#other-desktop-environments) for more information.*
 
@@ -32,7 +32,7 @@ Download the repository and run the install script with no options to configure 
 
 When configuring the theme you get to choose an [accent color](#available-accent-colors), choose between the [light and dark variants](#light-and-dark-variants), and choose which themes you want to install.
 ```
-git clone https://github.com/dgmarie/dg-gnome-theme -b main && cd dg-gnome-theme
+git clone https://github.com/dgsasha/dg-gnome-theme -b main && cd dg-gnome-theme
 ```
 ```
 ./install.sh
@@ -51,7 +51,8 @@ This script allows you to configure, install, and update the theme.
 ```
 
 #### Available Accent Colors:
-![Accent Colors](.github/images/accents.png)
+![Accent Colors](.github/images/accents-dark.svg#gh-dark-mode-only)
+![Accent Colors](.github/images/accents-light.svg#gh-light-mode-only)
 
 ### Light and Dark Variants
 The themes won't automatically update if you change the light/dark theme preference in GNOME. It is recommended to set the theme to `auto` during configuration, so when you change the light/dark theme preference in GNOME you can just run `./install.sh` afterwards to update the themes using the new preference.

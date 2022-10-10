@@ -11,9 +11,10 @@ dg_yaru_src_dir="${src_dir}/dg-yaru"
 firefox_src_dir="${src_dir}/dg-firefox-theme"
 installed_versions="${src_dir}/installed-versions.txt"
 
-color_variants=('orange' 'bark' 'sage' 'olive' 'viridian' 'prussiangreen' 'blue' 'purple' 'magenta' 'red')
-theme_variants=('auto' 'light' 'dark')
+themes=('gtk3' 'gtk4' 'gnome-shell' 'icons' 'cursors' 'sounds' 'snap') # not including firefox theme
 firefox_variants=('standard' 'flatpak' 'snap')
+color_variants=('orange' 'bark' 'sage' 'olive' 'viridian' 'prussiangreen' 'lightblue' 'blue' 'purple' 'magenta' 'pink' 'red')
+theme_variants=('auto' 'light' 'dark')
 gnome_versions=('42' '43')
 enableable_themes=('gtk3' 'gnome-shell' 'icons' 'cursors' 'sounds') # Themes that can be enabled with gsettings
 dg_yaru_parts=('gnome-shell' 'icons' 'cursors' 'sounds')
@@ -129,12 +130,13 @@ fi
 configure() {
   num=""
   echo -e "${blgreen}Which accent color do you want to use?${nc}"
-  echo "  1.  Orange		6.  Prussian Green"
-  echo "  2.  Bark		7.  Blue"
-  echo "  3.  Sage		8.  Purple"
-  echo "  4.  Olive		9.  Magenta"
-  echo "  5.  Viridian		10. Red"
-  while ! [[ "${num}" -ge 1 && "${num}" -le 10 ]]; do
+  echo "  1.  Orange		7.  Light Blue"
+  echo "  2.  Bark		8.  Blue"
+  echo "  3.  Sage		9.  Purple"
+  echo "  4.  Olive		10. Magenta"
+  echo "  5.  Viridian		11. Pink"
+  echo "  6.  Prussian Green	12. Red"
+  while ! [[ "${num}" -ge 1 && "${num}" -le 12 ]]; do
     echo -en "${bold}Enter the number corresponding to the accent color you want [Default: 1]: ${nc}"
     read -r num
     if [[ -z "${num}" ]]; then
@@ -344,21 +346,45 @@ configure() {
 
 # Either configure theme or use previous configuration
 if [[ -s "${installed_versions}" && "${reconfigure}" != "true" ]]; then
-  if grep -q "^enabled: " "${installed_versions}" && grep -q "^color:" "${installed_versions}" && grep -q "^theme:" "${installed_versions}"; then
-    read -r -a previously_enabled_themes <<< "$(grep "^enabled: " "${installed_versions}" | cut -f 2- -d ' ')"
-    enabled_themes=("${previously_enabled_themes[@]}")
-    color="$(grep "^color:" "${installed_versions}" | awk '{print $2}')"
-    theme="$(grep "^theme:" "${installed_versions}" | awk '{print $2}')"
+  read -r -a previously_enabled_themes <<< "$(grep "^enabled: " "${installed_versions}" | cut -f 2- -d ' ')"
+  for t in "${previously_enabled_themes[@]}"; do
+    if printf '%s\0' "${themes[@]}" | grep -Fxqz -- "${t}"; then
+      enabled_themes+=("${t}")
+    elif [[ "${t}" != "" ]]; then
+      config_issue="true"
+    fi
+  done
+
+  read -r -a previously_enabled_firefox <<< "$(grep "^firefox: " "${installed_versions}" | cut -f 2- -d ' ')"
+  for f in "${previously_enabled_firefox[@]}"; do
+    if printf '%s\0' "${firefox_variants[@]}" | grep -Fxqz -- "${f}"; then
+      firefox+=("${f}")
+    elif [[ "${f}" != "" ]]; then
+      config_issue="true"
+    fi
+  done
+
+  previous_color="$(grep "^color:" "${installed_versions}" | awk '{print $2}')"
+  if printf '%s\0' "${color_variants[@]}" | grep -Fxqz -- "${previous_color}"; then
+    color="${previous_color}"
+  else
+    config_issue="true"
+  fi
+
+  previous_theme="$(grep "^theme:" "${installed_versions}" | awk '{print $2}')"
+  if printf '%s\0' "${theme_variants[@]}" | grep -Fxqz -- "${previous_theme}"; then
+    theme="${previous_theme}"
+  else
+    config_issue="true"
+  fi
+
+  if [[ "${config_issue}" == "true" ]]; then
+    configure
+  else
     echo -e "${byellow}Updating themes using previous configuration.${nc}"
     echo -e "${byellow}Use '${0} --reconfigure' if you want to change anything.${nc}"
-    if grep -q "^firefox: " "${installed_versions}"; then
-      read -r -a previously_enabled_firefox <<< "$(grep "^firefox: " "${installed_versions}" | cut -f 2- -d ' ')"
-      firefox=("${previously_enabled_firefox[@]}")
-    fi
+
     theme_variants
-  else # if something is wrong with the file
-    rm -rf "${installed_versions}"
-    configure
   fi
 else # user is either reconfiguring or installing for the first time
   if [[ -s "${installed_versions}" ]] && grep -q "^enabled: " "${installed_versions}"; then
@@ -685,20 +711,22 @@ fi
 
 # Install dg-firefox-theme if it's enabled
 for f in "${firefox[@]}"; do
-  if [[ "${update}" == "true" ]]; then
-    if [[ ( "$(git submodule status "src/dg-firefox-theme" | tr -d '+' | awk '{print $1}' )" != "$(grep "^dg-firefox-theme-${f}" "${installed_versions}" | awk '{print $2}')" ) ]]; then
-      install_dg_firefox_theme "${f}"
-    elif [[ "${f}" == "standard" && "${firefox_standard_changed}" == "true" ]]; then
-      install_dg_firefox_theme "${f}"
-    elif [[ "${f}" == "snap" && "${firefox_snap_changed}" == "true" ]]; then
-      install_dg_firefox_theme "${f}"
-    elif [[ "${f}" == "flatpak" && "${firefox_flatpak_changed}" == "true" ]]; then
-      install_dg_firefox_theme "${f}"
-    elif ! printf '%s\0' "${previously_enabled_firefox[@]}" | grep -Fxqz -- "${f}"; then
+  if printf '%s\0' "${firefox_variants[@]}" | grep -Fxqz -- "${f}"; then
+    if [[ "${update}" == "true" ]]; then
+      if [[ ( "$(git submodule status "src/dg-firefox-theme" | tr -d '+' | awk '{print $1}' )" != "$(grep "^dg-firefox-theme-${f}" "${installed_versions}" | awk '{print $2}')" ) ]]; then
+        install_dg_firefox_theme "${f}"
+      elif [[ "${f}" == "standard" && "${firefox_standard_changed}" == "true" ]]; then
+        install_dg_firefox_theme "${f}"
+      elif [[ "${f}" == "snap" && "${firefox_snap_changed}" == "true" ]]; then
+        install_dg_firefox_theme "${f}"
+      elif [[ "${f}" == "flatpak" && "${firefox_flatpak_changed}" == "true" ]]; then
+        install_dg_firefox_theme "${f}"
+      elif ! printf '%s\0' "${previously_enabled_firefox[@]}" | grep -Fxqz -- "${f}"; then
+        install_dg_firefox_theme "${f}"
+      fi
+    else
       install_dg_firefox_theme "${f}"
     fi
-  else
-    install_dg_firefox_theme "${f}"
   fi
 done
 if [[ -n "${firefox[*]}" && "${installed_firefox}" != "true" ]]; then
