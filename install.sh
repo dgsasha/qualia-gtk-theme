@@ -11,13 +11,13 @@ dg_yaru_src_dir="${src_dir}/dg-yaru"
 firefox_src_dir="${src_dir}/dg-firefox-theme"
 installed_versions="${src_dir}/installed-versions.txt"
 
-themes=('gtk3' 'gtk4' 'gnome-shell' 'icons' 'cursors' 'sounds' 'snap') # not including firefox theme
+themes=('gtk3' 'gtk4' 'gnome-shell' 'icons' 'cursors' 'sounds' 'snap') # Available themes, not including firefox theme
 firefox_variants=('standard' 'flatpak' 'snap')
-color_variants=('orange' 'bark' 'sage' 'olive' 'viridian' 'prussiangreen' 'lightblue' 'blue' 'purple' 'magenta' 'pink' 'red')
+color_variants=('orange' 'bark' 'sage' 'olive' 'viridian' 'prussiangreen' 'lightblue' 'blue' 'purple' 'magenta' 'pink' 'red') # Accent Colors
 theme_variants=('auto' 'light' 'dark')
 gnome_versions=('42' '43')
 enableable_themes=('gtk3' 'gnome-shell' 'icons' 'cursors' 'sounds') # Themes that can be enabled with gsettings
-dg_yaru_parts=('gnome-shell' 'icons' 'cursors' 'sounds')
+dg_yaru_parts=('gnome-shell' 'icons' 'cursors' 'gtksourceview' 'sounds')
 
 nc='\033[0m'
 bold='\033[1m'
@@ -287,6 +287,28 @@ configure() {
     fi
   done
 
+
+  yn=""
+  while true; do
+    echo -ne "${blgreen}Do you want to install the ${nc}${bold}GtkSourceView${blgreen} theme?${nc} ${bold}[Y/n]: ${nc}"
+    read -r yn
+    if [[ -z "${yn}" || "$(echo "${yn}" | tr '[:upper:]' '[:lower:]')" == "y" ]]; then
+      if [[ ! "$(command -v meson)" ]]; then
+        echo -e "${bold}'meson'${bred} not found, can't install GtkSourceView theme.${nc}"
+        continue
+      fi
+      if [[ "$(command -v ninja)" ]]; then
+        enabled_themes+=("gtksourceview")
+        break
+      else
+         echo -e "${bold}'ninja'${bred} not found, can't install GtkSourceView theme.${nc}"
+         continue
+      fi
+   elif [[ "$(echo "${yn}" | tr '[:upper:]' '[:lower:]')" == "n" ]]; then
+      break
+    fi
+  done
+
   if [[ -d "${HOME}/.mozilla/firefox" ]]; then
     yn=""
     while true; do
@@ -430,46 +452,38 @@ for p in "${dg_yaru_parts[@]}"; do
 done
 
 # Is user updating?
-if [[ -s "${installed_versions}" && "${force}" != "true" ]]; then
+if [[ -s "${installed_versions}" && "${force}" != "true" && "${config_issue}" != "true" ]]; then
   update="true"
 fi
 
-# Either create or update installed-versions.txt
-if [[ ! -s "${installed_versions}" ]]; then
-  { echo "This file is used by the install script to find out what versions of the themes are installed"
-    echo ""
-    echo "color: ${color}"
-    echo "theme: ${theme}"
-    echo "enabled: ${enabled_themes[*]}"
-    echo "firefox: ${firefox[*]}"
-    echo "gnome-shell: ${gnome_version}"
-  } >> "${installed_versions}"
+# Update installed-versions.txt and create it if necessary
+if [[ ! -f "${installed_versions}" ]]; then
+  echo "This file is used by the install script to find out what versions of the themes are installed" > "${installed_versions}"
+fi
+if grep -q "^color" "${installed_versions}"; then
+  sed -i "/^color/c\color: ${color}" "${installed_versions}"
 else
-  if grep -q "^color" "${installed_versions}"; then
-    sed -i "/^color/c\color: ${color}" "${installed_versions}"
-  else
-    echo "color: ${color}" >> "${installed_versions}"
-  fi
-  if grep -q "^theme" "${installed_versions}"; then
-    sed -i "/^theme/c\theme: ${theme}" "${installed_versions}"
-  else
-    echo "theme: ${theme}" >> "${installed_versions}"
-  fi
-  if grep -q "^enabled" "${installed_versions}"; then
-    sed -i "/^enabled/c\enabled: ${enabled_themes[*]}" "${installed_versions}"
-  else
-    echo "enabled: ${enabled_themes[*]}" >> "${installed_versions}"
-  fi
-  if grep -q "^firefox" "${installed_versions}"; then
-    sed -i "/^firefox/c\firefox: ${firefox[*]}" "${installed_versions}"
-  else
-    echo "firefox: ${firefox[*]}" >> "${installed_versions}"
-  fi
-  if grep -q "^gnome-shell" "${installed_versions}"; then
-    sed -i "/^gnome-shell/c\gnome-shell: ${gnome_version}" "${installed_versions}"
-  else
-    echo "gnome-shell: ${gnome_version}" >> "${installed_versions}"
-  fi
+  echo "color: ${color}" >> "${installed_versions}"
+fi
+if grep -q "^theme" "${installed_versions}"; then
+  sed -i "/^theme/c\theme: ${theme}" "${installed_versions}"
+else
+  echo "theme: ${theme}" >> "${installed_versions}"
+fi
+if grep -q "^enabled" "${installed_versions}"; then
+  sed -i "/^enabled/c\enabled: ${enabled_themes[*]}" "${installed_versions}"
+else
+  echo "enabled: ${enabled_themes[*]}" >> "${installed_versions}"
+fi
+if grep -q "^firefox" "${installed_versions}"; then
+  sed -i "/^firefox/c\firefox: ${firefox[*]}" "${installed_versions}"
+else
+  echo "firefox: ${firefox[*]}" >> "${installed_versions}"
+fi
+if grep -q "^gnome-shell" "${installed_versions}"; then
+  sed -i "/^gnome-shell/c\gnome-shell: ${gnome_version}" "${installed_versions}"
+else
+  echo "gnome-shell: ${gnome_version}" >> "${installed_versions}"
 fi
 
 install_dg_adw_gtk3() {
@@ -506,7 +520,7 @@ install_dg_adw_gtk3() {
 }
 
 install_dg_yaru() {
-  if printf '%s\0' "${previously_enabled_themes[@]}" | grep -Exqz -- "gnome-shell|icons|cursors|sounds" && [[ "${force}" != "true" ]]; then
+  if printf '%s\0' "${previously_enabled_themes[@]}" | grep -Exqz -- "gnome-shell|icons|cursors|gtksourceview|sounds" && [[ "${force}" != "true" ]]; then
     echo -e "${green}Updating ${nc}${bold}dg-yaru${nc} theme in ${bold}/usr/share${nc}"
   else
     echo -e "${green}Installing ${nc}${bold}dg-yaru${nc} theme in ${bold}/usr/share${nc}"
@@ -711,22 +725,20 @@ fi
 
 # Install dg-firefox-theme if it's enabled
 for f in "${firefox[@]}"; do
-  if printf '%s\0' "${firefox_variants[@]}" | grep -Fxqz -- "${f}"; then
-    if [[ "${update}" == "true" ]]; then
-      if [[ ( "$(git submodule status "src/dg-firefox-theme" | tr -d '+' | awk '{print $1}' )" != "$(grep "^dg-firefox-theme-${f}" "${installed_versions}" | awk '{print $2}')" ) ]]; then
-        install_dg_firefox_theme "${f}"
-      elif [[ "${f}" == "standard" && "${firefox_standard_changed}" == "true" ]]; then
-        install_dg_firefox_theme "${f}"
-      elif [[ "${f}" == "snap" && "${firefox_snap_changed}" == "true" ]]; then
-        install_dg_firefox_theme "${f}"
-      elif [[ "${f}" == "flatpak" && "${firefox_flatpak_changed}" == "true" ]]; then
-        install_dg_firefox_theme "${f}"
-      elif ! printf '%s\0' "${previously_enabled_firefox[@]}" | grep -Fxqz -- "${f}"; then
-        install_dg_firefox_theme "${f}"
-      fi
-    else
+  if [[ "${update}" == "true" ]]; then
+    if [[ ( "$(git submodule status "src/dg-firefox-theme" | tr -d '+' | awk '{print $1}' )" != "$(grep "^dg-firefox-theme-${f}" "${installed_versions}" | awk '{print $2}')" ) ]]; then
+      install_dg_firefox_theme "${f}"
+    elif [[ "${f}" == "standard" && "${firefox_standard_changed}" == "true" ]]; then
+      install_dg_firefox_theme "${f}"
+    elif [[ "${f}" == "snap" && "${firefox_snap_changed}" == "true" ]]; then
+      install_dg_firefox_theme "${f}"
+    elif [[ "${f}" == "flatpak" && "${firefox_flatpak_changed}" == "true" ]]; then
+      install_dg_firefox_theme "${f}"
+    elif ! printf '%s\0' "${previously_enabled_firefox[@]}" | grep -Fxqz -- "${f}"; then
       install_dg_firefox_theme "${f}"
     fi
+  else
+    install_dg_firefox_theme "${f}"
   fi
 done
 if [[ -n "${firefox[*]}" && "${installed_firefox}" != "true" ]]; then

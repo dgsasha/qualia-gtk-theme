@@ -9,7 +9,7 @@
 
 ![Screenshot of the light theme](.github/images/light.png)
 
-**This repo contains a GTK3 theme, a configuration for Libadwaita, a Firefox theme, and a GNOME Shell theme. The Yaru icon, cursor, and sound themes are also included.**
+**This repo contains a GTK3 theme, a configuration for Libadwaita, a Firefox theme, and a GNOME Shell theme. The Yaru icon, cursor, sound, and GtkSourceView themes are also included.**
 
 # How to Install
 
@@ -114,7 +114,7 @@ flatpak override --user --filesystem=xdg-config/gtk-4.0 --filesystem=xdg-data/th
 ## Snap Apps
 If Snap is installed you can enable Snap support when configuring the theme.
 
-If you really want Snaps to access the GTK4/Libadwaita configuration, you will have to run this command, replacing `SNAP-NAME` with the name of the Snap:
+If you really want Snaps to access the GTK4/Libadwaita configuration, you will have to run this command for each Snap, replacing `SNAP-NAME` with the name of the Snap:
 ```
 sudo mount --bind --mkdir ~/.config/gtk-4.0 ~/snap/SNAP-NAME/current/.config/gtk-4.0
 ```
