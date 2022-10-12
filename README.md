@@ -19,7 +19,7 @@
 
 - Arch based distros: `sudo pacman -S sassc git gnome-shell-extensions ninja meson`
 
-- Debian based distros: `sudo apt install sassc git gnome-shell-extensions ninja-build meson`
+- Debian/Ubuntu based distros: `sudo apt install sassc git gnome-shell-extensions ninja-build meson`
 
 - Fedora: `sudo dnf install sassc git gnome-shell-extension-user-theme ninja-build meson`
 
@@ -28,7 +28,7 @@
 **If `gnome-shell-extensions` / `gnome-shell-extension-user-theme` wasn't already installed, log out and log back in before you proceed. If you aren't using GNOME or aren't going to install the GNOME Shell theme, you can skip installing it.**
 
 ## Downloading and Installing
-Download the repository and run the install script with no options to configure and install the theme.
+Download the repository and run the install script to configure and install the theme.
 
 When configuring the theme you get to choose an [accent color](#available-accent-colors), choose between the [light and dark variants](#light-and-dark-variants), and choose which themes you want to install.
 ```
@@ -120,7 +120,7 @@ If you really want Snaps to access the GTK4/Libadwaita configuration, you will h
 ```
 sudo mount --bind --mkdir ~/.config/gtk-4.0 ~/snap/SNAP-NAME/current/.config/gtk-4.0
 ```
-For this to persist after reboot, you need to add the following line to /etc/fstab. Replace `USERNAME` and `SNAP-NAME` with the correct information.
+For this to persist after reboot, you need to add the following line to /etc/fstab for each Snap. Replace `USERNAME` and `SNAP-NAME` with the correct information.
 ```
 /home/USERNAME/.config/gtk-4.0  /home/USERNAME/snap/SNAP-NAME/current/.config/gtk-4.0  none  bind  0  0
 ```
