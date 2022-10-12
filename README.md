@@ -92,6 +92,8 @@ OPTIONS:
         Uninstall dg-yaru cursor theme.
   -s, --sounds
         Uninstall dg-yaru sound theme.
+  -v, --gtksourceview
+        Uninstall dg-yaru GtkSourceView theme.
       --gtk3
         Uninstall dg-adw-gtk3.
       --gtk4

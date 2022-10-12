@@ -11,7 +11,7 @@ dg_yaru_src_dir="${src_dir}/dg-yaru"
 firefox_src_dir="${src_dir}/dg-firefox-theme"
 installed_versions="${src_dir}/installed-versions.txt"
 
-themes=('gtk3' 'gtk4' 'gnome-shell' 'icons' 'cursors' 'sounds' 'snap') # Available themes, not including firefox theme
+themes=('gtk3' 'gtk4' 'gnome-shell' 'icons' 'cursors' 'sounds' 'gtksourceview' 'snap') # Available themes, not including firefox theme
 firefox_variants=('standard' 'flatpak' 'snap')
 color_variants=('orange' 'bark' 'sage' 'olive' 'viridian' 'prussiangreen' 'lightblue' 'blue' 'purple' 'magenta' 'pink' 'red') # Accent Colors
 theme_variants=('auto' 'light' 'dark')
@@ -60,15 +60,15 @@ firefox=()
 while [ $# -gt 0 ]; do
   case "${1}" in
     -r|--reconfigure)
-      reconfigure="true"
+      reconfigure=true
       shift
       ;;
     -f|--force)
-      force="true"
+      force=true
       shift
       ;;
     -v|--verbose)
-      verbose="true"
+      verbose=true
       shift
       ;;
     -c|--clean)
@@ -105,7 +105,7 @@ theme_variants() {
         ;;
       *)
         echo -e "${bred}Can't detect system light/dark theme preference.${nc}"
-        failed="true"
+        failed=true
         ;;
     esac
   elif [[ "${theme}" == "light" ]]; then
@@ -163,7 +163,7 @@ configure() {
     array_num="$(("${num}" - 1))"
     theme="${theme_variants["${array_num}"]}"
     theme_variants
-    if [[ "${failed}" != "true" ]]; then # let user pick another option if system theme cant be detected
+    if [[ "${failed}" != true ]]; then # let user pick another option if system theme cant be detected
       break
     fi
     num=""
@@ -366,14 +366,14 @@ configure() {
   fi
 }
 
-# Either configure theme or use previous configuration
-if [[ -s "${installed_versions}" && "${reconfigure}" != "true" ]]; then
+# Read previous configuration and check if there are issues
+if [[ -s "${installed_versions}" && "${reconfigure}" != true ]]; then
   read -r -a previously_enabled_themes <<< "$(grep "^enabled: " "${installed_versions}" | cut -f 2- -d ' ')"
   for t in "${previously_enabled_themes[@]}"; do
     if printf '%s\0' "${themes[@]}" | grep -Fxqz -- "${t}"; then
       enabled_themes+=("${t}")
     elif [[ "${t}" != "" ]]; then
-      config_issue="true"
+      config_issue=true
     fi
   done
 
@@ -382,7 +382,7 @@ if [[ -s "${installed_versions}" && "${reconfigure}" != "true" ]]; then
     if printf '%s\0' "${firefox_variants[@]}" | grep -Fxqz -- "${f}"; then
       firefox+=("${f}")
     elif [[ "${f}" != "" ]]; then
-      config_issue="true"
+      config_issue=true
     fi
   done
 
@@ -390,17 +390,17 @@ if [[ -s "${installed_versions}" && "${reconfigure}" != "true" ]]; then
   if printf '%s\0' "${color_variants[@]}" | grep -Fxqz -- "${previous_color}"; then
     color="${previous_color}"
   else
-    config_issue="true"
+    config_issue=true
   fi
 
   previous_theme="$(grep "^theme:" "${installed_versions}" | awk '{print $2}')"
   if printf '%s\0' "${theme_variants[@]}" | grep -Fxqz -- "${previous_theme}"; then
     theme="${previous_theme}"
   else
-    config_issue="true"
+    config_issue=true
   fi
 
-  if [[ "${config_issue}" == "true" ]]; then
+  if [[ "${config_issue}" == true ]]; then
     configure
   else
     echo -e "${byellow}Updating themes using previous configuration.${nc}"
@@ -421,73 +421,62 @@ fi
 # Check if the themes need to be reinstalled because of changes to configuration
 for f in "${firefox[@]}"; do
   if [[ -s "${installed_versions}" && "${f}" == "standard" && "${color}" != "$(grep "^dg-firefox-theme-standard:" "${installed_versions}" | awk '{print $3}')" ]]; then
-    firefox_standard_changed="true"
+    firefox_standard_changed=true
   fi
   if [[ -s "${installed_versions}" && "${f}" == "snap" && "${color}" != "$(grep "^dg-firefox-theme-snap:" "${installed_versions}" | awk '{print $3}')" ]]; then
-    firefox_snap_changed="true"
+    firefox_snap_changed=true
   fi
   if [[ -s "${installed_versions}" && "${f}" == "flatpak" && "${color}" != "$(grep "^dg-firefox-theme-flatpak:" "${installed_versions}" | awk '{print $3}')" ]]; then
-    firefox_flatpak_changed="true"
+    firefox_flatpak_changed=true
   fi
 done
 
 if [[ -s "${installed_versions}" && "${gnome_version}" != "$(grep "^gnome-shell:" "${installed_versions}" | awk '{print $2}')" ]]; then
-  gnome_shell_changed="true"
+  gnome_shell_changed=true
 fi
 
 if [[ -s "${installed_versions}" && ( "${color}" != "$(grep "^dg-libadwaita:" "${installed_versions}" | awk '{print $3}')" || "${suffix}" != "$(grep "^dg-libadwaita" "${installed_versions}" | awk '{print $4}')" ) ]]; then
-  gtk4_changed="true"
+  gtk4_changed=true
 fi
 
 for p in "${dg_yaru_parts[@]}"; do
   if printf '%s\0' "${enabled_themes[@]}" | grep -Fxqz -- "${p}" && [[ -s "${installed_versions}" ]]; then
     if ! grep "^dg-yaru: " "${installed_versions}" | cut -f 3- -d ' ' | grep -q "${p}"; then
-      dg_yaru_changed="true"
+      dg_yaru_changed=true
     fi
   elif [[ -s "${installed_versions}" ]]; then
     if grep "^dg-yaru: " "${installed_versions}" | cut -f 3- -d ' ' | grep -q "${p}"; then
-      dg_yaru_changed="true"
+      dg_yaru_changed=true
     fi
   fi
 done
 
 # Is user updating?
-if [[ -s "${installed_versions}" && "${force}" != "true" && "${config_issue}" != "true" ]]; then
-  update="true"
+if [[ -s "${installed_versions}" && "${force}" != true && "${config_issue}" != true ]]; then
+  update=true
 fi
 
 # Update installed-versions.txt and create it if necessary
 if [[ ! -f "${installed_versions}" ]]; then
   echo "This file is used by the install script to find out what versions of the themes are installed" > "${installed_versions}"
 fi
-if grep -q "^color" "${installed_versions}"; then
-  sed -i "/^color/c\color: ${color}" "${installed_versions}"
-else
-  echo "color: ${color}" >> "${installed_versions}"
-fi
-if grep -q "^theme" "${installed_versions}"; then
-  sed -i "/^theme/c\theme: ${theme}" "${installed_versions}"
-else
-  echo "theme: ${theme}" >> "${installed_versions}"
-fi
-if grep -q "^enabled" "${installed_versions}"; then
-  sed -i "/^enabled/c\enabled: ${enabled_themes[*]}" "${installed_versions}"
-else
-  echo "enabled: ${enabled_themes[*]}" >> "${installed_versions}"
-fi
-if grep -q "^firefox" "${installed_versions}"; then
-  sed -i "/^firefox/c\firefox: ${firefox[*]}" "${installed_versions}"
-else
-  echo "firefox: ${firefox[*]}" >> "${installed_versions}"
-fi
-if grep -q "^gnome-shell" "${installed_versions}"; then
-  sed -i "/^gnome-shell/c\gnome-shell: ${gnome_version}" "${installed_versions}"
-else
-  echo "gnome-shell: ${gnome_version}" >> "${installed_versions}"
-fi
+
+add_config() {
+  if grep -q "^${1}" "${installed_versions}"; then
+    sed -i "s/^${1}.*/${1}: ${2}/g" "${installed_versions}"
+  else
+    echo "${1}: ${2}" >> "${installed_versions}"
+  fi
+}
+
+add_config "color" "${color}"
+add_config "theme" "${theme}"
+add_config "enabled" "${enabled_themes[*]}"
+add_config "firefox" "${firefox[*]}"
+add_config "gnome-shell" "${gnome_version}"
 
 install_dg_adw_gtk3() {
-  if printf '%s\0' "${previously_enabled_themes[@]}" | grep -Fxqz -- "gtk3" && [[ "${force}" != "true" ]]; then
+  if printf '%s\0' "${previously_enabled_themes[@]}" | grep -Fxqz -- "gtk3" && [[ "${force}" != true ]]; then
     echo -e "${green}Updating ${nc}${bold}dg-adw-gtk3${nc} theme in ${bold}${HOME}/.local/share${nc}"
   else
     echo -e "${green}Installing ${nc}${bold}dg-adw-gtk3${nc} theme in ${bold}${HOME}/.local/share${nc}"
@@ -495,7 +484,7 @@ install_dg_adw_gtk3() {
   git submodule update --init "src/dg-adw-gtk3"
   cd "${gtk3_src_dir}" || exit
   dg_adw_gtk3_version="$(git rev-parse HEAD)"
-  if [[ "$verbose" == "true" ]]; then
+  if [[ "$verbose" == true ]]; then
     if [[ ! -d "${gtk3_src_dir}/build" ]]; then
       meson "-Dprefix=${HOME}/.local" build
     fi
@@ -512,15 +501,11 @@ install_dg_adw_gtk3() {
     fi
   fi
   cd "${repo_dir}" || exit
-  if grep -q "^dg-adw-gtk3" "${installed_versions}"; then
-    sed -i "/^dg-adw-gtk3/c\dg-adw-gtk3: ${dg_adw_gtk3_version}" "${installed_versions}"
-  else
-    echo "dg-adw-gtk3: ${dg_adw_gtk3_version}" >> "${installed_versions}"
-  fi
+  add_config "dg-adw-gtk3" "${dg_adw_gtk3_version}"
 }
 
 install_dg_yaru() {
-  if printf '%s\0' "${previously_enabled_themes[@]}" | grep -Exqz -- "gnome-shell|icons|cursors|gtksourceview|sounds" && [[ "${force}" != "true" ]]; then
+  if printf '%s\0' "${previously_enabled_themes[@]}" | grep -Exqz -- "gnome-shell|icons|cursors|gtksourceview|sounds" && [[ "${force}" != true ]]; then
     echo -e "${green}Updating ${nc}${bold}dg-yaru${nc} theme in ${bold}/usr/share${nc}"
   else
     echo -e "${green}Installing ${nc}${bold}dg-yaru${nc} theme in ${bold}/usr/share${nc}"
@@ -528,13 +513,13 @@ install_dg_yaru() {
   git submodule update --init "src/dg-yaru"
   cd "${dg_yaru_src_dir}" || exit
   dg_yaru_version="$(git rev-parse HEAD)"
-  if [[ "$verbose" == "true" && ! -d "${dg_yaru_src_dir}/build" ]]; then
+  if [[ "$verbose" == true && ! -d "${dg_yaru_src_dir}/build" ]]; then
     meson build
-  elif [[ "$verbose" != "true" && ! -d "${dg_yaru_src_dir}/build" ]]; then
+  elif [[ "$verbose" != true && ! -d "${dg_yaru_src_dir}/build" ]]; then
     meson build > /dev/null
   fi
   for part in "${dg_yaru_parts[@]}"; do
-    if ! printf '%s\0' "${enabled_themes[@]}" | grep -Fxqz -- "${part}" && [[ -n "$(meson configure build | awk -v part="${part}" '$1=="part"' | awk '$2=="true"')" ]]; then
+    if ! printf '%s\0' "${enabled_themes[@]}" | grep -Fxqz -- "${part}" && [[ -n "$(meson configure build | awk -v part="${part}" '$1=="part"' | awk '$2==true')" ]]; then
       meson configure build "-D${part}=false"
     elif printf '%s\0' "${enabled_themes[@]}" | grep -Fxqz -- "${part}" && [[ -n "$(meson configure build | awk -v part="${part}" '$1=="part"' | awk '$2=="false"')" ]]; then
       meson configure build "-D${part}=true"
@@ -545,7 +530,7 @@ install_dg_yaru() {
   if [[ -n "${gnome_version}" && -z "$(meson configure build | awk '$1=="gnome-shell-version"' | awk -v ver="${gnome_version}" '$2=="ver"')" ]]; then
     meson configure build "-Dgnome-shell-version=${gnome_version}"
   fi
-  if [[ "$verbose" == "true" ]]; then
+  if [[ "$verbose" == true ]]; then
     sudo ninja -C build --verbose install
   else
     if sudo ninja -C build install | grep --color -E "ERROR|FAILED"; then
@@ -556,11 +541,7 @@ install_dg_yaru() {
     fi
   fi
   cd "${repo_dir}" || exit
-  if grep -q "^dg-yaru" "${installed_versions}"; then
-    sed -i "/^dg-yaru/c\dg-yaru: ${dg_yaru_version}" "${installed_versions}"
-  else
-    echo "dg-yaru: ${dg_yaru_version}" >> "${installed_versions}"
-  fi
+  add_config "dg-yaru" "${dg_yaru_version}"
   for enabled in "${enabled_themes[@]}"; do
     if printf '%s\0' "${dg_yaru_parts[@]}" | grep -Fxqz -- "${enabled}"; then
       sed -i "/^dg-yaru/s/$/ ${enabled}/" "${installed_versions}"
@@ -569,10 +550,10 @@ install_dg_yaru() {
 }
 
 install_dg_libadwaita() {
-  if printf '%s\0' "${previously_enabled_themes[@]}" | grep -Fxqz -- "gtk4" && [[ "${gtk4_changed}" != "true" && "${force}" != "true" ]]; then
+  if printf '%s\0' "${previously_enabled_themes[@]}" | grep -Fxqz -- "gtk4" && [[ "${force}" != true ]]; then
     echo -e "${green}Updating ${nc}${bold}dg-libadwaita${nc} theme in ${bold}${gtk4_dir}${nc}"
   else
-    echo -e "${green}Installing ${nc}${bold}${color}${suffix} dg-libadwaita${nc} theme in ${bold}${gtk4_dir}${nc}"
+    echo -e "${green}Installing ${nc}${bold}dg-libadwaita${nc} theme in ${bold}${gtk4_dir}${nc}"
   fi
   git submodule update --init "src/dg-libadwaita"
   cd "${gtk4_src_dir}" || exit
@@ -584,6 +565,8 @@ install_dg_libadwaita() {
   else
     echo "dg-libadwaita: ${dg_libadwaita_version} ${color} ${suffix}" >> "${installed_versions}"
   fi
+  add_config "dg-libadwaita" "${dg_libadwaita_version}"
+  sed -i "/^dg-libadwaita/s/$/ ${color} ${suffix}/" "${installed_versions}"
 }
 
 install_dg_firefox_theme() {
@@ -597,18 +580,15 @@ install_dg_firefox_theme() {
   elif [[ "${1}" == "standard" ]]; then
     firefox_dir="${HOME}/.mozilla/firefox"
   fi
-  if printf '%s\0' "${previously_enabled_firefox[@]}" | grep -Fxqz -- "${1}" && [[ "${firefox_changed}" != "true" && "${force}" != "true" ]]; then
-    update_firefox="true"
+  if printf '%s\0' "${previously_enabled_firefox[@]}" | grep -Fxqz -- "${1}" && [[ "${firefox_changed}" != true && "${force}" != true ]]; then
+    update_firefox=true
   fi
   firefoxfolder="${firefox_dir}"
   source install.sh
-  installed_firefox="true"
+  installed_firefox=true
   cd "${repo_dir}" || exit
-  if grep -q "^dg-firefox-theme-${1}" "${installed_versions}"; then
-    sed -i "/^dg-firefox-theme-${1}/c\dg-firefox-theme-${1}: ${dg_firefox_theme_version} ${color}" "${installed_versions}"
-  else
-    echo "dg-firefox-theme-${1}: ${dg_firefox_theme_version} ${color}" >> "${installed_versions}"
-  fi
+  add_config "dg-firefox-theme-${1}" "${dg_firefox_theme_version}"
+  sed -i "/^dg-firefox-theme-${1}/s/$/ ${color}/" "${installed_versions}"
 }
 
 install_snap() {
@@ -654,10 +634,10 @@ install_snap() {
 
 # Install dg-adw-gtk3 if it's enabled
 if printf '%s\0' "${enabled_themes[@]}" | grep -Fxqz -- "gtk3"; then
-  if [[ "${update}" == "true" ]]; then
+  if [[ "${update}" == true ]]; then
     if [[ "$(git submodule status "src/dg-adw-gtk3" | tr -d '+' | awk '{print $1}' )" != "$(grep "^dg-adw-gtk3" "${installed_versions}" | awk '{print $2}')" ]]; then
       install_dg_adw_gtk3
-      did_update="true"
+      did_update=true
     else
       echo -e "${bold}dg-adw-gtk3${nc} is up to date, not reinstalling"
     fi
@@ -672,10 +652,10 @@ fi
 
 # Install dg-yaru if it's enabled
 if printf '%s\0' "${enabled_themes[@]}" | grep -Exqz -- "gnome-shell|icons|cursors|sounds"; then
-  if [[ "${update}" == "true" ]]; then
-    if [[ "$(git submodule status "src/dg-yaru" | tr -d '+' | awk '{print $1}' )" != "$(grep "^dg-yaru" "${installed_versions}" | awk '{print $2}')" || "${dg_yaru_changed}" == "true" || "${gnome_shell_changed}" == "true" ]]; then
+  if [[ "${update}" == true ]]; then
+    if [[ "$(git submodule status "src/dg-yaru" | tr -d '+' | awk '{print $1}' )" != "$(grep "^dg-yaru" "${installed_versions}" | awk '{print $2}')" || "${dg_yaru_changed}" == true || "${gnome_shell_changed}" == true ]]; then
       install_dg_yaru
-      did_update="true"
+      did_update=true
     else
       echo -e "${bold}dg-yaru${nc} is up to date, not reinstalling"
     fi
@@ -685,32 +665,37 @@ if printf '%s\0' "${enabled_themes[@]}" | grep -Exqz -- "gnome-shell|icons|curso
 fi
 if ! printf '%s\0' "${enabled_themes[@]}" | grep -Fxqz -- "gnome-shell"; then
   if [[ "$(compgen -G /usr/share/themes/dg-yaru*)" || "$(compgen -G /usr/share/gnome-shell/theme/dg-yaru*)" ]]; then
-    echo -e "Use './uninstall.sh --gnome-shell' to remove ${bold}dg-yaru${nc} GNOME Shell theme, which was previously installed."
+    echo -e "Use './uninstall.sh --gnome-shell' to remove dg-yaru ${bold}GNOME Shell${nc} theme, which was previously installed."
   fi
 fi
 if ! printf '%s\0' "${enabled_themes[@]}" | grep -Fxqz -- "icons"; then
   if [[ -d "/usr/share/icons/dg-yaru/index.theme" || "$(compgen -G /usr/share/icons/dg-yaru-*)" ]]; then
-    echo -e "Use './uninstall.sh --icons' to remove ${bold}dg-yaru${nc} icon theme, which was previously installed."
+    echo -e "Use './uninstall.sh --icons' to remove dg-yaru ${bold}icon${nc} theme, which was previously installed."
   fi
 fi
 if ! printf '%s\0' "${enabled_themes[@]}" | grep -Fxqz -- "cursors"; then
   if [[ -d "/usr/share/icons/dg-yaru/cursor.theme" || -d "/usr/share/icons/dg-yaru/cursors" ]]; then
-    echo -e "Use './uninstall.sh --cursors' to remove ${bold}dg-yaru${nc} cursor theme, which was previously installed."
+    echo -e "Use './uninstall.sh --cursors' to remove dg-yaru ${bold}cursor${nc} theme, which was previously installed."
   fi
 fi
 if ! printf '%s\0' "${enabled_themes[@]}" | grep -Fxqz -- "sounds"; then
   if [[ -d "/usr/share/sounds/dg-yaru" ]]; then
-    echo -e "Use './uninstall.sh --sounds' to remove ${bold}dg-yaru${nc} sound theme, which was previously installed."
+    echo -e "Use './uninstall.sh --sounds' to remove dg-yaru ${bold}sound${nc} theme, which was previously installed."
+  fi
+fi
+if ! printf '%s\0' "${enabled_themes[@]}" | grep -Fxqz -- "gtksourceview"; then
+  if [[ "$(compgen -G /usr/share/gtksourceview-5/styles/dg-yaru*)" || "$(compgen -G /usr/share/gtksourceview-4/styles/dg-yaru*)" ||"$(compgen -G /usr/share/gtksourceview-3.0/styles/dg-yaru*)" || "$(compgen -G /usr/share/gtksourceview-2.0/styles/dg-yaru*)" ]]; then
+    echo -e "Use './uninstall.sh --gtksourceview' to remove dg-yaru ${bold}GtkSourceView${nc} theme, which was previously installed."
   fi
 fi
 
 # Install dg-libadwaita if it's enabled
 if printf '%s\0' "${enabled_themes[@]}" | grep -Fxqz -- "gtk4"; then
-  if [[ "${update}" == "true" ]]; then
+  if [[ "${update}" == true ]]; then
     if [[ ( "$(git submodule status "src/dg-libadwaita" | tr -d '+' | awk '{print $1}' )" != "$(grep "^dg-libadwaita" "${installed_versions}" | awk '{print $2}')" ) ||
-      "${gtk4_changed}" == "true" ]]; then
+      "${gtk4_changed}" == true ]]; then
       install_dg_libadwaita
-      did_update="true"
+      did_update=true
     else
       echo -e "${bold}dg-libadwaita${nc} is up to date, not reinstalling"
     fi
@@ -725,14 +710,14 @@ fi
 
 # Install dg-firefox-theme if it's enabled
 for f in "${firefox[@]}"; do
-  if [[ "${update}" == "true" ]]; then
+  if [[ "${update}" == true ]]; then
     if [[ ( "$(git submodule status "src/dg-firefox-theme" | tr -d '+' | awk '{print $1}' )" != "$(grep "^dg-firefox-theme-${f}" "${installed_versions}" | awk '{print $2}')" ) ]]; then
       install_dg_firefox_theme "${f}"
-    elif [[ "${f}" == "standard" && "${firefox_standard_changed}" == "true" ]]; then
+    elif [[ "${f}" == "standard" && "${firefox_standard_changed}" == true ]]; then
       install_dg_firefox_theme "${f}"
-    elif [[ "${f}" == "snap" && "${firefox_snap_changed}" == "true" ]]; then
+    elif [[ "${f}" == "snap" && "${firefox_snap_changed}" == true ]]; then
       install_dg_firefox_theme "${f}"
-    elif [[ "${f}" == "flatpak" && "${firefox_flatpak_changed}" == "true" ]]; then
+    elif [[ "${f}" == "flatpak" && "${firefox_flatpak_changed}" == true ]]; then
       install_dg_firefox_theme "${f}"
     elif ! printf '%s\0' "${previously_enabled_firefox[@]}" | grep -Fxqz -- "${f}"; then
       install_dg_firefox_theme "${f}"
@@ -741,10 +726,10 @@ for f in "${firefox[@]}"; do
     install_dg_firefox_theme "${f}"
   fi
 done
-if [[ -n "${firefox[*]}" && "${installed_firefox}" != "true" ]]; then
+if [[ -n "${firefox[*]}" && "${installed_firefox}" != true ]]; then
   echo -e "${bold}dg-firefox-theme${nc} is up to date, not reinstalling"
 elif [[ -n "${firefox[*]}" ]]; then
-  did_update="true"
+  did_update=true
 fi
 if ! printf '%s\0' "${firefox[@]}" | grep -Fxqz -- "standard" && [[ "$(compgen -G "${HOME}"/.mozilla/firefox/*/chrome/dg-firefox-theme)" ]]; then
   echo -e "Use './uninstall.sh -f standard' to remove the standard variant of ${bold}dg-firefox-theme${nc}, which was previously installed."
@@ -829,6 +814,6 @@ else
   echo -e "${bold}'gsettings'${byellow} not found, not enabling themes.${nc}"
 fi
 
-if [[ ( "${did_update}" == "true" && "${update}" == "true" ) || "${update}" != "true" ]]; then
+if [[ ( "${did_update}" == true && "${update}" == true ) || "${update}" != true ]]; then
   echo -e "${byellow}Log out and log back in for everything to be updated${nc}"
 fi

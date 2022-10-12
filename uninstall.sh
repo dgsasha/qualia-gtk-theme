@@ -30,6 +30,8 @@ OPTIONS:
         Uninstall dg-yaru cursor theme.
   -s, --sounds
         Uninstall dg-yaru sound theme.
+  -v, --gtksourceview
+        Uninstall dg-yaru GtkSourceView theme.
       --gtk3
         Uninstall dg-adw-gtk3.
       --gtk4"
@@ -125,7 +127,7 @@ uninstall_shell() {
   if [[ "$(compgen -G /usr/share/themes/dg-yaru*)" || "$(compgen -G /usr/share/gnome-shell/theme/dg-yaru*)" || 
   ( -s "${installed_versions}" && ( "$(grep "^dg-yaru" "${installed_versions}" | grep "gnome-shell")" ||
   "$(grep "^enabled" "${installed_versions}" | grep "gnome-shell")" ) ) ]]; then
-    echo -e "${red}Removing ${nc}${bold}dg-yaru${nc} GNOME Shell theme."
+    echo -e "${red}Removing ${nc}${bold}dg-yaru ${bold}GNOME Shell${nc} theme."
     sudo rm -rf /usr/share/themes/dg-yaru* /usr/share/gnome-shell/theme/dg-yaru*
     if [[ -s "${installed_versions}" ]]; then
       sed -i '/^enabled/s/ gnome-shell//' "${installed_versions}"
@@ -138,7 +140,7 @@ uninstall_icons() {
   if [[ -f "/usr/share/icons/dg-yaru/index.theme" || "$(compgen -G /usr/share/icons/dg-yaru-*)" ||
   ( -s "${installed_versions}" && ( "$(grep "^dg-yaru" "${installed_versions}" | grep "icons")" ||
   "$(grep "^enabled" "${installed_versions}" | grep "icons")" ) ) ]]; then
-    echo -e "${red}Removing ${nc}${bold}dg-yaru${nc} icon theme."
+    echo -e "${red}Removing ${nc}${bold}dg-yaru ${bold}icon${nc} theme."
     for f in /usr/share/icons/dg-yaru/*; do
       case $f in
         *cursor.theme|*cursors)
@@ -166,7 +168,7 @@ uninstall_cursors() {
   if [[ ( -f "/usr/share/icons/dg-yaru/cursor.theme" || -d "/usr/share/icons/dg-yaru/cursors" ) ||
   ( -s "${installed_versions}" && ( "$(grep "^dg-yaru" "${installed_versions}" | grep "cursors")" ||
   "$(grep "^enabled" "${installed_versions}" | grep "cursors")" ) ) ]]; then
-    echo -e "${red}Removing ${nc}${bold}dg-yaru${nc} cursor theme."
+    echo -e "${red}Removing ${nc}${bold}dg-yaru ${bold}cursor${nc} theme."
     sudo rm -rf /usr/share/icons/dg-yaru/cursor.theme /usr/share/icons/dg-yaru/cursors
     if [[ -s "${installed_versions}" ]]; then
       sed -i '/^enabled/s/ cursors//' "${installed_versions}"
@@ -179,7 +181,7 @@ uninstall_sounds() {
   if [[ ( -d "/usr/share/sounds/dg-yaru" ) || ( -s "${installed_versions}" &&
   ( "$(grep "^dg-yaru" "${installed_versions}" | grep "sounds")" ||
   "$(grep "^enabled" "${installed_versions}" | grep "sounds")" ) ) ]]; then
-    echo -e "${red}Removing ${nc}${bold}dg-yaru${nc} sound theme."
+    echo -e "${red}Removing ${nc}dg-yaru ${bold}sound${nc} theme."
     sudo rm -rf /usr/share/sounds/dg-yaru
     if [[ -s "${installed_versions}" ]]; then
       sed -i '/^enabled/s/ sounds//' "${installed_versions}"
@@ -189,6 +191,23 @@ uninstall_sounds() {
       for i in $(snap connections | grep dg-adw-gtk3-theme:sound-themes | awk '{print $2}' | cut -f1 -d: | sort -u); do
         sudo snap disconnect "${i}:sound-themes" "dg-adw-gtk3-theme:sound-themes"
       done
+    fi
+  fi
+}
+
+uninstall_gtksourceview() {
+  if [[ "$(compgen -G /usr/share/gtksourceview-5/styles/dg-yaru*)" ||
+  "$(compgen -G /usr/share/gtksourceview-4/styles/dg-yaru*)" ||
+  "$(compgen -G /usr/share/gtksourceview-3.0/styles/dg-yaru*)" ||
+  "$(compgen -G /usr/share/gtksourceview-2.0/styles/dg-yaru*)" ||
+  ( -s "${installed_versions}" &&
+  ( "$(grep "^dg-yaru" "${installed_versions}" | grep "gtksourceview")" ||
+  "$(grep "^enabled" "${installed_versions}" | grep "gtksourceview")" ) ) ]]; then
+    echo -e "${red}Removing ${nc}dg-yaru ${bold}GtkSourceView${nc} theme."
+    sudo rm -rf /usr/share/gtksourceview-2.0/styles/dg-yaru* /usr/share/gtksourceview-3.0/styles/dg-yaru* /usr/share/gtksourceview-4/styles/dg-yaru* /usr/share/gtksourceview-5/styles/dg-yaru*
+    if [[ -s "${installed_versions}" ]]; then
+      sed -i '/^enabled/s/ gtksourceview//' "${installed_versions}"
+      sed -i '/^dg-yaru/s/ gtksourceview//' "${installed_versions}"
     fi
   fi
 }
@@ -244,6 +263,10 @@ while [[ $# -gt 0 ]]; do
       uninstall_sounds
       shift
       ;;
+    -v|--gtksourceview)
+      uninstall_gtksourceview
+      shift
+      ;;
     --gtk3)
       uninstall_gtk3
       shift
@@ -280,10 +303,10 @@ fi
 # If no parts of dg-yaru are installed, remove it from installed-versions.txt
 for p in "${dg_yaru_parts[@]}"; do
   if [[ -s "${installed_versions}" ]] && grep "^dg-yaru:" "${installed_versions}" | grep -q "${p}"; then
-    dg_yaru_installed="true"
+    dg_yaru_installed=true
   fi
 done
 
-if [[ -s "${installed_versions}" && "${dg_yaru_installed}" != "true" ]]; then
+if [[ -s "${installed_versions}" && "${dg_yaru_installed}" != true ]]; then
   sed -i '/^dg-yaru/d' "${installed_versions}"
 fi
