@@ -741,9 +741,11 @@ if ! printf '%s\0' "${firefox[@]}" | grep -Fxqz -- "flatpak" && [[ "$(compgen -G
   echo -e "Use './uninstall.sh -f flatpak' to remove the Flatpak variant of ${bold}dg-firefox-theme${nc}, which was previously installed."
 fi
 
-# Install dg-adw-gtk3-theme snap if it's enabled
-if printf '%s\0' "${enabled_themes[@]}" | grep -Fxqz -- "snap" && [[ "$(command -v snap)" ]]; then
+# Install dg-adw-gtk3-theme snap if it's enabled and there is an internet connection
+if printf '%s\0' "${enabled_themes[@]}" | grep -Fxqz -- "snap" && [[ "$(command -v snap)" ]] && echo -e "GET http://google.com HTTP/1.0\n\n" | nc google.com 80 > /dev/null 2>&1 ; then
   install_snap
+elif ! snap list | grep -q "dg-adw-gtk3-theme" && ! echo -e "GET http://google.com HTTP/1.0\n\n" | nc google.com 80 > /dev/null 2>&1 ; then
+  echo -e "You are offline, not installing ${bold}dg-adw-gtk3-theme${nc} Snap."
 elif printf '%s\0' "${enabled_themes[@]}" | grep -Fxqz -- "snap" && [[ ! "$(command -v snap)" ]]; then
   echo -e "${byellow}WARNING:${nc} ${bold}'snap'${nc} is not installed, not installing ${bold}dg-adw-gtk3-theme${nc} snap"
 elif ! printf '%s\0' "${enabled_themes[@]}" | grep -Fxqz -- "snap" && snap list | grep -q "dg-adw-gtk3-theme"; then
