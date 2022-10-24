@@ -302,11 +302,7 @@ fi
 
 # If no parts of dg-yaru are installed, remove it from installed-versions.txt
 for p in "${dg_yaru_parts[@]}"; do
-  if [[ -s "${installed_versions}" ]] && grep "^dg-yaru:" "${installed_versions}" | grep -q "${p}"; then
-    dg_yaru_installed=true
+  if [[ -s "${installed_versions}" ]] && ! grep "^dg-yaru:" "${installed_versions}" | grep -q "${p}"; then
+    sed -i '/^dg-yaru/d' "${installed_versions}"
   fi
 done
-
-if [[ -s "${installed_versions}" && "${dg_yaru_installed}" != true ]]; then
-  sed -i '/^dg-yaru/d' "${installed_versions}"
-fi
