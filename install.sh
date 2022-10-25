@@ -138,7 +138,7 @@ fi
 
 config_num() {
   local num
-  while ! [[ "${num}" -ge 1 && "${num}" -le 3 ]]; do
+  while ! [[ "${num}" -ge 1 && "${num}" -le ${2} ]]; do
     echo -en "${bold}Enter the number corresponding to the ${1} you want [Default: 1]: ${nc}"
     read -r num
     if [[ -z "${num}" ]]; then
@@ -186,7 +186,7 @@ configure() {
   echo "  4.  Olive		10. Magenta"
   echo "  5.  Viridian		11. Pink"
   echo "  6.  Prussian Green	12. Red"
-  config_num "accent color"
+  config_num "accent color" 12
   color="${color_variants["${array_num}"]}"
 
   echo -e "${blgreen}Which theme variant do you want to use?${nc}"
@@ -194,7 +194,7 @@ configure() {
   echo "  2.  Light"
   echo "  3.  Dark"
   while true; do
-    config_num "theme variant"
+    config_num "theme variant" 3
     theme="${theme_variants["${array_num}"]}"
     theme_variants
     if [[ "${failed}" != true ]]; then # let user pick another option if system theme cant be detected
