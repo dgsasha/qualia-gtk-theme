@@ -249,7 +249,8 @@ if [[ -s "${installed_versions}" && "${reconfigure}" != true ]]; then
   for line in "${config_array[@]}"; do
     declare -a "${line}"
     read -r -a previous_array <<< "$(grep "^${line}: " "${installed_versions}" | cut -f 2- -d ' ')"
-    for i in $(seq 0 $((${#previous_array[@]} - 1))); do
+    end=$((${#previous_array[@]} - 1))
+    for ((i=0;i<=end;i++)); do
       if echo "${variants[${line}]}" | grep -q "${previous_array[${i}]}" ; then
         declare "${line}[${i}]"="${previous_array[${i}]}"
       else
@@ -401,9 +402,9 @@ install_dg_yaru() {
   fi
   cd "${repo_dir}" || exit
   add_config "dg-yaru" "${dg_yaru_version}"
-  for enabled in "${enabled[@]}"; do
-    if printf '%s\0' "${dg_yaru_parts[@]}" | grep -Fxqz -- "${enabled}"; then
-      sed -i "/^dg-yaru/s/$/ ${enabled}/" "${installed_versions}"
+  for i in "${enabled[@]}"; do
+    if printf '%s\0' "${dg_yaru_parts[@]}" | grep -Fxqz -- "${i}"; then
+      sed -i "/^dg-yaru/s/$/ ${i}/" "${installed_versions}"
     fi
   done
 }
@@ -581,16 +582,19 @@ if ! printf '%s\0' "${firefox[@]}" | grep -Fxqz -- "flatpak" && [[ "$(compgen -G
 fi
 
 # Install dg-adw-gtk3-theme snap if it's enabled and there is an internet connection
-if printf '%s\0' "${enabled[@]}" | grep -Fxqz -- "snap" && [[ "$(command -v snap)" ]] && echo -e "GET http://google.com HTTP/1.0\n\n" | nc google.com 80 > /dev/null 2>&1 ; then
-  install_snap
-elif ! snap list | grep -q "dg-adw-gtk3-theme" && ! echo -e "GET http://google.com HTTP/1.0\n\n" | nc google.com 80 > /dev/null 2>&1 ; then
-  echo -e "You are offline, not installing ${bold}dg-adw-gtk3-theme${nc} Snap."
-elif printf '%s\0' "${enabled[@]}" | grep -Fxqz -- "snap" && [[ ! "$(command -v snap)" ]]; then
-  echo -e "${byellow}WARNING:${nc} ${bold}'snap'${nc} is not installed, not installing ${bold}dg-adw-gtk3-theme${nc} snap"
-elif ! printf '%s\0' "${enabled[@]}" | grep -Fxqz -- "snap" && snap list | grep -q "dg-adw-gtk3-theme"; then
-  echo -e "Use './uninstall.sh --snap' to remove ${bold}dg-adw-gtk3-theme${nc} snap, which was previously installed."
+if printf '%s\0' "${enabled[@]}" | grep -Fxqz -- "snap"; then
+  if [[ "$(command -v snap)" ]] && echo -e "GET http://google.com HTTP/1.0\n\n" | nc google.com 80 > /dev/null 2>&1 ; then
+    install_snap
+  elif ! snap list | grep -q "dg-adw-gtk3-theme" && ! echo -e "GET http://google.com HTTP/1.0\n\n" | nc google.com 80 > /dev/null 2>&1 ; then
+    echo -e "You are offline, not installing ${bold}dg-adw-gtk3-theme${nc} Snap."
+  elif [[ ! "$(command -v snap)" ]]; then
+    echo -e "${byellow}WARNING:${nc} ${bold}'snap'${nc} is not installed, not installing ${bold}dg-adw-gtk3-theme${nc} snap"
+  fi
+else
+  if snap list | grep -q "dg-adw-gtk3-theme"; then
+    echo -e "Use './uninstall.sh --snap' to remove ${bold}dg-adw-gtk3-theme${nc} snap, which was previously installed."
+  fi
 fi
-
 ##################
 #  Enable Theme  #
 ##################
@@ -624,15 +628,15 @@ enable_sounds() {
 }
 
 enable_gnome_shell() {
-if [[ "$(command -v gnome-extensions)" ]] && gnome-extensions list | grep -q user-theme@gnome-shell-extensions.gcampax.github.com; then
-  gnome-extensions enable user-theme@gnome-shell-extensions.gcampax.github.com
-  if [[ "$(gsettings get org.gnome.shell.extensions.user-theme name)" != "'${dg_yaru}'" ]]; then
-    echo -e "Changing GNOME Shell theme to ${bold}${dg_yaru}${nc}."
-    gsettings set org.gnome.shell.extensions.user-theme name "${dg_yaru}"
+  if [[ "$(command -v gnome-extensions)" ]] && gnome-extensions list | grep -q user-theme@gnome-shell-extensions.gcampax.github.com; then
+    gnome-extensions enable user-theme@gnome-shell-extensions.gcampax.github.com
+    if [[ "$(gsettings get org.gnome.shell.extensions.user-theme name)" != "'${dg_yaru}'" ]]; then
+      echo -e "Changing GNOME Shell theme to ${bold}${dg_yaru}${nc}."
+      gsettings set org.gnome.shell.extensions.user-theme name "${dg_yaru}"
+    fi
+  else
+    echo -e "${bold}'User Themes'${byellow} GNOME Shell Extension not found, not enabling GNOME Shell theme.${nc}"
   fi
-else
-  echo -e "${bold}'User Themes'${byellow} GNOME Shell Extension not found, not enabling GNOME Shell theme.${nc}"
-fi
 }
 
 # dg-yaru naming
