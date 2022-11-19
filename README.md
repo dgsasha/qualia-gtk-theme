@@ -1,15 +1,19 @@
 <div align="center">
 
-# dg GNOME Theme
-**A Yaru inspired theme designed to provide a consistent experience on GNOME 42+**
+# qualia GTK theme
+**A Yaru and Libadwaita inspired theme designed to provide a consistent experience on GTK desktops.**
 
-*Other desktops should work, see [this section](#other-desktop-environments) for more information.*
+**Supports GNOME 42+, Budgie 10.6+, Cinnamon, Unity7, Xfce, and Mate.**
+
+**[Other Desktop Environments](.github/OTHER.md#other-desktop-environments)**
 
 ![Screenshot of the dark theme](.github/images/dark.png)
 
 ![Screenshot of the light theme](.github/images/light.png)
 
-**This repo contains a GTK3 theme, a configuration for Libadwaita, a Firefox theme, and a GNOME Shell theme. The Yaru icon, cursor, sound, and GtkSourceView themes are also included.**
+Screenshots of other Desktop environments can be found [here](.github/SCREENSHOTS.md).
+
+**This repo contains a GTK3 theme, a configuration for Libadwaita, a Firefox theme, and themes for the desktops listed above. The Yaru icon, cursor, sound, and GtkSourceView themes are also included.**
 
 # How to Install
 
@@ -17,20 +21,28 @@
 
 ## Installing Dependencies
 
-- Arch based distros: `sudo pacman -S sassc git gnome-shell-extensions ninja meson`
+A modern version of Python is required. Any of the currently supported Python 3 versions should work.
 
-- Debian/Ubuntu based distros: `sudo apt install sassc git gnome-shell-extensions ninja-build meson`
+You will also need a Meson version greater than 0.59. This may be an issue for older Debian and Ubuntu releases.
 
-- Fedora: `sudo dnf install sassc git gnome-shell-extension-user-theme ninja-build meson`
+- Arch based distros: `sudo pacman -S sassc git ninja meson rsync gnome-shell-extensions`
 
-- openSUSE: `sudo zypper install sassc git gnome-shell-extension-user-theme ninja meson`
+- Debian/Ubuntu based distros: `sudo apt install sassc git ninja-build meson gnome-shell-extensions`
 
-**If `gnome-shell-extensions` / `gnome-shell-extension-user-theme` wasn't already installed, log out and log back in before you proceed. If you aren't using GNOME or aren't going to install the GNOME Shell theme, you can skip installing it.**
+- Fedora: `sudo dnf install sassc git ninja-build meson gnome-shell-extension-user-theme`
+
+- openSUSE: `sudo zypper install sassc git ninja meson gnome-shell-extension-user-theme`
+
+- Solus: `sudo eopkg install sassc git ninja meson rsync gnome-shell-extensions`
+
+**If `gnome-shell-extensions` / `gnome-shell-extension-user-theme` wasn't already installed, log out and log back in before you proceed.**
+
+**If you aren't using GNOME or aren't going to install the GNOME Shell theme, you can (and should) skip installing it.**
 
 ## Downloading and Installing
 Download the repository and run the install script to configure and install the theme.
 
-When configuring the theme you get to choose an [accent color](#available-accent-colors), choose between the [light and dark variants](#light-and-dark-variants), and choose which themes you want to install.
+When configuring the theme you get to choose an [accent color](#available-accent-colors), choose between the light and dark variants, and choose which themes you want to install.
 ```
 git clone https://github.com/dgsasha/dg-gnome-theme -b main && cd dg-gnome-theme
 ```
@@ -38,100 +50,70 @@ git clone https://github.com/dgsasha/dg-gnome-theme -b main && cd dg-gnome-theme
 ./install.sh
 ```
 ```
-Usage: ./install.sh [OPTION]...
+usage: install.py [-h] [-c] [-r] [-t] [-a] [-v]
 
-OPTIONS:
-  -r, --reconfigure   Reconfigure the theme.
-  -f, --force         Force reinstall the theme.
-  -c, --clean         Clean build directories and exit.
-  -v, --verbose       Show full meson output.
-  -h, --help          Show this screen.
+This script is used to install, update, and reconfigure the theme
 
-This script allows you to configure, install, and update the theme.
+options:
+  -h, --help         show this help message and exit
+  -c, --clean        clean build directories and exit
+  -r, --reconfigure  reconfigure the theme
+  -t, --theme        change theme variant
+  -a, --accent       change accent color
+  -v, --verbose      display entire output
 ```
 
 #### Available Accent Colors:
 ![Accent Colors](.github/images/accents-dark.svg#gh-dark-mode-only)
 ![Accent Colors](.github/images/accents-light.svg#gh-light-mode-only)
 
-### Light and Dark Variants
-The themes won't automatically update if you change the light/dark theme preference in GNOME. It is recommended to set the theme to `auto` during configuration, so when you change the light/dark theme preference in GNOME you can just run `./install.sh` afterwards to update the themes using the new preference.
-
 ## Updating
-The install script will handle updating the themes.
+Pull in changes from the git repo and run the install script again.
 ```
 git pull
 ```
 ```
-./install.sh
+./install.py
 ```
 
-Your previous configuration will be used again unless you use the `--reconfigure` option.
-
-Only the themes that have changes will be updated, if you want to reinstall all of the themes, use the `--force` option.
+Your previous configuration will be used again unless you use the `--reconfigure` option. You can also use `--accent` or `--theme` to just change the accent color or the theme variant.
 
 ## Uninstalling
-Before uninstalling, use GNOME Tweaks to change the themes to something else to avoid any issues. 
+Before uninstalling, change the themes to something else to avoid any issues. 
 
 After doing that, run the uninstall script:
 ```
 ./uninstall.sh
 ```
 ```
-Usage: ./uninstall.sh [OPTION]...
+Usage:
+  ./uninstall.py <theme> ...
+  ./uninstall.py <option> 
 
-OPTIONS:
-  -f, --firefox [standard|flatpak|snap]
-        Uninstall dg-firefox-theme.
-        Using no arguments will remove all variants.
-  -g, --gnome-shell
-        Uninstall dg-yaru GNOME Shell theme.
-  -i, --icons
-        Uninstall dg-yaru icon theme.
-  -c, --cursors
-        Uninstall dg-yaru cursor theme.
-  -s, --sounds
-        Uninstall dg-yaru sound theme.
-  -v, --gtksourceview
-        Uninstall dg-yaru GtkSourceView theme.
-      --gtk3
-        Uninstall dg-adw-gtk3.
-      --gtk4
-        Uninstall dg-libadwaita.
-      --snap
-        Uninstall dg-adw-gtk3-theme Snap.
-  -h, --help
-        Show this screen.
+Themes:
+  gtk3            gtk4              libadwaita
+  gnome-shell     cinnamon-shell    metacity
+  marco           ubuntu-unity      xfwm4
+  firefox         firefox-standard  firefox-snap
+  firefox-flatpak icons             cursors
+  sounds          gtksourceview     snap
 
-Run './uninstall.sh' with any number of the above options to choose which parts of the theme to uninstall."
-Or run './uninstall.sh' with no arguments to uninstall the entire theme."
+Options:
+  -o, --old       Removes the old version of the theme (dg-gnome-theme).
+  -h, --help      Show this screen.
+
+Run './uninstall.py' followed by any number of the above themes to choose what to uninstall.
+Or run './uninstall.py' with no arguments to uninstall the entire theme.
+
+Run './uninstall.py firefox' to remove the theme from all firefox variants.
+Also, 'metacity' and 'marco' do the same thing, as well as 'gtk4' and 'libadwaita'.
 ```
 
-## Flatpak Apps
-Run this command once to let all Flatpak apps access the themes:
-```
-flatpak override --user --filesystem=xdg-config/gtk-4.0 --filesystem=xdg-data/themes
-```
+## [Flatpak Apps](.github/OTHER.md#flatpak-apps)
 
-## Snap Apps
-If Snap is installed you can enable Snap support when configuring the theme.
+## [Snap Apps](.github/OTHER.md#snap-apps)
 
-If you really want Snaps to access the GTK4/Libadwaita configuration, you will have to run this command for each Snap, replacing `SNAP-NAME` with the name of the Snap:
-```
-sudo mount --bind --mkdir ~/.config/gtk-4.0 ~/snap/SNAP-NAME/current/.config/gtk-4.0
-```
-For this to persist after reboot, you need to add the following line to /etc/fstab for each Snap. Replace `USERNAME` and `SNAP-NAME` with the correct information.
-```
-/home/USERNAME/.config/gtk-4.0  /home/USERNAME/snap/SNAP-NAME/current/.config/gtk-4.0  none  bind  0  0
-```
-
-## GDM Theme
-I recommend using [Login Manager Settings](https://github.com/realmazharhussain/gdm-settings) to change the GDM theme to dg-yaru.
-
-If you change the GDM theme and later choose to uninstall the theme, reset the GDM theme to default first or you might encounter issues.
-
-## Other Desktop Environments
-GNOME versions before 42 and other DEs should work as well, the GNOME Shell theme just won't be installed. If your desktop doesn't use gsettings, the install script will also skip enabling most of the themes.
+## [GDM Theme](.github/OTHER.md#gdm-theme)
 
 ## Copying
 The scripts in this repository are licensed under the GPL v3.0, but the themes each have their own licensing (you can access each repository through GitHub under the src directory).
