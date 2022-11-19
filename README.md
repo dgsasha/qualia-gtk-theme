@@ -13,43 +13,45 @@
 
 Screenshots of desktop environments other than GNOME can be found [here](.github/SCREENSHOTS.md).
 
-**This repo contains a GTK3 theme, a configuration for Libadwaita, a Firefox theme, and themes for the desktops listed above. The Yaru icon, cursor, sound, and GtkSourceView themes are also included.**
+**This repo contains a GTK3 theme, a configuration for Libadwaita, a Firefox theme, and themes for the desktops listed above.**
+  
+**The Yaru icon, cursor, sound, and GtkSourceView themes are also included.**
 
 # How to Install
 
 ## Installing Dependencies
 
-A modern version of Python is required. Any of the currently supported Python 3 versions should work.
+A modern version of Python is required. Any currently supported version should work.
 
-You will also need a Meson version greater than 0.59. This may be an issue for older Debian and Ubuntu releases.
+You will also need a Meson version greater than 0.59.
 
 <hr>
 
-**Arch based distros:**
+### Arch based distros
 
 ```
 sudo pacman -S sassc git ninja meson rsync gnome-shell-extensions
 ```
 
-**Debian/Ubuntu based distros:**
+### Debian/Ubuntu based distros
 
 ```
 sudo apt install sassc git ninja-build meson gnome-shell-extensions
 ```
 
-**Fedora:**
+### Fedora
 
 ```
 sudo dnf install sassc git ninja-build meson gnome-shell-extension-user-theme
 ```
 
-**openSUSE:**
+### openSUSE
 
 ```
 sudo zypper install sassc git ninja meson gnome-shell-extension-user-theme
 ```
 
-**Solus:**
+### Solus
 
 ```
 sudo eopkg install sassc git ninja meson rsync gnome-shell-extensions
@@ -154,8 +156,8 @@ Also, 'metacity' and 'marco' do the same thing, as well as 'gtk4' and 'libadwait
 
 ## Other things you should read
 
-### [Flatpak Apps](.github/OTHER.md#flatpak-apps) &nbsp; [Snap Apps](.github/OTHER.md#snap-apps) &nbsp; [GDM Theme](.github/OTHER.md#gdm-theme) &nbsp; [Copying](.github/OTHER.md#copying) &nbsp; [Issues](.github/OTHER.md#issues) &nbsp; [Contributing](.github/CONTRIBUTING.md)
+#### [Flatpak Apps](.github/OTHER.md#flatpak-apps) &nbsp; [Snap Apps](.github/OTHER.md#snap-apps) &nbsp; [GDM Theme](.github/OTHER.md#gdm-theme) &nbsp; [Copying](.github/OTHER.md#copying) &nbsp; [Issues](.github/OTHER.md#issues) &nbsp; [Contributing](.github/CONTRIBUTING.md)
 
 ## Credits :)
 ### A huge thanks to:
-### [Ubuntu](https://ubuntu.com/) for [Yaru](https://github.com/ubuntu/yaru), [vinceliuice](https://github.com/vinceliuice) for [WhiteSur-gtk-theme](https://github.com/vinceliuice/WhiteSur-gtk-theme), [rafaelmardojai](https://github.com/rafaelmardojai) for [firefox-gnome-theme](https://github.com/rafaelmardojai/firefox-gnome-theme), and [lassekongo83](https://github.com/lassekongo83) for [adw-gtk3](https://github.com/lassekongo83/adw-gtk3).
+#### [Ubuntu](https://ubuntu.com/) for [Yaru](https://github.com/ubuntu/yaru), [vinceliuice](https://github.com/vinceliuice) for [WhiteSur-gtk-theme](https://github.com/vinceliuice/WhiteSur-gtk-theme), [rafaelmardojai](https://github.com/rafaelmardojai) for [firefox-gnome-theme](https://github.com/rafaelmardojai/firefox-gnome-theme), and [lassekongo83](https://github.com/lassekongo83) for [adw-gtk3](https://github.com/lassekongo83/adw-gtk3).
