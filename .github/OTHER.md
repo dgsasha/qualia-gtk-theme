@@ -1,3 +1,10 @@
+<div align="center">
+
+## Other Desktop Environments
+Other GTK or GNOME based desktops (like Pantheon) may work with this theme. The install script will not be able to enable the themes though. Full support for Pantheon will be added when Elementary OS 7 releases. Open an issue to request support for other desktops.
+
+Qt based desktops are unsupported by this theme and will likely remain that way.
+
 ## Flatpak Apps
 Run this command once to let all Flatpak apps access the themes:
 ```
@@ -21,7 +28,10 @@ If you are using GNOME, I recommend using [Login Manager Settings](https://githu
 
 If you change the GDM theme and later choose to uninstall the theme, reset the GDM theme to default first or you might encounter issues.
 
-## Other Desktop Environments
-Other GTK or GNOME based desktops (like Pantheon) may work with this theme. The install script will not be able to enable the themes though. Full support for Pantheon will be added when Elementary OS 7 releases. Open an issue to request support for other desktops.
+## Copying
+The scripts in this repository are licensed under the GPL v3.0, but the themes each have their own licensing (you can access each repository through GitHub under the src directory).
 
-Qt based desktops are unsupported by this theme and will likely remain that way.
+## Issues
+If you have any issues, open one here and try to be specific and provide as much information as possible. Please try to make sure it is only an issue with one of my themes and not with the upstream project it is based on. If the issue also exists upstream, open it there instead.
+
+</div>

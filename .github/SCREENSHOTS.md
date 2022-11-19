@@ -2,7 +2,8 @@
 
 # More Screenshots :)
 
-Support for some of these desktops is still a work in progress. Everything should work but there may be inconsistencies or bugs. This will be a lot of work for me so please feel free to open issues or pull requests, it will be greatly appreciated.
+Support for some of these desktops is still a work in progress. Everything should work but there may be inconsistencies or bugs. 
+See [contributing](contributing.md) if you want to help.
 
 ## Cinnamon
 

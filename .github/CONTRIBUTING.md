@@ -2,7 +2,7 @@
 
 # Contributing
 
-</div
+</div>
 
 If you notice any bugs or issues with the theme or any of the scripts, please open an issue. If you want to fix it yourself, open a pull request. If you notice any design inconsistencies or think something should look different, you can also open an issue or pull request and provide an explanation for why you think it should be changed. I'm open to criticism as long as you are respectful.
 
@@ -12,4 +12,6 @@ If you go to in the 'src' dir, you should see 4 directories. These are submodule
 
 When you are ready to share your contribution, make a fork of the repo on GitHub, push it there, and open a pull request. 
 
-Try to avoid any major design changes, I will be less likely to merge those. If you want to help out and don't know where to start, just ask me if I have anything I want help on and I should be able to give you something to do.
+Try to avoid any major design changes, I will be less likely to merge those.
+
+</div>
