@@ -2,8 +2,6 @@
 
 # Contributing
 
-</div>
-
 If you notice any bugs or issues with the theme or any of the scripts, please open an issue. If you want to fix it yourself, open a pull request. If you notice any design inconsistencies or think something should look different, you can also open an issue or pull request and provide an explanation for why you think it should be changed. I'm open to criticism as long as you are respectful.
 
 If you want to help out with development, start by making sure you are familiar with CSS and Sass. These are the languages that the themes are written in. Knowledge of Meson, Python 3, and Bash will also be useful, as most of the scripts are written in these languages.
