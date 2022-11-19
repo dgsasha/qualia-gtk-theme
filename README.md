@@ -73,7 +73,7 @@ When configuring the theme you get to choose an [accent color](#available-accent
 git clone https://github.com/dgsasha/dg-gnome-theme -b main && cd dg-gnome-theme
 ```
 ```
-./install.sh
+./install.py
 ```
 
 </div>
@@ -121,7 +121,7 @@ Before uninstalling, change the themes to something else to avoid any issues.
 After doing that, run the uninstall script:
 
 ```
-./uninstall.sh
+./uninstall.py
 ```
 
 </div>

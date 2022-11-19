@@ -322,6 +322,7 @@ if __name__ == "__main__":
   ##########################
 
   config['version'] = ''
+  enabled = []
 
   try:
     for line in open(CONFIG_FILE).readlines():
@@ -330,19 +331,13 @@ if __name__ == "__main__":
         line[1] = line[1].split(' ')
       else:
         line.append(None)
-      if type(line[1]) == list:
-        if line[0] in config:
-          for i in list(config[line[0]]):
-            if i not in line[1]:
-              config[line[0]].pop(i)
-        if line[0] == 'firefox': # old config file was a little different
-          temp_list=[]
+      if line[0] == 'firefox' or line[0] == 'enabled': # old config file was a little different
+        prefix = 'firefox-' if line[0] == 'firefox' else ''
+        if type(line[1]) == list:
           for i in line[1]:
-            i = 'firefox-' + i
-            temp_list.append(i)
-          for i in config['enabled']:
-            if i not in temp_list and i.startswith('firefox-'):
-              config['enabled'].pop(i) # add firefox list to enabled key
+            enabled.append(prefix + i)
+        elif type(line[1]) == str:
+          enabled.append(prefix + line[1])
       elif type(line[1]) == str:
         try:
           if line[0] in config and line[1] in config[line[0]]:
@@ -353,6 +348,10 @@ if __name__ == "__main__":
           pass
   except(FileNotFoundError):
     pass
+
+  for i in list(config['enabled']):
+    if i not in enabled:
+      config['enabled'].pop(i)
 
   # Reconfigure if something went wrong
   if ( type(config['color']) != str or type(config['theme']) != str ) or not theme_variants(config['theme']):
@@ -482,7 +481,7 @@ if __name__ == "__main__":
 
   def install_snap():
     snap_list = subprocess.run(['snap', 'list'], stdout=subprocess.PIPE).stdout.decode('utf-8').split('\n')
-    for i in ['gtk-common-themes', 'dg-adw-gtk3-theme']:
+    for i in ['gtk-common-themes', 'qualia-gtk-theme']:
       installed = False
       for line in snap_list:
         line = line.split()
@@ -500,10 +499,10 @@ if __name__ == "__main__":
       for key, value in {'gtk3': 'gtk-3', 'icons': 'icon', 'sounds': 'sound'}.items():
         if key in config["enabled"]:
           if line[2] == f'gtk-common-themes:{value}-themes':
-            run_command(['sudo', 'snap', 'connect', line[1], f'dg-adw-gtk3-theme:{value}-themes'])
+            run_command(['sudo', 'snap', 'connect', line[1], f'qualia-gtk-theme:{value}-themes'])
         else:
-          if line[2] == f'dg-adw-gtk3-theme:{value}-themes':
-            run_command(['sudo', 'snap', 'disconnect', line[1], f'dg-adw-gtk3-theme:{value}-themes'])
+          if line[2] == f'qualia-gtk-theme:{value}-themes':
+            run_command(['sudo', 'snap', 'disconnect', line[1], f'qualia-gtk-theme:{value}-themes'])
 
   def install_msg(theme, directory, process):
     message = f'{BGREEN}Installing{NC} the {BOLD}{theme}{NC} in {BOLD}{directory}{NC}'
@@ -521,22 +520,23 @@ if __name__ == "__main__":
       sys.stdout.write('\r' + message + '\033[J\n')
       sys.stdout.flush()
 
-  def check_path(name):
+  def check_path(name, dict = paths, ret = False):
     exists = False
-    for i in paths[name]:
+    for i in dict[name]:
       if type(i) == list:
         for path in i:
-          if name == 'icons' and path in paths['cursors']:
+          if name == 'icons' and path in dict['cursors']:
             pass
           else:
             exists = os.path.exists(path)
       else:
-        if name == 'icons' and i in paths['cursors']:
+        if name == 'icons' and i in dict['cursors']:
           pass
         else:
           exists = os.path.exists(i)
-
-    if exists:
+    if ret:
+      return exists
+    elif exists:
       print(f"The {VARIANTS['enableable'][name]} theme was installed previously, use './uninstall.py {name}' to remove it.")
 
   # Install dg-adw-gtk3
@@ -624,7 +624,7 @@ if __name__ == "__main__":
     snap_list = subprocess.run(['snap', 'list'], stderr=subprocess.DEVNULL, stdout=subprocess.PIPE).stdout.decode('utf-8').split('\n')
     for line in snap_list:
       line = line.split()
-      if 'dg-adw-gtk3-theme' in line:
+      if 'qualia-gtk-theme' in line:
         print("Snap theme was installed previously, use './uninstall.py snap' to remove it.")
 
   #####################
@@ -736,5 +736,20 @@ if __name__ == "__main__":
   f = open(CONFIG_FILE, 'a')
   f.write('version: ' + config['new_version'])
   f.close()
+
+  ########################
+  #   Remove old theme   #
+  ########################
+
+  from uninstall import OLD_NAMES
+
+  old_paths = installed_paths(OLD_NAMES, True)
+
+  for i in old_paths:
+    old_exists = check_path(i, old_paths, True)
+    if old_exists:
+      print("Removing old theme.")
+      subprocess.run(['sudo', './uninstall.py', '--old'])
+      break
 
   print(f"{BYELLOW}Log out and log back in for everything to be updated.{NC}")
