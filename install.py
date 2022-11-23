@@ -350,7 +350,7 @@ if __name__ == "__main__":
     pass
 
   for i in list(config['enabled']):
-    if i not in enabled:
+    if i not in enabled and not configured:
       config['enabled'].pop(i)
 
   # Reconfigure if something went wrong
