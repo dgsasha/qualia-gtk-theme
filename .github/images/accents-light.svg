@@ -42,17 +42,15 @@
    <circle cx="452" cy="132" r="36"/>
   </clipPath>
  </defs>
- <g>
-  <rect x=".08851" y=".08851" width="499.82" height="183.82" rx="14.218" ry="12" clip-path="url(#clipPath334)" fill="#f7f7f7" stroke="#000" stroke-opacity=".08" stroke-width="2.177"/>
-  <g stroke="#fff" stroke-opacity=".1" stroke-width="2">
-   <circle cx="52" cy="52" r="36" clip-path="url(#clipPath914)" fill="#ed5b28"/>
-   <circle cx="132" cy="52" r="36" clip-path="url(#clipPath1195)" fill="#8d6b4c"/>
-   <circle cx="212" cy="52" r="36" clip-path="url(#clipPath1203)" fill="#737d5a"/>
-   <circle cx="292" cy="52" r="36" clip-path="url(#clipPath1211)" fill="#518e3c"/>
-   <circle cx="372" cy="52" r="36" clip-path="url(#clipPath1219)" fill="#1fa36a"/>
-   <circle cx="132" cy="132" r="36" clip-path="url(#clipPath1199)" fill="#465acb"/>
-   <circle cx="212" cy="132" r="36" clip-path="url(#clipPath1207)" fill="#9851c4"/>
-  </g>
+ <rect x=".08851" y=".08851" width="499.82" height="183.82" rx="14.218" ry="12" clip-path="url(#clipPath334)" fill="#f7f7f7" stroke="#000" stroke-opacity=".08" stroke-width="2.177"/>
+ <g stroke="#fff" stroke-opacity=".1" stroke-width="2">
+  <circle cx="52" cy="52" r="36" clip-path="url(#clipPath914)" fill="#ed5b28"/>
+  <circle cx="132" cy="52" r="36" clip-path="url(#clipPath1195)" fill="#8d6b4c"/>
+  <circle cx="212" cy="52" r="36" clip-path="url(#clipPath1203)" fill="#737d5a"/>
+  <circle cx="292" cy="52" r="36" clip-path="url(#clipPath1211)" fill="#518e3c"/>
+  <circle cx="372" cy="52" r="36" clip-path="url(#clipPath1219)" fill="#1fa36a"/>
+  <circle cx="132" cy="132" r="36" clip-path="url(#clipPath1199)" fill="#465acb"/>
+  <circle cx="212" cy="132" r="36" clip-path="url(#clipPath1207)" fill="#9851c4"/>
  </g>
  <text transform="matrix(.26458 0 0 .26458 5 0)" fill="#da3450" style="shape-inside:url(#rect10671);white-space:pre" xml:space="preserve"/>
  <text transform="matrix(.26458 0 0 .26458 5 0)" fill="#000000" font-family="Cantarell" font-size="17.333px" font-weight="bold" text-align="center" style="shape-inside:url(#rect16048);white-space:pre" xml:space="preserve"/>
@@ -78,4 +76,5 @@
   <text x="51.978516" y="55.917328" fill="#fdfdfd" font-size="14.667px" stroke-width=".26458" text-align="center" text-anchor="middle" xml:space="preserve"><tspan x="51.978516" y="55.917328" fill="#fdfdfd" font-family="sans-serif" font-size="14.667px" stroke-width=".26458">Orange</tspan></text>
   <text x="-29.420439" y="72.158226" fill="#ee1e33" xml:space="preserve"><tspan x="-29.420439" y="72.158226"/></text>
  </g>
+ <text x="51.455719" y="128.30103" fill="#fdfdfd" font-family="sans-serif" font-size="14.667px" stroke-width=".26458" text-align="center" text-anchor="middle" xml:space="preserve"><tspan x="51.455719" y="128.30103"><tspan x="51.455719" y="128.30103" fill="#fdfdfd" font-family="sans-serif" font-size="14.667px" stroke-width=".26458">Light</tspan></tspan><tspan x="51.455719" y="146.63478">Blue</tspan></text>
 </svg>
