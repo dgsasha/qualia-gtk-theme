@@ -658,7 +658,7 @@ if __name__ == "__main__":
         print(f"{BLYELLOW}'gsettings'{BYELLOW} not found, not {theme} theme.{NC}")
         break
     if shutil.which('xfconf-query') is not None:
-      if property != None and config['xfce'] != None and check_output(['xfconf-query', '-c', 'xsettings', '-p', property]) != name:
+      if property != None and config['xfce'] != None and check_output(['xfconf-query', '-c', channel, '-p', property]) != name:
           print(f'Changing {theme} theme to {BOLD}{name}{NC}.')
           run_command(['xfconf-query', '-c', channel, '-p', property, '-s', name])
     elif property != None and config['xfce'] != None:

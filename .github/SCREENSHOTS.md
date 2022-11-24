@@ -34,9 +34,3 @@ See [contributing](contributing.md) if you want to help.
 ![Screenshot of the dark Unity theme](images/unity-dark.png)
 
 ![Screenshot of the light Unity theme](images/unity-light.png)
-
-## LightDM GTK Greeter
-
-![Screenshot of the dark LightDM GTK Greeter theme](images/lightdm-gtk-dark.png)
-
-![Screenshot of the light LightDM GTK Greeter theme](images/lightdm-gtk-light.png)
