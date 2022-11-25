@@ -70,7 +70,7 @@ When configuring the theme you get to choose an [accent color](#available-accent
 
 
 ```
-git clone https://github.com/dgsasha/dg-gnome-theme -b main && cd dg-gnome-theme
+git clone https://github.com/dgsasha/qualia-gtk-theme -b main && cd qualia-gtk-theme
 ```
 ```
 ./install.py
