@@ -517,7 +517,7 @@ if __name__ == "__main__":
           sys.stdout.write(f'\033[{message_len // (columns - 1) + 1}A')
           sys.stdout.flush()
           time.sleep(0.1)
-      sys.stdout.write('\r' + message + '\033[J\n')
+      sys.stdout.write('\r' + message + '\033[J\n\033[?25h')
       sys.stdout.flush()
 
   def check_path(name, dict = paths, ret = False):
