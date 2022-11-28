@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-import os, sys, argparse, subprocess, shutil, socket, time, threading
+import os, sys, argparse, subprocess, shutil, time, threading
 from re import sub
 from urllib.request import urlopen
 
@@ -74,6 +74,8 @@ VARIANTS = { # all of the possible configurations, name: pretty-name
     'cursors': 'Cursor',
     'sounds': 'Sound',
     'gtksourceview': 'GtkSourceView',
+    'vscode': 'VS Code',
+    'default_syntax': 'default syntax highlighting',
     'snap': 'Snap',
   },
 }
@@ -111,6 +113,11 @@ if __name__ == "__main__":
     help = 'change theme variant'
   )
   parser.add_argument(
+    '-s', '--syntax',
+    action = 'store_true',
+    help = 'change VS Code syntax highlighting'
+  )
+  parser.add_argument(
     '-a', '--accent',
     action = 'store_true',
     help = 'change accent color'
@@ -128,6 +135,7 @@ if __name__ == "__main__":
   clean = args.clean
   update_color = args.accent
   update_theme = args.theme
+  update_syntax = args.syntax
 
   if clean:
     if os.getuid() != 0:
@@ -206,6 +214,9 @@ if __name__ == "__main__":
   if not os.path.isdir(FIREFOX_DIR['flatpak']):
     del config['enableable']['firefox-flatpak']
 
+  if shutil.which('code') is None:
+    del config['enableable']['vscode']
+
   if shutil.which('snap') is None:
     del config['enableable']['snap']
 
@@ -272,12 +283,18 @@ if __name__ == "__main__":
 
     return ret
 
-  def config_yn(name, pretty):
+  def config_yn(name, pretty, default = 'y'):
     while True:
       if name == 'snap' and shutil.which('snap') is None:
         break
-      val = input(f'{BLBLUE}Do you want to install the {NC}{BLCYAN}{pretty}{NC}{BLBLUE} theme?{NC}{BOLD} [Y/n]: {NC}')
-      if val.casefold() == 'y'.casefold() or val == '':
+      if name == 'default_syntax':
+        question = f'{BLBLUE}Do you want to keep the {NC}{BLCYAN}{pretty}{NC}{BLBLUE}?{NC}{BOLD}'
+      else:
+        question = f'{BLBLUE}Do you want to install the {NC}{BLCYAN}{pretty}{NC}{BLBLUE} theme?{NC}{BOLD}'
+
+      val = input(question + ' [y/n]'.replace(default, default.capitalize()) + f': {NC}')
+
+      if val.casefold() == 'y'.casefold() or ( default == 'y' and val == '' ):
         if name in DG_YARU_PARTS or name == 'gtk3':
           if shutil.which('meson') is None:
             print(f"{BLRED}'meson'{BRED} not found, can't install {pretty} theme.{NC}")
@@ -287,23 +304,37 @@ if __name__ == "__main__":
             continue
         config['enabled'][name] = pretty
         break
-      elif val.casefold() == 'n'.casefold():
+      elif val.casefold() == 'n'.casefold() or ( default == 'n' and val == '' ):
         break
 
-  def configure(just_color = False, just_theme = False):
+  def configure(just_color = False, just_theme = False, just_syntax = False):
     global configured
+    configure_all = False
+    if not just_color and not just_theme and not just_syntax:
+      configure_all = True
 
-    if not just_theme:
+    if configure_all or just_color:
       config['color'] = config_menu('accent color', VARIANTS['colors'], 1)
 
-    if not just_color:
+    if configure_all or just_theme:
       config['theme'] = config_menu('theme variant', VARIANTS['themes'], 1)
 
-    if not just_color and not just_theme:
+    if configure_all:
       config['enabled'] = {}
       for key, value in config['enableable'].items():
+        if key == 'default_syntax':
+          if 'vscode' in config['enabled']:
+            config_yn(key, value, 'n')
+          continue
         config_yn(key, value)
-      
+    if just_syntax and 'vscode' in config['enabled']:
+      if 'default_syntax' in config['enabled']:
+        config['enabled'].pop('default_syntax')
+      config_yn('default_syntax', 'default syntax highlighting', 'n')
+    elif just_syntax:
+      print('VS Code theme is not enabled, exiting.')
+      exit()
+
     print()
     configured = True
 
@@ -357,12 +388,14 @@ if __name__ == "__main__":
   if ( type(config['color']) != str or type(config['theme']) != str ) or not theme_variants(config['theme']):
     configure()
 
-  # Reconfigure color or theme variant if user wants to
+  # Reconfigure color, theme variant, or syntax highlighting if user wants to
   if not reconfigure:
     if update_color:
       configure(just_color=True)
     if update_theme:
       configure(just_theme=True)
+    if update_syntax:
+      configure(just_syntax=True)
 
   ##############################
   ##   Write to Config File   ##
@@ -389,7 +422,7 @@ if __name__ == "__main__":
     print(f"{BYELLOW}Use {BLYELLOW}'{sys.argv[0]} --reconfigure'{BYELLOW} if you want to change anything.{NC}")
 
   suffix='-dark' if color_scheme == 'prefer-dark' else ''
-  libadwaita_theme='dark' if color_scheme == 'prefer-dark' else 'light'
+  theme_variant='dark' if color_scheme == 'prefer-dark' else 'light'
 
   theme_name = {}
   for i in ['yaru', 'gtk3', 'firefox']:
@@ -468,16 +501,23 @@ if __name__ == "__main__":
   def install_dg_libadwaita():
     cd(REPO_DIR)
     run_command(['git', 'submodule', 'update', '--init', 'src/dg-libadwaita'])
-    if verbose:
-      print(f"Changing dir to {SRC['gtk4']}")
     cd(SRC['gtk4'])
-    run_command(['./install.sh', '-c', config['color'], '-t', libadwaita_theme], override_verbose = True)
+    run_command(['./install.sh', '-c', config['color'], '-t', theme_variant], override_verbose = True)
 
   def install_dg_firefox_theme(directory):
     cd(REPO_DIR)
     run_command(['git', 'submodule', 'update', '--init', 'src/dg-firefox-theme'])
     cd(SRC['firefox'])
     run_command(['./install.sh', '-c', config['color'], '-f', directory], override_verbose = True)
+
+  def install_vscode():
+    cd(REPO_DIR)
+    run_command(['git', 'submodule', 'update', '--init', 'src/dg-vscode-adwaita'])
+    cd(SRC['vscode'])
+    if 'default_syntax' in config['enabled']:
+      run_command(['./install.py', '-c', config['color'], '-t', theme_variant, '-d'], override_verbose = True)
+    else:
+      run_command(['./install.py', '-c', config['color'], '-t', theme_variant], override_verbose = True)
 
   def install_snap():
     snap_list = subprocess.run(['snap', 'list'], stdout=subprocess.PIPE).stdout.decode('utf-8').split('\n')
@@ -541,7 +581,7 @@ if __name__ == "__main__":
 
   # Install dg-adw-gtk3
   if 'gtk3' in config['enabled']:
-    if ( not update_theme and not update_color ) or updated:
+    if ( not update_theme and not update_color and not update_syntax ) or updated:
       gtk3 = threading.Thread(target=install_dg_adw_gtk3)
       gtk3.start()
       install_msg('qualia GTK3 theme', f'{HOME}/.local/share', gtk3)
@@ -589,7 +629,7 @@ if __name__ == "__main__":
     pretty_string += ' theme'
 
   if len(config['dg_yaru_parts']) > 0:
-    if ( not update_theme and not update_color ) or updated:
+    if ( not update_theme and not update_color and not update_syntax ) or updated:
       yaru = threading.Thread(target=install_dg_yaru)
       yaru.start()
       install_msg(pretty_string, '/usr/share', yaru)
@@ -599,18 +639,25 @@ if __name__ == "__main__":
       check_path(i)
 
   # Install dg-libadwaita
-  if 'gtk4' in config['enabled'] :
-    install_dg_libadwaita()
+  if 'gtk4' in config['enabled']:
+    if not update_syntax or updated:
+      install_dg_libadwaita()
   else:
     check_path('gtk4')
 
   # Install dg-firefox-theme
   for key, value in FIREFOX_DIR.items():
     if f'firefox-{key}' in config['enabled']:
-      if not update_theme or update_color or updated:
+      if ( not update_theme and not update_syntax ) or updated:
         install_dg_firefox_theme(value)
     else:
       check_path(f'firefox-{key}')
+
+  # Install dg-vscode-adwiata
+  if 'vscode' in config['enabled']:
+    install_vscode()
+  else:
+    check_path('vscode')
 
   # Install snap theme
   if 'snap' in config['enabled']:

@@ -3,7 +3,11 @@
 import os, sys, shutil, subprocess
 
 from install import BRED, BOLD, VARIANTS, BYELLOW, NC
-from paths import installed_paths, CONFIG_FILE, OLD_CONFIG
+from paths import installed_paths, CONFIG_FILE, OLD_CONFIG, HOME
+
+CODE_CONFIG_DIR = f'{HOME}/.config/Code/User'
+CODE_CONFIG = f'{CODE_CONFIG_DIR}/settings.json'
+BACKUP_CODE_CONFIG = f'{CODE_CONFIG_DIR}/settings.json.bak'
 
 OLD = [
   'gtk3',
@@ -35,6 +39,7 @@ Themes:
   firefox         firefox-standard  firefox-snap
   firefox-flatpak icons             cursors
   sounds          gtksourceview     snap
+  vscode
 
 Options:
   -o, --old       Removes the old version of the theme (dg-gnome-theme).
@@ -108,6 +113,11 @@ if __name__ == "__main__":
             print(message)
           shown = True
           delete(i)
+
+    if name == 'vscode':
+      if os.path.exists(BACKUP_CODE_CONFIG) and os.path.exists(CODE_CONFIG):
+        print('Restoring old VS Code configuration.')
+        os.replace(BACKUP_CODE_CONFIG, CODE_CONFIG)
 
     if disconnect:
       for i in snap:

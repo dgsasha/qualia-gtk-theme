@@ -14,3 +14,7 @@
 	path = src/dg-libadwaita
 	url = https://github.com/dgsasha/dg-libadwaita
 	branch = main
+[submodule "src/dg-vscode-adwaita"]
+	path = src/dg-vscode-adwaita
+	url = https://github.com/dgsasha/dg-vscode-adwaita.git
+	branch = main

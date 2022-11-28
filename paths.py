@@ -16,6 +16,7 @@ SRC = {
   'gtk4': f'{SRC_DIR}/dg-libadwaita',
   'yaru': f'{SRC_DIR}/dg-yaru',
   'firefox': f'{SRC_DIR}/dg-firefox-theme',
+  'vscode': f'{SRC_DIR}/dg-vscode-adwaita',
 }
 
 FIREFOX_DIR = {
@@ -40,6 +41,7 @@ def installed_paths(themes, old_only = False):
     'cursors': [],
     'sounds': [],
     'gtksourceview': [],
+    'vscode': [],
   }
 
   for name in themes['yaru']:
@@ -65,5 +67,6 @@ def installed_paths(themes, old_only = False):
   if not old_only:
     paths['gtk4'] += [f'{GTK4_DIR}/mac-icons']
     paths['gtk4'] += [f'{GTK4_DIR}/gtk.css']
+    paths['vscode'] += [f'{HOME}/.vscode/extensions/qualia']
 
   return paths

@@ -11,9 +11,9 @@
 
 ![Screenshot of the light theme](.github/images/light.png)
 
-Screenshots of desktop environments other than GNOME can be found [here](.github/SCREENSHOTS.md).
+More screenshots can be seen [here](.github/SCREENSHOTS.md).
 
-**This repo contains a GTK3 theme, a configuration for Libadwaita, a Firefox theme, and themes for the desktops listed above.**
+**This repo contains a GTK3 theme, a configuration for Libadwaita, a Firefox theme, a VS Code theme, and themes for the desktops listed above.**
   
 **The Yaru icon, cursor, sound, and GtkSourceView themes are also included.**
 
@@ -79,7 +79,7 @@ git clone https://github.com/dgsasha/qualia-gtk-theme -b main && cd qualia-gtk-t
 </div>
 
 ```
-usage: install.py [-h] [-c] [-r] [-t] [-a] [-v]
+usage: install.py [-h] [-c] [-r] [-t] [-s] [-a] [-v]
 
 This script is used to install, update, and reconfigure the theme
 
@@ -88,7 +88,9 @@ options:
   -c, --clean        clean build directories and exit
   -r, --reconfigure  reconfigure the theme
   -t, --theme        change theme variant
+  -s, --syntax       change VS Code syntax highlighting
   -a, --accent       change accent color
+
   -v, --verbose      display entire output
 ```
 
@@ -113,6 +115,7 @@ Your previous configuration will be used again unless you use the `--reconfigure
 
 You can also use `--accent` or `--theme` to just change the accent color or the theme variant.
 
+If you installed the VS Code theme, you can use `--syntax` to change the syntax highlighting.
 
 ## Uninstalling
 
@@ -138,6 +141,7 @@ Themes:
   firefox         firefox-standard  firefox-snap
   firefox-flatpak icons             cursors
   sounds          gtksourceview     snap
+  vscode
 
 Options:
   -o, --old       Removes the old version of the theme (dg-gnome-theme).
@@ -158,4 +162,4 @@ Also, 'metacity' and 'marco' do the same thing, as well as 'gtk4' and 'libadwait
 
 ## Credits :)
 ### A huge thanks to:
-### [Ubuntu](https://ubuntu.com/) for [Yaru](https://github.com/ubuntu/yaru), [vinceliuice](https://github.com/vinceliuice) for [WhiteSur-gtk-theme](https://github.com/vinceliuice/WhiteSur-gtk-theme), [rafaelmardojai](https://github.com/rafaelmardojai) for [firefox-gnome-theme](https://github.com/rafaelmardojai/firefox-gnome-theme), and [lassekongo83](https://github.com/lassekongo83) for [adw-gtk3](https://github.com/lassekongo83/adw-gtk3).
+### [Ubuntu](https://ubuntu.com/) for [Yaru](https://github.com/ubuntu/yaru), [vinceliuice](https://github.com/vinceliuice) for [WhiteSur-gtk-theme](https://github.com/vinceliuice/WhiteSur-gtk-theme), [rafaelmardojai](https://github.com/rafaelmardojai) for [firefox-gnome-theme](https://github.com/rafaelmardojai/firefox-gnome-theme), [piousdeer](https://github.com/piousdeer) for [vscode-adwaita](https://github.com/piousdeer/vscode-adwaita), and [lassekongo83](https://github.com/lassekongo83) for [adw-gtk3](https://github.com/lassekongo83/adw-gtk3).
