@@ -68,7 +68,6 @@ Download the repository and run the install script to configure and install the 
 
 When configuring the theme you get to choose an [accent color](#available-accent-colors), choose between the light and dark variants, and choose which themes you want to install.
 
-
 ```
 git clone https://github.com/dgsasha/qualia-gtk-theme -b main && cd qualia-gtk-theme
 ```
@@ -79,7 +78,7 @@ git clone https://github.com/dgsasha/qualia-gtk-theme -b main && cd qualia-gtk-t
 </div>
 
 ```
-usage: install.py [-h] [-c] [-r] [-t] [-s] [-a] [-v]
+usage: install.py [-h] [-c] [-r] [-t] [-s] [-a] [-f] [-v]
 
 This script is used to install, update, and reconfigure the theme
 
@@ -90,7 +89,7 @@ options:
   -t, --theme        change theme variant
   -s, --syntax       change VS Code syntax highlighting
   -a, --accent       change accent color
-
+  -f, --force        force install the theme
   -v, --verbose      display entire output
 ```
 
@@ -113,16 +112,15 @@ git pull
 
 Your previous configuration will be used again unless you use the `--reconfigure` option.
 
+Only the themes that need updates will be reinstalled, if you want to force reinstall everything, use the `--force` option.
+
+If you ever update GNOME, reinstall the theme with the `--force` option to install the new GNOME Shell theme.
+
 You can also use `--accent` or `--theme` to just change the accent color or the theme variant.
 
 If you installed the VS Code theme, you can use `--syntax` to change the syntax highlighting.
 
 ## Uninstalling
-
-Before uninstalling, change the themes to something else to avoid any issues. 
-
-After doing that, run the uninstall script:
-
 ```
 ./uninstall.py
 ```
@@ -131,27 +129,26 @@ After doing that, run the uninstall script:
 
 ```
 Usage:
-  ./uninstall.py <theme> ...
-  ./uninstall.py <option> 
+    ./uninstall.py <theme> ...
+    ./uninstall.py <option> 
 
 Themes:
-  gtk3            gtk4              libadwaita
-  gnome-shell     cinnamon-shell    metacity
-  marco           ubuntu-unity      xfwm4
-  firefox         firefox-standard  firefox-snap
-  firefox-flatpak icons             cursors
-  sounds          gtksourceview     snap
-  vscode
+    gtk3            gtk4-libadwaita  gnome-shell
+    cinnamon-shell  metacity         ubuntu-unity
+    xfwm4           firefox          firefox-standard
+    firefox-snap    firefox-flatpak  icons
+    cursors         sounds           gtksourceview
+    snap            vscode           gtk4-config
 
 Options:
-  -o, --old       Removes the old version of the theme (dg-gnome-theme).
-  -h, --help      Show this screen.
+    -o, --old       Removes the old version of the theme (dg-gnome-theme).
+    -v, --verbose   Verbose mode.
+    -h, --help      Show this screen.
 
 Run './uninstall.py' followed by any number of the above themes to choose what to uninstall.
 Or run './uninstall.py' with no arguments to uninstall the entire theme.
 
 Run './uninstall.py firefox' to remove the theme from all firefox variants.
-Also, 'metacity' and 'marco' do the same thing, as well as 'gtk4' and 'libadwaita'.
 ```
 
 <div align="center">
