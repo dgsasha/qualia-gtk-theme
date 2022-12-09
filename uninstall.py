@@ -46,6 +46,7 @@ Themes:
 Options:
     -o, --old       Removes the old version of the theme (dg-gnome-theme).
     -v, --verbose   Verbose mode.
+    -d, --dry-run   Similar to verbose mode, except nothing is actually deleted.
     -h, --help      Show this screen.
 
 Run '{sys.argv[0]}' followed by any number of the above themes to choose what to uninstall.
@@ -56,6 +57,7 @@ Run '{sys.argv[0]} firefox' to remove the theme from all firefox variants.'''
 snap = ['qualia-gtk-theme', 'dg-adw-gtk3-theme']
 
 verbose = False
+dry_run = False
 
 def remove_config(name, version = False):
     '''
@@ -65,7 +67,7 @@ def remove_config(name, version = False):
     name (str) : The name of the theme or line to remove.
     version (bool) : True if the line that stores the git version for the theme is being removed.
     '''
-    if os.path.isfile(CONFIG_FILE):
+    if os.path.isfile(CONFIG_FILE) and not dry_run:
         with open(CONFIG_FILE, 'r', encoding='UTF-8') as f:
             filedata = f.read()
         for line in filedata.split('\n'):
@@ -86,7 +88,8 @@ def delete(path):
     '''
     if verbose:
         print('Deleting ' + path)
-        subprocess.run('sudo', 'rm', '-rf', path, check=True)
+        if not dry_run:
+            subprocess.run('sudo', 'rm', '-rf', path, check=True)
 
 def remove_empty(themes):
     '''
@@ -129,7 +132,7 @@ def remove_theme(name, pretty, themes, old = False , disconnect = True):
     else:
         message += f'{pretty} theme{NC}.'
 
-    if not disconnect:
+    if not disconnect and not dry_run:
         if name == 'snap' and shutil.which('snap') is not None:
             for i in snap:
                 snap_list = subprocess.run(['sudo', 'snap', 'list'], stdout=subprocess.PIPE, check=True).stdout.decode('utf-8').split('\n')
@@ -158,7 +161,7 @@ def remove_theme(name, pretty, themes, old = False , disconnect = True):
                 shown = True
                 delete(i)
 
-    if disconnect:
+    if disconnect and not dry_run:
         for i in snap:
             if name in ['gtk3', 'icons', 'sounds'] and shutil.which('snap') is not None:
                 connections = subprocess.run(['sudo', 'snap', 'connections'], stdout=subprocess.PIPE, check=True).stdout.decode('utf-8').strip().split('\n')
@@ -220,6 +223,7 @@ def main():
     uninstalling = []
 
     global verbose
+    global dry_run
 
     for i in sys.argv:
         if i == 'unity':
@@ -230,7 +234,7 @@ def main():
             for f in VARIANTS["enableable"]['dg-firefox-theme']:
                 uninstalling.append(f)
                 remove_theme(f, VARIANTS["enableable"]['dg-firefox-theme'][f], themes)
-                remove_config(f) 
+                remove_config(f)
         if i != sys.argv[0]:
             if i.startswith('-'):
                 if i in ['-h', '--help']:
@@ -238,6 +242,9 @@ def main():
                     sys.exit()
                 elif i in ['-v', '--verbose']:
                     verbose = True
+                elif i in ['-d', '--dry-run']:
+                    verbose = True
+                    dry_run = True
                 elif i in ['-o', '--old']:
                     global snap
                     snap = ['dg-adw-gtk3-theme']
@@ -253,18 +260,22 @@ def main():
                 else:
                     print(f"Unrecognized theme '{i}'.")
                     sys.exit()
+    args = []
+    for i in sys.argv:
+        if not i.startswith('-'):
+            args.append(i)
 
-    if len(sys.argv) <= 1:
+    if len(args) <= 1:
         uninstalling = available_themes
         for key, value in available_themes.items():
             remove_theme(key, value, themes)
             for key in [CONFIG_FILE, OLD_CONFIG]:
-                if os.path.isfile(key):
+                if os.path.isfile(key) and not dry_run:
                     os.remove(key)
 
     remove_empty(themes)
 
-    if os.path.isfile(CONFIG_FILE):
+    if os.path.isfile(CONFIG_FILE) and not dry_run:
         conf = Config()
 
         conf.read()

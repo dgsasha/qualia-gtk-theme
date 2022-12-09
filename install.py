@@ -87,13 +87,14 @@ VERSIONS = {
     'budgie': (10.6,)
 }
 
-update_color = update_theme = update_syntax = reconfigure = verbose = force = configured = updated =False
+# Set some things to false
+no_update = update_color = update_theme = update_syntax = reconfigure = verbose = force = configured = updated = False
 
 #################
 ##  Functions  ##
 #################
 
-def cd(dir):
+def cd(directory):
     '''
     Change directory.
 
@@ -101,8 +102,8 @@ def cd(dir):
         dir (str) : The path of the directory to change to.
     '''
     if verbose:
-        print(f"Changing directory to {dir}")
-    os.chdir(dir)
+        print(f"Changing directory to {directory}")
+    os.chdir(directory)
 
 def run_command(command, meson = False, override_verbose = None, show_ouput = False):
     '''
@@ -147,91 +148,6 @@ def check_output(command):
 
 def main():
     '''The main function.'''
-    ##############################
-    ##   Command Line Options   ##
-    ##############################
-
-    parser = argparse.ArgumentParser(
-        description='This script is used to install, update, and reconfigure the theme'
-    )
-
-    parser.add_argument(
-        '-c', '--clean',
-        action = 'store_true',
-        help = 'clean build directories and exit'
-    )
-    parser.add_argument(
-        '-r', '--reconfigure',
-        action='store_true',
-        help='reconfigure the theme'
-    )
-    parser.add_argument(
-        '-t', '--theme',
-        action = 'store_true',
-        help = 'change theme variant'
-    )
-    parser.add_argument(
-        '-s', '--syntax',
-        action = 'store_true',
-        help = 'change VS Code syntax highlighting'
-    )
-    parser.add_argument(
-        '-a', '--accent',
-        action = 'store_true',
-        help = 'change accent color'
-    )
-    parser.add_argument(
-        '-f', '--force',
-        action = 'store_true',
-        help = 'force install the theme'
-    )
-    parser.add_argument(
-        '-v', '--verbose',
-        action = 'store_true',
-        help = 'verbose mode'
-    )
-
-    args = parser.parse_args()
-
-    global update_color
-    update_color = args.accent
-
-    global update_theme
-    update_theme = args.theme
-
-    global update_syntax
-    update_syntax = args.syntax
-
-    global reconfigure
-    reconfigure = args.reconfigure
-
-    global verbose
-    verbose = args.verbose
-
-    global force
-    force = args.force
-
-    global configure_all
-    configure_all = False
-
-    if args.clean:
-        if os.getuid() != 0:
-            args = ['sudo', sys.executable] + sys.argv + [os.environ]
-            os.execlpe('sudo', *args)
-
-        for i in [SRC['yaru'], SRC['gtk3']]:
-            try:
-                shutil.rmtree(f'{i}/build')
-            except NotADirectoryError:
-                os.remove(f'{i}/build')
-            except FileNotFoundError:
-                pass
-        sys.exit()
-
-    if not args.clean and os.getuid() == 0:
-        print(f"{BRED}Don't run this script as root, exiting.")
-        sys.exit()
-
     #####################
     ##  Configuration  ##
     #####################
@@ -252,6 +168,7 @@ def main():
 
     # Whether or not to configure
     if not os.path.isfile(CONFIG_FILE) or reconfigure:
+        global configure_all
         configure_all = True
         conf.configure()
         if os.path.isfile(CONFIG_FILE):
@@ -264,7 +181,8 @@ def main():
     # Reconfigure if config file has issues
     try:
         color_scheme = conf.theme_variants(config['theme'])
-        if not (isinstance(config['color'], str) or isinstance(config['theme'], str) or isinstance(config['enabled'], list)) or color_scheme is None:
+        if not isinstance(config['color'], str) or not isinstance(config['theme'], str) or \
+        not isinstance(config['enabled'], list) or color_scheme is None or not config['enabled']:
             configure_all = True
             conf.configure()
     except KeyError:
@@ -289,8 +207,8 @@ def main():
         print(f"{BYELLOW}Use {BLYELLOW}'{sys.argv[0]} --reconfigure'{BYELLOW} if you want to change anything.{NC}")
 
     theme_names = {}
-    for i in ['dg-yaru', 'dg-adw-gtk3', 'dg-firefox-theme']:
-        theme_names[i]=['qualia'] # For detecting the old version of the theme
+    for theme in ['dg-yaru', 'dg-adw-gtk3', 'dg-firefox-theme']:
+        theme_names[theme]=['qualia'] # For detecting the old version of the theme
 
     paths = installed_paths(theme_names)
 
@@ -335,7 +253,7 @@ def main():
                     else:
                         message += f'{pretty} theme{NC}.'
                     print(f"The {message} was installed previously, use './uninstall.py {name}' to remove it.")
-        
+
         return exists
 
     # Install dg-adw-gtk3
@@ -607,7 +525,12 @@ class Config:
                     config['enabled'].append(key)
         elif update_syntax and 'vscode' in config['enabled']:
             if self.config_yn('default_syntax', 'default syntax highlighting', 'n'):
-                config['enabled'].append('default_syntax')
+                if 'default_syntax' not in config['enabled']:
+                    config['enabled'].append('default_syntax')
+            else:
+                if 'default_syntax' in config['enabled']:
+                    config['enabled'].remove('default_syntax')
+
         elif update_syntax:
             print('VS Code theme is not enabled, exiting.')
             sys.exit()
@@ -718,9 +641,11 @@ class Config:
                     prefix = 'firefox-' if key == 'firefox' else '' # old config file was a little different
                     if isinstance(value, list):
                         for i in value:
-                            config['enabled'].append(prefix + i)
+                            if i in config['enableable']:
+                                config['enabled'].append(prefix + i)
                     elif isinstance(value, str):
-                        config['enabled'].append(prefix + value)
+                        if value in config['enableable']:
+                            config['enabled'].append(prefix + value)
                 elif key.startswith('old'): # Themes that were enabled before qualia
                     old = key.split('_')
                     theme = old[1]
@@ -850,7 +775,7 @@ class InstallDgAdwGtk3(threading.Thread):
         self.config = config
         self.start()
         self.join()
-        while self.spinner != None and self.spinner.is_alive(): # Wait for spinner thread to close
+        while self.spinner is not None and self.spinner.is_alive(): # Wait for spinner thread to close
             pass
 
     def get_version(self):
@@ -864,7 +789,8 @@ class InstallDgAdwGtk3(threading.Thread):
         return version
 
     def _install(self):
-        run_command(['git', 'submodule', 'update', '--init', 'src/dg-adw-gtk3'])
+        if not no_update:
+            run_command(['git', 'submodule', 'update', '--init', 'src/dg-adw-gtk3'])
         cd(SRC['gtk3'])
 
         if 'gtk4-libadwaita' in self.config['enabled'] and 'gtk3' in self.config['enabled']:
@@ -923,7 +849,8 @@ class InstallDgYaru(threading.Thread):
         return version
 
     def _install(self):
-        run_command(['git', 'submodule', 'update', '--init', 'src/dg-yaru'])
+        if not no_update:
+            run_command(['git', 'submodule', 'update', '--init', 'src/dg-yaru'])
 
         cd(SRC['yaru'])
 
@@ -1005,7 +932,8 @@ class InstallDgLibadwaita(threading.Thread):
         return version
 
     def _install(self):
-        run_command(['git', 'submodule', 'update', '--init', 'src/dg-libadwaita'])
+        if not no_update:
+            run_command(['git', 'submodule', 'update', '--init', 'src/dg-libadwaita'])
         cd(SRC['gtk4'])
 
         if self.get_version() != self.config['dg-libadwaita_version'] or configure_all or force or update_color or update_theme:
@@ -1042,7 +970,8 @@ class InstallDgFirefoxTheme(threading.Thread):
         return version
 
     def _install(self):
-        run_command(['git', 'submodule', 'update', '--init', 'src/dg-firefox-theme'])
+        if not no_update:
+            run_command(['git', 'submodule', 'update', '--init', 'src/dg-firefox-theme'])
         cd(SRC['firefox'])
 
         if self.get_version() != self.config[f'dg-firefox-theme_version'] or configure_all or force or update_color:
@@ -1075,7 +1004,8 @@ class InstallDgVscodeAdwaita(threading.Thread):
         return version
 
     def _install(self):
-        run_command(['git', 'submodule', 'update', '--init', 'src/dg-vscode-adwaita'])
+        if not no_update:
+            run_command(['git', 'submodule', 'update', '--init', 'src/dg-vscode-adwaita'])
         cd(SRC['vscode'])
 
         if self.get_version() != self.config['dg-vscode-adwaita_version'] or configured or force:
@@ -1103,17 +1033,17 @@ class InstallQualiaGtkThemeSnap(threading.Thread):
 
     def _install(self):
         snap_list = check_output(['snap', 'list']).split('\n')
-        for i in ['gtk-common-themes', 'qualia-gtk-theme']:
+        for name in ['gtk-common-themes', 'qualia-gtk-theme']:
             installed = False
             for line in snap_list:
                 line = line.split()
-                if i in line:
+                if name in line:
                     installed = True
-                    print(f'Checking if {BOLD}{i}{NC} Snap can be updated.')
-                    run_command(['sudo', 'snap', 'refresh', i])
+                    print(f'Checking if {BOLD}{name}{NC} Snap can be updated.')
+                    run_command(['sudo', 'snap', 'refresh', name])
             if not installed:
-                print(f'{BGREEN}Installing{NC} the {BOLD}{i}{NC} Snap.')
-                run_command(['sudo', 'snap', 'install', i])
+                print(f'{BGREEN}Installing{NC} the {BOLD}{name}{NC} Snap.')
+                run_command(['sudo', 'snap', 'install', name])
 
         connections = check_output(['snap', 'connections']).split('\n')
         for line in connections:
@@ -1319,4 +1249,90 @@ class Enable:
 
 if __name__ == "__main__":
     from uninstall import OLD_NAMES
+
+    ##############################
+    ##   Command Line Options   ##
+    ##############################
+
+    parser = argparse.ArgumentParser(
+        description='This script is used to install, update, and reconfigure the theme'
+    )
+
+    parser.add_argument(
+        '-c', '--clean',
+        action = 'store_true',
+        help = 'clean build directories and exit'
+    )
+    parser.add_argument(
+        '-r', '--reconfigure',
+        action='store_true',
+        help='reconfigure the theme'
+    )
+    parser.add_argument(
+        '-t', '--theme',
+        action = 'store_true',
+        help = 'change theme variant'
+    )
+    parser.add_argument(
+        '-s', '--syntax',
+        action = 'store_true',
+        help = 'change VS Code syntax highlighting'
+    )
+    parser.add_argument(
+        '-a', '--accent',
+        action = 'store_true',
+        help = 'change accent color'
+    )
+    parser.add_argument(
+        '-f', '--force',
+        action = 'store_true',
+        help = 'force install the theme'
+    )
+    parser.add_argument(
+        '-n', '--no-update',
+        action = 'store_true',
+        help = "don't update the submodules, useful if you made local changes"
+    )
+    parser.add_argument(
+        '-v', '--verbose',
+        action = 'store_true',
+        help = 'verbose mode'
+    )
+
+    args = parser.parse_args()
+
+    update_color = args.accent
+
+    update_theme = args.theme
+
+    update_syntax = args.syntax
+
+    reconfigure = args.reconfigure
+
+    no_update = args.no_update
+
+    verbose = args.verbose
+
+    force = args.force
+
+    configure_all = False
+
+    if args.clean:
+        if os.getuid() != 0:
+            args = ['sudo', sys.executable] + sys.argv + [os.environ]
+            os.execlpe('sudo', *args)
+
+        for i in [SRC['yaru'], SRC['gtk3']]:
+            try:
+                shutil.rmtree(f'{i}/build')
+            except NotADirectoryError:
+                os.remove(f'{i}/build')
+            except FileNotFoundError:
+                pass
+        sys.exit()
+
+    if not args.clean and os.getuid() == 0:
+        print(f"{BRED}Don't run this script as root, exiting.")
+        sys.exit()
+
     main()
