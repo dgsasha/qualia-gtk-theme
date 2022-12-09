@@ -32,8 +32,7 @@ OLD_NAMES = {
 }
 
 HELP = f'''Usage:
-    {sys.argv[0]} <theme> ...
-    {sys.argv[0]} <option> 
+    {sys.argv[0]} <option> <theme> ...
 
 Themes:
     gtk3            gtk4-libadwaita  gnome-shell
@@ -52,7 +51,7 @@ Options:
 Run '{sys.argv[0]}' followed by any number of the above themes to choose what to uninstall.
 Or run '{sys.argv[0]}' with no arguments to uninstall the entire theme.
 
-Run '{sys.argv[0]} firefox' to remove the theme from all firefox variants.'''
+Run '{sys.argv[0]} firefox' to remove the theme from all Firefox variants.'''
 
 snap = ['qualia-gtk-theme', 'dg-adw-gtk3-theme']
 

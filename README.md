@@ -78,7 +78,7 @@ git clone https://github.com/dgsasha/qualia-gtk-theme -b main && cd qualia-gtk-t
 </div>
 
 ```
-usage: install.py [-h] [-c] [-r] [-t] [-s] [-a] [-f] [-v]
+usage: install.py [-h] [-c] [-r] [-t] [-s] [-a] [-f] [-n] [-v]
 
 This script is used to install, update, and reconfigure the theme
 
@@ -90,7 +90,8 @@ options:
   -s, --syntax       change VS Code syntax highlighting
   -a, --accent       change accent color
   -f, --force        force install the theme
-  -v, --verbose      display entire output
+  -n, --no-update    don't update the submodules, useful if you made local changes
+  -v, --verbose      verbose mode
 ```
 
 <div align="center">
@@ -129,8 +130,7 @@ If you installed the VS Code theme, you can use `--syntax` to change the syntax 
 
 ```
 Usage:
-    ./uninstall.py <theme> ...
-    ./uninstall.py <option> 
+    ./uninstall.py <option> <theme> ...
 
 Themes:
     gtk3            gtk4-libadwaita  gnome-shell
@@ -143,12 +143,13 @@ Themes:
 Options:
     -o, --old       Removes the old version of the theme (dg-gnome-theme).
     -v, --verbose   Verbose mode.
+    -d, --dry-run   Similar to verbose mode, except nothing is actually deleted.
     -h, --help      Show this screen.
 
 Run './uninstall.py' followed by any number of the above themes to choose what to uninstall.
 Or run './uninstall.py' with no arguments to uninstall the entire theme.
 
-Run './uninstall.py firefox' to remove the theme from all firefox variants.
+Run './uninstall.py firefox' to remove the theme from all Firefox variants.
 ```
 
 <div align="center">
