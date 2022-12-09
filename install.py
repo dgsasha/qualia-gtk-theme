@@ -130,7 +130,7 @@ def run_command(command, meson = False, override_verbose = None, show_ouput = Fa
             print(f'{BRED}Something went wrong. Check the log above.{NC}')
         if meson:
             print(f"{BRED}Also, running {BLRED}'{sys.argv[0]} --clean'{BRED} might fix the issue.{NC}")
-        raise error
+        os._exit(1)
 
 def check_output(command):
     '''
@@ -844,7 +844,7 @@ class InstallDgAdwGtk3(threading.Thread):
         config (dict) : Dictionary that contains the configuration.
     '''
     def __init__(self, config):
-        cd(SRC['gtk3'])
+        cd(REPO_DIR)
         super().__init__(target=self._install)
         self.spinner = None
         self.config = config
@@ -864,7 +864,8 @@ class InstallDgAdwGtk3(threading.Thread):
         return version
 
     def _install(self):
-        run_command(['git', 'submodule', 'update', '--init', '.'])
+        run_command(['git', 'submodule', 'update', '--init', 'src/dg-adw-gtk3'])
+        cd(SRC['gtk3'])
 
         if 'gtk4-libadwaita' in self.config['enabled'] and 'gtk3' in self.config['enabled']:
             pretty_string = 'qualia GTK3 and Libadwaita GTK4 themes'
@@ -900,7 +901,7 @@ class InstallDgYaru(threading.Thread):
         parts_pretty (list) : Names of parts of theme to be printed.
     '''
     def __init__(self, config, parts, parts_pretty):
-        cd(SRC['yaru'])
+        cd(REPO_DIR)
         super().__init__(target=self._install)
         self.spinner = None
         self.config = config
@@ -922,7 +923,9 @@ class InstallDgYaru(threading.Thread):
         return version
 
     def _install(self):
-        run_command(['git', 'submodule', 'update', '--init', '.'])
+        run_command(['git', 'submodule', 'update', '--init', 'src/dg-yaru'])
+
+        cd(SRC['yaru'])
 
         pretty_string = 'qualia '
         for i, pretty in enumerate(self.parts_pretty):
@@ -985,7 +988,7 @@ class InstallDgLibadwaita(threading.Thread):
         config (dict) : Dictionary that contains the configuration.
     '''
     def __init__(self, config):
-        cd(SRC['gtk4'])
+        cd(REPO_DIR)
         super().__init__(target=self._install)
         self.config = config
         self.start()
@@ -1002,7 +1005,8 @@ class InstallDgLibadwaita(threading.Thread):
         return version
 
     def _install(self):
-        run_command(['git', 'submodule', 'update', '--init', '.'])
+        run_command(['git', 'submodule', 'update', '--init', 'src/dg-libadwaita'])
+        cd(SRC['gtk4'])
 
         if self.get_version() != self.config['dg-libadwaita_version'] or configure_all or force or update_color or update_theme:
             global updated
@@ -1020,7 +1024,7 @@ class InstallDgFirefoxTheme(threading.Thread):
         directory (str) : Directory to install to.
     '''
     def __init__(self, config, directory):
-        cd(SRC['firefox'])
+        cd(REPO_DIR)
         super().__init__(target=self._install)
         self.config = config
         self.directory = directory
@@ -1038,7 +1042,8 @@ class InstallDgFirefoxTheme(threading.Thread):
         return version
 
     def _install(self):
-        run_command(['git', 'submodule', 'update', '--init', '.'])
+        run_command(['git', 'submodule', 'update', '--init', 'src/dg-firefox-theme'])
+        cd(SRC['firefox'])
 
         if self.get_version() != self.config[f'dg-firefox-theme_version'] or configure_all or force or update_color:
             run_command(['./install.sh', '-c', self.config['color'], '-f', self.directory], show_ouput=True)
@@ -1053,7 +1058,7 @@ class InstallDgVscodeAdwaita(threading.Thread):
         config (dict) : Dictionary that contains the configuration.
     '''
     def __init__(self, config):
-        cd(SRC['vscode'])
+        cd(REPO_DIR)
         super().__init__(target=self._install)
         self.config = config
         self.start()
@@ -1070,9 +1075,11 @@ class InstallDgVscodeAdwaita(threading.Thread):
         return version
 
     def _install(self):
-        global updated
-        run_command(['git', 'submodule', 'update', '--init', '.'])
+        run_command(['git', 'submodule', 'update', '--init', 'src/dg-vscode-adwaita'])
+        cd(SRC['vscode'])
+
         if self.get_version() != self.config['dg-vscode-adwaita_version'] or configured or force:
+            global updated
             if 'default_syntax' in self.config['enabled']:
                 run_command(['./install.py', '-c', self.config['color'], '-t', self.config['variant'], '-d'], show_ouput = True)
             else:
