@@ -68,7 +68,10 @@ def installed_paths(themes, old_only = False):
         paths['themes'] += [glob(f'/usr/share/themes/{name}*')]
 
     for name in themes['dg-adw-gtk3']:
-        paths['gtk3'] += [glob(f'{HOME}/.local/share/themes/{name}*/gtk-3.0'), glob(f'/usr/share/themes/{name}*')]
+        paths['gtk3'] += [
+            glob(f'{HOME}/.local/share/themes/{name}*/gtk-3.0'), glob(f'/usr/share/themes/{name}*/gtk-3.0'),
+            glob(f'{HOME}/.local/share/themes/{name}*/gtk-2.0'), glob(f'/usr/share/themes/{name}*/gtk-2.0')
+        ]
         paths['themes'] += [glob(f'{HOME}/.local/share/themes/{name}*')]
 
     for key, value in FIREFOX_DIR.items():

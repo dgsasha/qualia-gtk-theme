@@ -324,6 +324,7 @@ def main():
                 else:
                     exists = os.path.exists(i)
         if should_print and exists:
+            message = ''
             for theme in VARIANTS['enableable']:
                 if name in VARIANTS['enableable'][theme]:
                     pretty = VARIANTS['enableable'][theme][name]
@@ -359,8 +360,8 @@ def main():
             if target.startswith(f'{HOME}/.local'):
                 dest = '/usr' + target.split(f'{HOME}/.local')[1]
                 run_command(['sudo', 'mkdir', '-p', dest])
-                for i in ['gtk-3.0', 'gtk-4.0', 'index.theme']:
-                    if not os.path.exists(f'{dest}/{i}'):
+                for i in ['gtk-2.0', 'gtk-3.0', 'gtk-4.0', 'index.theme']:
+                    if not os.path.exists(f'{dest}/{i}') and os.path.exists(f'{target}/{i}'):
                         run_command(['sudo', 'ln', '-sf', f'{target}/{i}', f'{dest}/{i}'])
 
     # Install dg-yaru
@@ -960,9 +961,9 @@ class InstallDgYaru(threading.Thread):
             else:
                 options.append('-Dpanel-icons=false')
 
-            gnome_version = int(self.config['desktop_versions']['gnome'])
+            gnome_version = self.config['desktop_versions']['gnome']
             if gnome_version is not None:
-                options.append('-Dgnome-shell-version=' + str(gnome_version))
+                options.append('-Dgnome-shell-version=' + str(int(gnome_version)))
 
             if not os.path.isdir('build'):
                 run_command(['meson', 'build'] + options, meson=True)
