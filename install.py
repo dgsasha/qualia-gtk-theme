@@ -1208,9 +1208,13 @@ class Enable:
 
                 if theme == 'gnome-shell':
                     if shutil.which('gnome-extensions') is not None:
-                        if 'user-theme@gnome-shell-extensions.gcampax.github.com' in check_output(['gnome-extensions', 'list']):
-                            run_command(['gnome-extensions', 'enable', 'user-theme@gnome-shell-extensions.gcampax.github.com'], override_verbose = self.verbose)
-                        else:
+                        try:
+                            if 'user-theme@gnome-shell-extensions.gcampax.github.com' in check_output(['gnome-extensions', 'list']):
+                                    run_command(['gnome-extensions', 'enable', 'user-theme@gnome-shell-extensions.gcampax.github.com'], override_verbose = self.verbose)
+                            else:
+                                print(f"{BLYELLOW}'User Themes'{BYELLOW} GNOME Shell Extension not found, not enabling GNOME Shell theme.{NC}")
+                                continue
+                        except subprocess.CalledProcessError:
                             print(f"{BLYELLOW}'User Themes'{BYELLOW} GNOME Shell Extension not found, not enabling GNOME Shell theme.{NC}")
                             continue
                     else:
