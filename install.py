@@ -442,7 +442,7 @@ class Config:
             enableable (int or float) : version of desktop.
         '''
         try:
-            ver = subprocess.run(command, stdout=subprocess.PIPE, check=True).stdout.decode('utf-8')
+            ver = subprocess.run(command, stdout=subprocess.PIPE).stdout.decode('utf-8')
             ver = sub(regex, '', ver)
 
             if '.' in ver and float(ver) in VERSIONS[name]:
@@ -654,7 +654,10 @@ class Config:
                         config['old'][theme] = {}
                         config['old'][theme][desktop] = value
                 elif key == 'gnome':
-                    config['old_gnome'] = int(value)
+                    try:
+                        config['old_gnome'] = int(value)
+                    except ValueError:
+                        config['old_gnome'] = None
                 elif isinstance(value, str):
                     try:
                         if not configured and key in VARIANTS and value in VARIANTS[key]:
