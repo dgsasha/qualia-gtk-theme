@@ -445,7 +445,7 @@ class Config:
             ver = subprocess.run(command, stdout=subprocess.PIPE, check=True).stdout.decode('utf-8')
             ver = sub(regex, '', ver)
 
-            if float(ver) in VERSIONS[name]:
+            if '.' in ver and float(ver) in VERSIONS[name]:
                 version = float(ver)
             elif int(ver) in VERSIONS[name]:
                 version = int(ver)
@@ -653,6 +653,8 @@ class Config:
                     if desktop in VERSIONS:
                         config['old'][theme] = {}
                         config['old'][theme][desktop] = value
+                elif key == 'gnome':
+                    config['old_gnome'] = int(value)
                 elif isinstance(value, str):
                     try:
                         if not configured and key in VARIANTS and value in VARIANTS[key]:
@@ -681,6 +683,8 @@ class Config:
         f.write('color: ' + config['color'] + '\n')
         f.write('theme: ' + config['theme'] + '\n')
         f.write('enabled: ' + ' '.join(config['enabled']) + '\n')
+        f.write('\n')
+        f.write('gnome: ' + str(config['desktop_versions']['gnome']) + '\n')
         f.write('\n')
 
         for theme in VARIANTS['enableable']:
@@ -868,7 +872,8 @@ class InstallDgYaru(threading.Thread):
         else:
             pretty_string += ' theme'
 
-        if self.get_version() != self.config['dg-yaru_version'] or configure_all or force:
+        if self.get_version() != self.config['dg-yaru_version'] or configure_all or force or \
+        self.config['old_gnome'] != self.config['desktop_versions']['gnome']:
             global updated
             self.spinner = Spinner(pretty_string, '/usr/share', self)
 
@@ -893,7 +898,7 @@ class InstallDgYaru(threading.Thread):
 
             gnome_version = self.config['desktop_versions']['gnome']
             if gnome_version is not None:
-                options.append('-Dgnome-shell-version=' + str(int(gnome_version)))
+                options.append('-Dgnome-shell-version=' + str(gnome_version))
 
             if not os.path.isdir('build'):
                 run_command(['meson', 'build'] + options, meson=True)

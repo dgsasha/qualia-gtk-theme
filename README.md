@@ -23,7 +23,7 @@ More screenshots can be seen [here](.github/SCREENSHOTS.md).
 
 A modern version of Python is required. Any currently supported version should work.
 
-You will also need a Meson version greater than 0.59.
+You will also need a Meson version greater than 0.59. This will be an issue on older Debian or Ubuntu releases.
 
 #### Arch based distros
 
@@ -115,11 +115,15 @@ Your previous configuration will be used again unless you use the `--reconfigure
 
 Only the themes that need updates will be reinstalled, if you want to force reinstall everything, use the `--force` option.
 
-If you ever update GNOME, reinstall the theme with the `--force` option to install the new GNOME Shell theme.
-
 You can also use `--accent` or `--theme` to just change the accent color or the theme variant.
 
 If you installed the VS Code theme, you can use `--syntax` to change the syntax highlighting.
+
+**Warning about GNOME**
+
+The GNOME Shell often changes a lot between major releases. For this reason you will always need to run `./install.py` after updating GNOME to make sure the latest version of the theme is installed. You should probably do this for other desktops as well, just in case there are changes.
+
+You should also probably avoid using alpha builds of GNOME because I might not have the theme updated to support them yet.
 
 ## Uninstalling
 ```
