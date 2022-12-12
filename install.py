@@ -277,7 +277,8 @@ def main():
         for target in targets:
             if target.startswith(f'{HOME}/.local'):
                 dest = '/usr' + target.split(f'{HOME}/.local')[1]
-                run_command(['sudo', 'mkdir', '-p', dest])
+                if not os.path.exists(dest):
+                    run_command(['sudo', 'mkdir', '-p', dest])
                 for i in ['gtk-2.0', 'gtk-3.0', 'gtk-4.0', 'index.theme']:
                     if not os.path.exists(f'{dest}/{i}') and os.path.exists(f'{target}/{i}'):
                         run_command(['sudo', 'ln', '-sf', f'{target}/{i}', f'{dest}/{i}'])
