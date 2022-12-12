@@ -372,8 +372,14 @@ def main():
     conf.write(config)
 
     # Set color scheme
-    if config['color_scheme'] is not None and shutil.which('gsettings') is not None:
-        run_command(['gsettings', 'set', 'org.gnome.desktop.interface', 'color-scheme', config['color_scheme']])
+    try:
+        if config['color_scheme'] is not None and shutil.which('gsettings') is not None:
+            subprocess.run(['gsettings', 'set', 'org.gnome.desktop.interface', 'color-scheme', config['color_scheme']], stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT, check=True)
+            if config['desktop_versions']['budgie'] is not None:
+                dark = 'true' if config['color_scheme'] == 'prefer-dark' else 'false'
+                subprocess.run(['gsettings', 'set', 'com.solus-project.budgie-panel', 'dark-theme', dark ], stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT, check=True)
+    except subprocess.CalledProcessError:
+        pass
 
     ########################
     #   Remove old theme   #
@@ -1057,12 +1063,15 @@ class InstallQualiaGtkThemeSnap(threading.Thread):
         for line in connections:
             line = line.split()
             for key, value in {'gtk3': 'gtk-3', 'icons': 'icon', 'sounds': 'sound'}.items():
-                if key in self.config["enabled"]:
-                    if line[2] == f'gtk-common-themes:{value}-themes':
-                        run_command(['sudo', 'snap', 'connect', line[1], f'qualia-gtk-theme:{value}-themes'])
-                else:
-                    if line[2] == f'qualia-gtk-theme:{value}-themes':
-                        run_command(['sudo', 'snap', 'disconnect', line[1], f'qualia-gtk-theme:{value}-themes'])
+                try:
+                    if key in self.config["enabled"]:
+                        if line[2] == f'gtk-common-themes:{value}-themes':
+                            run_command(['sudo', 'snap', 'connect', line[1], f'qualia-gtk-theme:{value}-themes'])
+                    else:
+                        if line[2] == f'qualia-gtk-theme:{value}-themes':
+                            run_command(['sudo', 'snap', 'disconnect', line[1], f'qualia-gtk-theme:{value}-themes'])
+                except IndexError:
+                    pass
 
 class Enable:
     '''
