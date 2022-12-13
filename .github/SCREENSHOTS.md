@@ -5,12 +5,6 @@
 Support for some of these desktops is still a work in progress. Everything should work but there may be inconsistencies or bugs. 
 See [contributing](contributing.md) if you want to help.
 
-## VS Code
-
-![Screenshot of the dark VS Code theme](images/vscode-dark.png)
-
-![Screenshot of the light VS Code theme](images/vscode-light.png)
-
 ## Cinnamon
 
 ![Screenshot of the dark Cinnamon theme](images/cinnamon-dark.png)
