@@ -28,7 +28,7 @@ Open an issue or a pull request if your distro is not listed below.
 <details>
 <summary>
 
-### Arch based distros
+## Arch based distros
 
 </summary>
 
@@ -49,7 +49,7 @@ sudo pacman -S gnome-shell-extensions
 <details>
 <summary>
 
-### Debian/Ubuntu based distros
+## Debian/Ubuntu based distros
 
 </summary>
 
@@ -102,7 +102,7 @@ sudo apt-get install gnome-shell-extensions
 <details>
 <summary>
 
-### Fedora
+## Fedora
 
 </summary>
 
@@ -122,7 +122,7 @@ sudo dnf install gnome-shell-extension-user-theme
 <details>
 <summary>
 
-### openSUSE Tumbleweed
+## openSUSE Tumbleweed
 
 </summary>
 
@@ -141,7 +141,7 @@ sudo zypper install gnome-shell-extension-user-theme
 <details>
 <summary>
 
-### Solus
+## Solus
 
 </summary>
 
