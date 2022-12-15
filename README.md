@@ -5,7 +5,7 @@
 
 **Supports GNOME 42+, Budgie 10.6+, Cinnamon, Unity7, Xfce, and Mate.**
 
-**[Other Desktop Environments](.github/OTHER.md#other-desktop-environments)**
+**[Other Desktop Environments](https://github.com/dgsasha/qualia-gtk-theme/wiki/Other-Desktop-Environments)**
 
 ![Screenshot of the dark theme](.github/images/dark.png)
 
@@ -23,44 +23,139 @@ More screenshots can be seen [here](.github/SCREENSHOTS.md).
 
 A modern version of Python is required. Any currently supported version should work.
 
-You will also need a Meson version greater than 0.59. This will be an issue on older Debian or Ubuntu releases.
+Open an issue or a pull request if your distro is not listed below.
 
-#### Arch based distros
+<details>
+<summary>
+
+### Arch based distros
+
+</summary>
+
+*Includes Arch, Manjaro, Garuda Linux, EndeavourOS, etc.*
 
 ```
-sudo pacman -S sassc git ninja meson rsync gnome-shell-extensions
+sudo pacman -S sassc git ninja meson rsync
 ```
 
-#### Debian/Ubuntu based distros
+**If using GNOME, also run this and then log out and log back in:**
 
 ```
-sudo apt install sassc git ninja-build meson gnome-shell-extensions
+sudo pacman -S gnome-shell-extensions
 ```
 
-#### Fedora
+</details>
+
+<details>
+<summary>
+
+### Debian/Ubuntu based distros
+
+</summary>
+
+<details>
+<summary>
+
+### Debian base >= 'bookworm' or Ubuntu base >= 22.04
+
+</summary>
+
+*Also includes [bullseye-backports](https://backports.debian.org/Instructions/) or Debian branches like sid/testing*
+
+```
+sudo apt-get install sassc git ninja-build meson
+```
+
+**If using GNOME, also run this and then log out and log back in:**
+
+```
+sudo apt-get install gnome-shell-extensions
+```
+
+</details>
+
+<details>
+<summary>
+
+### Debian base <= 'bullseye' or Ubuntu base <= 20.04
+
+</summary>
+
+*Includes some Ubuntu based distros like Zorin OS*
+```
+sudo apt-get install sassc git ninja-build python3-pip gnome-shell-extensions
+```
+```
+sudo pip install meson ninja
+```
+
+**If using GNOME, also run this and then log out and log back in:**
+
+```
+sudo apt-get install gnome-shell-extensions
+```
+
+</details>
+
+</details>
+
+<details>
+<summary>
+
+### Fedora
+
+</summary>
 
 ```
 sudo dnf install sassc git ninja-build meson gnome-shell-extension-user-theme
 ```
 
-#### openSUSE
+**If using GNOME, also run this and then log out and log back in:**
+
+```
+sudo dnf install gnome-shell-extension-user-theme
+```
+
+
+</details>
+
+<details>
+<summary>
+
+### openSUSE Tumbleweed
+
+</summary>
 
 ```
 sudo zypper install sassc git ninja meson gnome-shell-extension-user-theme
 ```
 
-#### Solus
+**If using GNOME, also run this and then log out and log back in:**
+
+```
+sudo zypper install gnome-shell-extension-user-theme
+```
+
+</details>
+
+<details>
+<summary>
+
+### Solus
+
+</summary>
 
 ```
 sudo eopkg install sassc git ninja meson rsync gnome-shell-extensions
 ```
 
-<br>
+**If using GNOME, also run this and then log out and log back in:**
 
-**If you aren't using GNOME, you shouldn't install `gnome-shell-extensions` / `gnome-shell-extension-user-theme`.**
+```
+sudo eopkg install gnome-shell-extensions
+```
 
-**If you are using GNOME, and it wasn't already installed, log out and log back in before you proceed.**
-
+</details>
 
 ## Downloading and Installing
 
@@ -160,7 +255,7 @@ Run './uninstall.py firefox' to remove the theme from all Firefox variants.
 
 ## Other things you should read
 
-### [Flatpak Apps](.github/OTHER.md#flatpak-apps) &nbsp; [Snap Apps](.github/OTHER.md#snap-apps) &nbsp; [GDM Theme](.github/OTHER.md#gdm-theme) &nbsp; [Copying](.github/OTHER.md#copying) &nbsp; [Issues](.github/OTHER.md#issues) &nbsp; [Contributing](.github/CONTRIBUTING.md)
+### [Flatpak Apps](https://github.com/dgsasha/qualia-gtk-theme/wiki/Flatpak-Apps) &nbsp; [Snap Apps](https://github.com/dgsasha/qualia-gtk-theme/wiki/Snap-Apps) &nbsp; [GDM Theme](https://github.com/dgsasha/qualia-gtk-theme/wiki/GDM-Theme) &nbsp; [Copying](https://github.com/dgsasha/qualia-gtk-theme/wiki/Copying) &nbsp; [Issues](https://github.com/dgsasha/qualia-gtk-theme/wiki/Issues) &nbsp; [Contributing](https://github.com/dgsasha/qualia-gtk-theme/wiki/Contributing)
 
 ## Credits :)
 ### A huge thanks to:

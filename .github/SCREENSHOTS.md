@@ -3,7 +3,7 @@
 # More Screenshots :)
 
 Support for some of these desktops is still a work in progress. Everything should work but there may be inconsistencies or bugs. 
-See [contributing](contributing.md) if you want to help.
+See [contributing](https://github.com/dgsasha/qualia-gtk-theme/wiki/Contributing) if you want to help.
 
 ## Cinnamon
 
