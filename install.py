@@ -887,11 +887,6 @@ class InstallDgYaru(threading.Thread):
             global updated
             self.spinner = Spinner(pretty_string, '/usr/share', self)
 
-            if 'ubuntu-unity' in self.config['enabled'] or 'mate' in self.config['enabled']:
-                panel_icons=True
-            else:
-                panel_icons=False
-
             options = []
 
             for p in self.parts:
@@ -901,7 +896,7 @@ class InstallDgYaru(threading.Thread):
                 if i not in self.parts:
                     options.append('-D' + i + '=false')
 
-            if panel_icons:
+            if 'unity' in self.config['desktop_versions'] or 'mate' in self.config['desktop_versions']:
                 options.append('-Dpanel-icons=true')
             else:
                 options.append('-Dpanel-icons=false')

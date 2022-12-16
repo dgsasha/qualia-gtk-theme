@@ -29,10 +29,9 @@ Open an issue or a pull request if your distro is not listed below.
 <summary>
 
 ### Arch based distros
+*Includes Arch, Manjaro, Garuda, EndeavourOS, etc.*
 
 </summary>
-
-*Includes Arch, Manjaro, Garuda Linux, EndeavourOS, etc.*
 
 ```
 sudo pacman -S sassc git ninja meson rsync
@@ -50,6 +49,7 @@ sudo pacman -S gnome-shell-extensions
 <summary>
 
 ### Debian/Ubuntu based distros
+*Includes Debian, Ubuntu (and all Ubuntu Remixes), Pop!_OS, Zorin OS, etc.*
 
 </summary>
 
@@ -57,10 +57,9 @@ sudo pacman -S gnome-shell-extensions
 <summary>
 
 #### Debian base >= 'bookworm' or Ubuntu base >= 22.04
+*Also includes [bullseye-backports](https://backports.debian.org/Instructions/) and Debian branches like sid/testing.*
 
 </summary>
-
-*Also includes [bullseye-backports](https://backports.debian.org/Instructions/) or Debian branches like sid/testing*
 
 ```
 sudo apt-get install sassc git ninja-build meson
@@ -78,19 +77,19 @@ sudo apt-get install gnome-shell-extensions
 <summary>
 
 #### Debian base <= 'bullseye' or Ubuntu base <= 20.04
+*Includes some Ubuntu based distros like Zorin OS.*
+
+*The GNOME Shell theme will not work on distros this old.*
 
 </summary>
 
-*Includes some Ubuntu based distros like Zorin OS*
 ```
 sudo apt-get install sassc git ninja-build python3-pip gnome-shell-extensions
 ```
 ```
 sudo pip install meson ninja
 ```
-
 **If using GNOME, also run this and then log out and log back in:**
-
 ```
 sudo apt-get install gnome-shell-extensions
 ```
@@ -102,7 +101,8 @@ sudo apt-get install gnome-shell-extensions
 <details>
 <summary>
 
-### Fedora
+### Fedora based distros
+*Includes all Fedora Spins, Nobara, risiOS, etc.*
 
 </summary>
 
@@ -116,13 +116,13 @@ sudo dnf install sassc git ninja-build meson gnome-shell-extension-user-theme
 sudo dnf install gnome-shell-extension-user-theme
 ```
 
-
 </details>
 
 <details>
 <summary>
 
-### openSUSE Tumbleweed
+### OpenSUSE based distros
+*Includes OpenSUSE Tumbleweed and GeckoLinux Rolling, openSUSE Leap probably isn't supported.*
 
 </summary>
 
@@ -142,6 +142,7 @@ sudo zypper install gnome-shell-extension-user-theme
 <summary>
 
 ### Solus
+*Includes all Solus editions.*
 
 </summary>
 
@@ -206,19 +207,26 @@ git pull
 ./install.py
 ```
 
-Your previous configuration will be used again unless you use the `--reconfigure` option.
-
 Only the themes that need updates will be reinstalled, if you want to force reinstall everything, use the `--force` option.
+
+Your previous configuration will be used again unless you use the `--reconfigure` option.
 
 You can also use `--accent` or `--theme` to just change the accent color or the theme variant.
 
 If you installed the VS Code theme, you can use `--syntax` to change the syntax highlighting.
 
+<details>
+<summary>
+
 **Warning about GNOME**
+
+</summary>
 
 The GNOME Shell often changes a lot between major releases. For this reason you will always need to run `./install.py` after updating GNOME to make sure the latest version of the theme is installed. You should probably do this for other desktops as well, just in case there are changes.
 
 You should also probably avoid using alpha builds of GNOME because I might not have the theme updated to support them yet.
+
+</details>
 
 ## Uninstalling
 ```
