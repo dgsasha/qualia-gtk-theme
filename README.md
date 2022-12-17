@@ -102,7 +102,7 @@ sudo apt-get install gnome-shell-extensions
 <summary>
 
 ### Fedora based distros
-*Includes all Fedora Spins, Nobara, risiOS, etc.*
+*Includes Fedora (and all Fedora Spins), Nobara, risiOS, etc.*
 
 </summary>
 
