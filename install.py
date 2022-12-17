@@ -768,8 +768,8 @@ class Spinner(threading.Thread):
             while self.process.is_alive():
                 for cursor in '|/-\\':
                     columns = int(os.popen('stty size', 'r').read().split()[1])
-                    sys.stdout.write(f'\r\033[?25l' + message + f'\033[J\033[{columns - 1}G' + cursor + '\n')
-                    sys.stdout.write(f'\033[{message_len // (columns - 1) + 1}A')
+                    sys.stdout.write(f'\r\033[?25l' + message + '   ' + f'\033[J\033[{columns - 1}G' + cursor + '\n')
+                    sys.stdout.write(f'\033[{(message_len + 2) // (columns) + 1}A')
                     sys.stdout.flush()
                     time.sleep(0.1)
             sys.stdout.write('\r' + message + '\033[J\n\033[?25h')
