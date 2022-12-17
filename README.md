@@ -164,6 +164,7 @@ Download the repository and run the install script to configure and install the 
 
 When configuring the theme you get to choose an [accent color](#available-accent-colors), choose between the light and dark variants, and choose which themes you want to install.
 
+If you are going to install the VS Code theme, read [this](https://github.com/dgsasha/qualia-gtk-theme/wiki/VS-Code-Theme) first.
 ```
 git clone https://github.com/dgsasha/qualia-gtk-theme -b main && cd qualia-gtk-theme
 ```

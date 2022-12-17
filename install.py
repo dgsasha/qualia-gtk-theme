@@ -1208,8 +1208,6 @@ class Enable:
             if theme in config['enabled'] or uninstalling:
                 if value['theme_name'] is None:
                     continue
-                else:
-                    name = value['theme_name']
 
                 if theme == 'gnome-shell':
                     if shutil.which('gnome-extensions') is not None:
@@ -1229,6 +1227,11 @@ class Enable:
                 for de, schema in value['schemas'].items():
                     if desktop != 'all' and desktop != de:
                         continue
+                    if theme == 'icons' and de == 'unity' and not uninstalling:
+                        # because the panel isn't always dark in the unity theme, use light icons in light theme
+                        name = data['gtk3']['theme_name']
+                    else:
+                        name = value['theme_name']
                     key = value['key']
                     if shutil.which('gsettings') is not None:
                         if config['desktop_versions'][de] is not None:
@@ -1240,7 +1243,7 @@ class Enable:
                             elif de in config['old'][theme] and config['old'][theme][de].startswith('qualia'):
                                 config['old'][theme][de] = old
                             if old != name:
-                                print(f'Changing {theme} theme in {de_pretty} to {BOLD}{name}{NC}.')
+                                print(f'Changing {config["enableable"][theme]} theme in {de_pretty} to {BOLD}{name}{NC}.')
                                 run_command(['gsettings', 'set', schema, key, name], override_verbose = self.verbose)
                     else:
                         print(f"{BLYELLOW}'gsettings'{BYELLOW} not found, not enabling {theme} theme.{NC}")
@@ -1248,6 +1251,7 @@ class Enable:
 
                 prop = data[theme]['property']
                 if shutil.which('xfconf-query') is not None:
+                    name = value['theme_name']
                     channel = data[theme]['channel']
                     if prop is not None and config['desktop_versions']['xfce'] is not None:
                         old = check_output(['xfconf-query', '-c', channel, '-p', prop])
@@ -1257,7 +1261,7 @@ class Enable:
                         elif 'xfce' in config['old'][theme] and config['old'][theme]['xfce'].startswith('qualia'):
                             config['old'][theme]['xfce'] = old
                         if old != name:
-                            print(f'Changing {theme} theme in XFCE to {BOLD}{name}{NC}.')
+                            print(f'Changing {config["enableable"][theme]} theme in XFCE to {BOLD}{name}{NC}.')
                             run_command(['xfconf-query', '-c', channel, '-p', prop, '-s', name], override_verbose = self.verbose)
                 elif prop is not None and config['desktop_versions']['xfce'] is not None:
                     print(f"{BLYELLOW}'xfconf-query'{BYELLOW} not found, not enabling {theme} theme.{NC}")

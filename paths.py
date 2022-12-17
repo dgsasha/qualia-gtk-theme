@@ -83,6 +83,6 @@ def installed_paths(themes, old_only = False):
         paths['gtk4'] += [f'{GTK4_DIR}/mac-icons']
         paths['gtk4'] += [f'{GTK4_DIR}/gtk.css']
         paths['gtk4-libadwaita'] += [glob(f'{HOME}/.local/share/themes/qualia*/gtk-4.0'), glob('/usr/share/themes/qualia*/gtk-4.0')]
-        paths['vscode'] += [f'{HOME}/.vscode/extensions/qualia']
+        paths['vscode'] += [f'{HOME}/.vscode/extensions/qualia', f'{HOME}/.var/app/com.visualstudio.code/data/vscode/extensions/qualia']
 
     return paths

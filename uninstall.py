@@ -7,10 +7,7 @@ import shutil
 import subprocess
 
 from install import BRED, BOLD, VARIANTS, NC, Config, Enable
-from paths import installed_paths, CONFIG_FILE, OLD_CONFIG, HOME
-
-CODE_CONFIG_DIR = f'{HOME}/.config/Code/User'
-CODE_CONFIG = f'{CODE_CONFIG_DIR}/settings.json'
+from paths import installed_paths, CONFIG_FILE, OLD_CONFIG
 
 OLD = [
     'gtk3',
