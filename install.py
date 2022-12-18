@@ -141,7 +141,7 @@ def check_output(command):
         command (list) : A list of the command and arguments to run.
 
     Returns:
-        output (str) : The ouput of the command
+        output (str) : The ouput of the command.
     '''
     output = subprocess.run(command, stdout=subprocess.PIPE, check=True).stdout.decode('utf-8').strip('\'\n')
     return output
@@ -222,10 +222,10 @@ def main():
         Parameters:
             name (str) : The name of the part of the theme to check.
             paths (dict) : The dict containing all of the paths.
-            should_print (bool) : If we should print that the path exists
+            should_print (bool) : If we should print that the path exists.
 
         Returns:
-            exists (bool) : If ret is true, whether or not the path exists
+            exists (bool) : Whether or not the path exists.
         '''
         exists = False
 
@@ -468,10 +468,10 @@ class Config:
         Find out what themes can be enabled.
 
         Parameters:
-            desktop_versions (dict): dictionary containing the desktop versions
+            desktop_versions (dict): dictionary containing the desktop versions.
 
         Returns:
-            enableable (dict) : {name: pretty_name}, themes that can be enabled
+            enableable (dict) : {name: pretty_name}, themes that can be enabled.
         '''
         enableable = {}
 
@@ -551,7 +551,7 @@ class Config:
 
         Parameters:
             message (str) : Which {message} do you want?
-            options (dict) : {name: pretty_name} dictionary that contains options
+            options (dict) : {name: pretty_name} dictionary that contains options.
             default (int) : Default option.
         '''
         print (f'{BLBLUE}Which {NC}{BLCYAN}{message}{NC}{BLBLUE} do you want?{NC}')
@@ -719,7 +719,7 @@ class Config:
         Finds out what variant of the themes should be installed (light or dark).
 
         Parameters:
-            pref (str) : 'light' 'dark' or 'auto'
+            pref (str) : 'light' 'dark' or 'auto'.
         '''
         config = self.config
         if pref == 'auto':
@@ -747,7 +747,7 @@ class Spinner(threading.Thread):
     Attributes:
         theme (str) : The theme name to be printed in the message.
         directory (str) : The directory to be printed in the message.
-        process (Thread) : The thread of the install process we are waiting on
+        process (Thread) : The thread of the install process we are waiting on.
     '''
     def __init__(self, theme, directory, process):
         super().__init__(target=self._msg)
@@ -775,18 +775,17 @@ class Spinner(threading.Thread):
             sys.stdout.write('\r' + message + '\033[J\n\033[?25h')
             sys.stdout.flush()
 
-class InstallDgAdwGtk3(threading.Thread):
+class InstallThread(threading.Thread):
     '''
-    Installs the dg-adw-gtk3 theme if it was updated or if being forced.
+    A thread for installing a part of the theme.
 
     Attributes:
-        config (dict) : Dictionary that contains the configuration.
+        process (object) : Callable object to run in a thread.
     '''
-    def __init__(self, config):
+    def __init__(self, process):
         cd(REPO_DIR)
-        super().__init__(target=self._install)
         self.spinner = None
-        self.config = config
+        super().__init__(target=process)
         self.start()
         self.join()
         while self.spinner is not None and self.spinner.is_alive(): # Wait for spinner thread to close
@@ -794,13 +793,31 @@ class InstallDgAdwGtk3(threading.Thread):
 
     def get_version(self):
         '''
-        Return current version of dg-adw-gtk3.
+        Return current version of the submodule.
 
         Returns:
             version (str) : 40 character commit hash
         '''
         version = check_output(['git', 'rev-parse', 'HEAD'])
         return version
+
+    def updated(self):
+        '''
+        Sets the global variable 'updated' to true.
+        '''
+        global updated
+        updated = True
+
+class InstallDgAdwGtk3(InstallThread):
+    '''
+    Installs the dg-adw-gtk3 theme if it was updated or if being forced.
+
+    Attributes:
+        config (dict) : Dictionary that contains the configuration.
+    '''
+    def __init__(self, config):
+        self.config = config
+        super().__init__(process=self._install)
 
     def _install(self):
         if not no_update:
@@ -821,17 +838,16 @@ class InstallDgAdwGtk3(threading.Thread):
             options = ['-Dgtk4=true', '-Dgtk3=false']
 
         if self.get_version() != self.config['dg-adw-gtk3_version'] or configure_all or force:
-            global updated
             self.spinner = Spinner(pretty_string, f'{HOME}/.local/share/themes', self)
             if not os.path.isdir('build'):
                 run_command(['meson', f'-Dprefix={HOME}/.local', 'build'], meson=True)
             run_command(['meson', 'configure', 'build'] + options, meson=True)
             run_command(['ninja', '-C', 'build', 'install'], meson=True)
-            updated = True
+            self.updated()
         else:
             print(f'The {up_to_date} up to date.')
 
-class InstallDgYaru(threading.Thread):
+class InstallDgYaru(InstallThread):
     '''
     Installs the dg-yaru theme if it was updated or if being forced.
 
@@ -841,26 +857,10 @@ class InstallDgYaru(threading.Thread):
         parts_pretty (list) : Names of parts of theme to be printed.
     '''
     def __init__(self, config, parts, parts_pretty):
-        cd(REPO_DIR)
-        super().__init__(target=self._install)
-        self.spinner = None
         self.config = config
         self.parts = parts
         self.parts_pretty = parts_pretty
-        self.start()
-        self.join()
-        while self.spinner is not None and self.spinner.is_alive(): # Wait for spinner thread to close
-            pass
-
-    def get_version(self):
-        '''
-        Return current version of dg-yaru.
-
-        Returns:
-            version (str) : 40 character commit hash
-        '''
-        version = check_output(['git', 'rev-parse', 'HEAD'])
-        return version
+        super().__init__(process=self._install)
 
     def _install(self):
         if not no_update:
@@ -884,7 +884,6 @@ class InstallDgYaru(threading.Thread):
 
         if self.get_version() != self.config['dg-yaru_version'] or configure_all or force or \
         self.config['old_gnome'] != self.config['desktop_versions']['gnome']:
-            global updated
             self.spinner = Spinner(pretty_string, '/usr/share', self)
 
             options = []
@@ -910,14 +909,14 @@ class InstallDgYaru(threading.Thread):
             else:
                 run_command(['meson', 'configure', 'build'] + options, meson=True)
             run_command(['ninja', '-C', 'build', 'install'], meson=True)
-            updated = True
+            self.updated()
         else:
             if len(self.parts) > 1:
                 print(f'The {pretty_string} are up to date.')
             else:
                 print(f'The {pretty_string} is up to date.')
 
-class InstallDgLibadwaita(threading.Thread):
+class InstallDgLibadwaita(InstallThread):
     '''
     Installs the dg-libadwaita theme if it was updated or if being forced.
 
@@ -925,21 +924,8 @@ class InstallDgLibadwaita(threading.Thread):
         config (dict) : Dictionary that contains the configuration.
     '''
     def __init__(self, config):
-        cd(REPO_DIR)
-        super().__init__(target=self._install)
         self.config = config
-        self.start()
-        self.join()
-
-    def get_version(self):
-        '''
-        Return current version of dg-libadwaita.
-
-        Returns:
-            version (str) : 40 character commit hash
-        '''
-        version = check_output(['git', 'rev-parse', 'HEAD'])
-        return version
+        super().__init__(process=self._install)
 
     def _install(self):
         if not no_update:
@@ -947,13 +933,12 @@ class InstallDgLibadwaita(threading.Thread):
         cd(SRC['gtk4'])
 
         if self.get_version() != self.config['dg-libadwaita_version'] or configure_all or force or update_color or update_theme:
-            global updated
             run_command(['./install.sh', '-c', self.config['color'], '-t', self.config['variant']], show_ouput=True)
-            updated = True
+            self.updated()
         else:
             print('The qualia GTK4 configuration is up to date.')
 
-class InstallDgFirefoxTheme(threading.Thread):
+class InstallDgFirefoxTheme(InstallThread):
     '''
     Installs the dg-firefox-theme if it was updated or if being forced.
 
@@ -962,22 +947,9 @@ class InstallDgFirefoxTheme(threading.Thread):
         directory (str) : Directory to install to.
     '''
     def __init__(self, config, directory):
-        cd(REPO_DIR)
-        super().__init__(target=self._install)
         self.config = config
         self.directory = directory
-        self.start()
-        self.join()
-
-    def get_version(self):
-        '''
-        Return current version of dg-firefox-theme.
-
-        Returns:
-            version (str) : 40 character commit hash
-        '''
-        version = check_output(['git', 'rev-parse', 'HEAD'])
-        return version
+        super().__init__(process=self._install)
 
     def _install(self):
         if not no_update:
@@ -989,7 +961,7 @@ class InstallDgFirefoxTheme(threading.Thread):
         else:
             print('The qualia Firefox theme is up to date.')
 
-class InstallDgVscodeAdwaita(threading.Thread):
+class InstallDgVscodeAdwaita(InstallThread):
     '''
     Installs the dg-vscode-adwaita theme if it was updated or if being forced.
 
@@ -997,21 +969,8 @@ class InstallDgVscodeAdwaita(threading.Thread):
         config (dict) : Dictionary that contains the configuration.
     '''
     def __init__(self, config):
-        cd(REPO_DIR)
-        super().__init__(target=self._install)
         self.config = config
-        self.start()
-        self.join()
-
-    def get_version(self):
-        '''
-        Return current version of dg-vscode-adwaita.
-
-        Returns:
-            version (str) : 40 character commit hash
-        '''
-        version = check_output(['git', 'rev-parse', 'HEAD'])
-        return version
+        super().__init__(process=self._install)
 
     def _install(self):
         if not no_update:
@@ -1019,16 +978,15 @@ class InstallDgVscodeAdwaita(threading.Thread):
         cd(SRC['vscode'])
 
         if self.get_version() != self.config['dg-vscode-adwaita_version'] or configured or force:
-            global updated
             if 'default_syntax' in self.config['enabled']:
                 run_command(['./install.py', '-c', self.config['color'], '-t', self.config['variant'], '-d'], show_ouput = True)
             else:
                 run_command(['./install.py', '-c', self.config['color'], '-t', self.config['variant']], show_ouput = True)
-            updated = True
+            self.updated()
         else:
             print('The qualia VSCode theme is up to date.')
 
-class InstallQualiaGtkThemeSnap(threading.Thread):
+class InstallQualiaGtkThemeSnap(InstallThread):
     '''
     Installs the qualia-gtk-theme snap if it was updated.
 
@@ -1036,10 +994,8 @@ class InstallQualiaGtkThemeSnap(threading.Thread):
         config (dict) : Dictionary that contains the configuration.
     '''
     def __init__(self, config):
-        super().__init__(target=self._install)
         self.config = config
-        self.start()
-        self.join()
+        super().__init__(process=self._install)
 
     def _install(self):
         snap_list = check_output(['snap', 'list']).split('\n')
@@ -1075,8 +1031,8 @@ class Enable:
 
     Attributes:
         config (dict) : Dictionary that contains the configuration.
-        do_verbose (bool): verbose output
-        kwargs (dict) : {theme: name} dictionary of the themes to enable
+        do_verbose (bool): Verbose output.
+        kwargs (dict) : {theme: name} Dictionary of the themes to enable.
     '''
     def __init__(self, config, do_verbose, **kwargs):
         self.names = {}
