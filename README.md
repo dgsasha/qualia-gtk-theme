@@ -84,7 +84,7 @@ sudo apt-get install gnome-shell-extensions
 </summary>
 
 ```
-sudo apt-get install sassc git ninja-build python3-pip gnome-shell-extensions
+sudo apt-get install sassc git python3-pip
 ```
 ```
 sudo pip install meson ninja
@@ -107,7 +107,7 @@ sudo apt-get install gnome-shell-extensions
 </summary>
 
 ```
-sudo dnf install sassc git ninja-build meson gnome-shell-extension-user-theme
+sudo dnf install sassc git ninja-build meson
 ```
 
 **If using GNOME, also run this and then log out and log back in:**
@@ -127,7 +127,7 @@ sudo dnf install gnome-shell-extension-user-theme
 </summary>
 
 ```
-sudo zypper install sassc git ninja meson gnome-shell-extension-user-theme
+sudo zypper install sassc git ninja meson
 ```
 
 **If using GNOME, also run this and then log out and log back in:**
