@@ -1,7 +1,7 @@
 <div align="center">
 
 # qualia GTK theme
-**A Yaru and Libadwaita inspired theme designed to provide a consistent experience on GTK desktops.**
+**A Yaru and Libadwaita inspired theme designed to provide a consistent experience across GTK desktops.**
 
 **Supports GNOME 42+, Budgie 10.6+, Cinnamon, Unity7, Xfce, and Mate.**
 
@@ -11,7 +11,7 @@
 
 ![Screenshot of the light theme](.github/images/light.png)
 
-More screenshots can be seen [here](.github/SCREENSHOTS.md).
+More screenshots can be seen [here](https://github.com/dgsasha/qualia-gtk-theme/wiki/Screenshots).
 
 **This repo contains a GTK3 theme, a configuration for Libadwaita, a Firefox theme, a VS Code theme, and themes for the desktops listed above.**
   
@@ -22,8 +22,6 @@ More screenshots can be seen [here](.github/SCREENSHOTS.md).
 ## Installing Dependencies
 
 A modern version of Python is required. Any currently supported version should work.
-
-Open an issue or a pull request if your distro is not listed below.
 
 <details>
 <summary>
@@ -160,16 +158,23 @@ sudo eopkg install gnome-shell-extensions
 
 ## Downloading and Installing
 
-Download the repository and run the install script to configure and install the theme.
+#### First, download the repository.
 
-When configuring the theme you get to choose an [accent color](#available-accent-colors), choose between the light and dark variants, and choose which themes you want to install.
-
-If you are going to install the Firefox theme, read [this](https://github.com/dgsasha/qualia-gtk-theme/wiki/Firefox-Theme) first.
-
-If you are going to install the VS Code theme, read [this](https://github.com/dgsasha/qualia-gtk-theme/wiki/VS-Code-Theme) first.
+If storage space / network usage is not a problem, run this:
 ```
 git clone https://github.com/dgsasha/qualia-gtk-theme -b main && cd qualia-gtk-theme
 ```
+If you want to limit the download size and don't plan on contributing, run this instead:
+```
+git clone --depth=1 --recurse-submodules --shallow-submodules https://github.com/dgsasha/qualia-gtk-theme -b main && cd qualia-gtk-theme
+```
+
+#### Next, run the install script to configure and install the theme.
+
+When configuring the theme you get to choose an [accent color](#available-accent-colors), choose between the light and dark variants, and choose which themes you want to install.
+
+If you are going to install the Firefox theme, read [this](https://github.com/dgsasha/qualia-gtk-theme/wiki/Firefox-Theme) first, and if you are going to install the VS Code theme, read [this](https://github.com/dgsasha/qualia-gtk-theme/wiki/VS-Code-Theme) first.
+
 ```
 ./install.py
 ```
@@ -201,7 +206,9 @@ options:
 
 ## Updating
 
-Pull in changes from the git repo and run the install script again.
+You should try to update the theme frequently, and always make sure it is up to date before opening issues.
+
+To update, pull in changes from the git repo and run the install script again.
 
 ```
 git pull
@@ -210,7 +217,7 @@ git pull
 ./install.py
 ```
 
-Only the themes that need updates will be reinstalled, if you want to force reinstall everything, use the `--force` option.
+Only the themes that have updates will be reinstalled, if you want to force reinstall everything, use the `--force` option.
 
 Your previous configuration will be used again unless you use the `--reconfigure` option.
 
@@ -221,7 +228,7 @@ If you installed the VS Code theme, you can use `--syntax` to change the syntax 
 <details>
 <summary>
 
-**Warning about GNOME**
+#### Warning about GNOME
 
 </summary>
 
@@ -268,6 +275,8 @@ Run './uninstall.py firefox' to remove the theme from all Firefox variants.
 
 ### [Flatpak Apps](https://github.com/dgsasha/qualia-gtk-theme/wiki/Flatpak-Apps) &nbsp; [Snap Apps](https://github.com/dgsasha/qualia-gtk-theme/wiki/Snap-Apps) &nbsp; [GDM Theme](https://github.com/dgsasha/qualia-gtk-theme/wiki/GDM-Theme) &nbsp; [Copying](https://github.com/dgsasha/qualia-gtk-theme/wiki/Copying) &nbsp; [Issues](https://github.com/dgsasha/qualia-gtk-theme/wiki/Issues) &nbsp; [Contributing](https://github.com/dgsasha/qualia-gtk-theme/wiki/Contributing)
 
-## Credits :)
+## :heart: &nbsp; Credits &nbsp; :heart:
 ### A huge thanks to:
 ### [Ubuntu](https://ubuntu.com/) for [Yaru](https://github.com/ubuntu/yaru), [vinceliuice](https://github.com/vinceliuice) for [WhiteSur-gtk-theme](https://github.com/vinceliuice/WhiteSur-gtk-theme), [rafaelmardojai](https://github.com/rafaelmardojai) for [firefox-gnome-theme](https://github.com/rafaelmardojai/firefox-gnome-theme), [piousdeer](https://github.com/piousdeer) for [vscode-adwaita](https://github.com/piousdeer/vscode-adwaita), and [lassekongo83](https://github.com/lassekongo83) for [adw-gtk3](https://github.com/lassekongo83/adw-gtk3).
+
+</div>
