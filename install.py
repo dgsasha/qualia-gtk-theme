@@ -10,6 +10,7 @@ import time
 import threading
 from re import sub
 from urllib.request import urlopen
+from glob import glob
 
 from paths import HOME, REPO_DIR, CONFIG_FILE, OLD_CONFIG, SRC, FIREFOX_DIR, installed_paths
 
@@ -206,11 +207,7 @@ def main():
         print(f'{BYELLOW}Updating themes using previous configuration.{NC}')
         print(f"{BYELLOW}Use {BLYELLOW}'{sys.argv[0]} --reconfigure'{BYELLOW} if you want to change anything.{NC}")
 
-    theme_names = {}
-    for theme in ['dg-yaru', 'dg-adw-gtk3', 'dg-firefox-theme']:
-        theme_names[theme]=['qualia'] # For detecting the old version of the theme
-
-    paths = installed_paths(theme_names)
+    paths = installed_paths(new_only = True)
 
     config['suffix']='-dark' if config['color_scheme'] == 'prefer-dark' else ''
     config['variant']='dark' if config['color_scheme'] == 'prefer-dark' else 'light'
@@ -264,24 +261,6 @@ def main():
     else:
         check_path('gtk3', paths)
         check_path('gtk4', paths)
-
-    # Symlink to /usr dir if using mate
-    targets = []
-    if config['desktop_versions']['mate'] is not None:
-        for path in paths['themes']:
-            if isinstance(path, list):
-                for i in path:
-                    targets.append(i)
-            else:
-                targets.append(path)
-        for target in targets:
-            if target.startswith(f'{HOME}/.local'):
-                dest = '/usr' + target.split(f'{HOME}/.local')[1]
-                if not os.path.exists(dest):
-                    run_command(['sudo', 'mkdir', '-p', dest])
-                for i in ['gtk-2.0', 'gtk-3.0', 'gtk-4.0', 'index.theme']:
-                    if not os.path.exists(f'{dest}/{i}') and os.path.exists(f'{target}/{i}'):
-                        run_command(['sudo', 'ln', '-sf', f'{target}/{i}', f'{dest}/{i}'])
 
     # Install dg-yaru
     yaru_parts_pretty = []
@@ -343,6 +322,28 @@ def main():
             if 'qualia-gtk-theme' in line:
                 print("Snap theme was installed previously, use './uninstall.py snap' to remove it.")
 
+    # Symlink themes to /usr dir if using mate
+    dirs = []
+    if config['desktop_versions']['mate'] is not None:
+        theme_dirs = installed_paths(new_only = True, just_theme_dirs = True)
+        for path in theme_dirs:
+            if isinstance(path, list):
+                for i in path:
+                    dirs.append(i)
+            else:
+                dirs.append(path)
+        for directory in dirs:
+            paths = glob(f'{directory}/*')
+            for path in paths:
+                if path.startswith(f'{HOME}/.local'):
+                    target = path
+                    dest = '/usr' + target.split(f'{HOME}/.local')[1]
+                    directory = os.path.dirname(dest)
+                    if directory.startswith('/usr') and not os.path.isdir(directory):
+                        run_command(['sudo', 'mkdir', '-p', directory])
+                    if not os.path.exists(dest) and os.path.exists(target):
+                        run_command(['sudo', 'ln', '-rsf', target, dest])
+
     #####################
     ##  Enable Themes  ##
     #####################
@@ -386,7 +387,7 @@ def main():
     #   Remove old theme   #
     ########################
 
-    old_paths = installed_paths(OLD_NAMES, True)
+    old_paths = installed_paths(old_only = True)
 
     for i in old_paths:
         old_exists = check_path(i, old_paths, False)
@@ -824,23 +825,26 @@ class InstallDgAdwGtk3(InstallThread):
             run_command(['git', 'submodule', 'update', '--init', 'src/dg-adw-gtk3'])
         cd(SRC['gtk3'])
 
+        options = [f'-Dprefix={HOME}/.local']
         if 'gtk4-libadwaita' in self.config['enabled'] and 'gtk3' in self.config['enabled']:
             pretty_string = 'qualia GTK3 and Libadwaita GTK4 themes'
             up_to_date = 'qualia GTK3 and Libadwaita GTK4 themes are'
-            options = ['-Dgtk4=true', '-Dgtk3=true']
+            options += ['-Dgtk4=true', '-Dgtk3=true']
         elif 'gtk3' in self.config['enabled']:
             pretty_string = 'qualia GTK3 theme'
             up_to_date = 'qualia GTK3 theme is'
-            options = ['-Dgtk4=false', '-Dgtk3=true']
+            options += ['-Dgtk4=false', '-Dgtk3=true']
         else:
             pretty_string = 'Libadwaita GTK4 theme'
             up_to_date = 'Libadwaita GTK4 theme is'
-            options = ['-Dgtk4=true', '-Dgtk3=false']
+            options += ['-Dgtk4=true', '-Dgtk3=false']
 
         if self.get_version() != self.config['dg-adw-gtk3_version'] or configure_all or force:
             self.spinner = Spinner(pretty_string, f'{HOME}/.local/share/themes', self)
             if not os.path.isdir('build'):
-                run_command(['meson', f'-Dprefix={HOME}/.local', 'build'], meson=True)
+                run_command(['meson', 'build'] + options, meson=True)
+            else:
+                run_command(['meson', 'configure', 'build'] + options, meson=True)
             run_command(['meson', 'configure', 'build'] + options, meson=True)
             run_command(['ninja', '-C', 'build', 'install'], meson=True)
             self.updated()
@@ -1225,8 +1229,6 @@ class Enable:
         return config
 
 if __name__ == "__main__":
-    from uninstall import OLD_NAMES
-
     ##############################
     ##   Command Line Options   ##
     ##############################

@@ -22,12 +22,6 @@ OLD = [
     'snap'
 ]
 
-OLD_NAMES = {
-    'dg-yaru': ['dg-yaru'],
-    'dg-adw-gtk3': ['dg-adw-gtk3'],
-    'dg-firefox-theme': ['dg-firefox-theme'],
-}
-
 HELP = f'''Usage:
     {sys.argv[0]} <option> <theme> ...
 
@@ -84,18 +78,15 @@ def delete(path):
     '''
     if verbose:
         print('Deleting ' + path)
-        if not dry_run:
-            subprocess.run('sudo', 'rm', '-rf', path, check=True)
+    if not dry_run:
+        subprocess.run(['sudo', 'rm', '-rf', path], check=True)
 
-def remove_empty(themes):
+def remove_empty():
     '''
     Removes empty theme directories.
-
-    Parameters:
-    themes (dict) : The possible names of the directories of the themes. theme: [name1, name2]
     '''
-    paths = installed_paths(themes)
-    for i in paths['themes']:
+    theme_dirs = installed_paths(just_theme_dirs = True)
+    for i in theme_dirs:
         if isinstance(i, list):
             for folder in i:
                 if len(next(os.walk(folder))[1]) == 0:
@@ -104,14 +95,13 @@ def remove_empty(themes):
             if len(next(os.walk(i))[1]) == 0:
                 delete(i)
 
-def remove_theme(name, pretty, themes, old = False , disconnect = True):
+def remove_theme(name, pretty, old = False , disconnect = True):
     '''
     Removes a part of the theme.
 
     Parameters:
     name (str) : The name of the part of the theme.
     pretty (str) : The name of the part of the theme that should be printed.
-    themes (dict) : The possible names of the directories of the theme. theme: [name1, name2]
     old (bool): Whether or not it should be printed that it is the old theme being removed.
     disconnect (bool): Whether or not the associated snap theme should be disconnected.
     '''
@@ -139,23 +129,24 @@ def remove_theme(name, pretty, themes, old = False , disconnect = True):
                         subprocess.run(['sudo', 'snap', 'remove', i], check=True)
                         return
 
-    paths = installed_paths(themes, old)
+    paths = installed_paths(old_only = old)
     if name != 'snap':
-        for i in paths[name]:
-            if isinstance(i, list):
-                for path in i:
-                    if name == 'icons' and path in paths['cursors']:
-                        pass # Since cursors and icons are in same dir, don't remove cursors unless user wants to
-                    else:
-                        if not shown:
-                            print(message)
-                        shown = True
-                        delete(path)
-            elif os.path.exists(i):
-                if not shown:
-                    print(message)
-                shown = True
-                delete(i)
+        if isinstance(paths[name], list):
+            for i in paths[name]:
+                if isinstance(i, list):
+                    for path in i:
+                        if name == 'icons' and path in paths['cursors']:
+                            pass # Since cursors and icons are in same dir, don't remove cursors unless user wants to
+                        else:
+                            if not shown:
+                                print(message)
+                            shown = True
+                            delete(path)
+                elif os.path.exists(i):
+                    if not shown:
+                        print(message)
+                    shown = True
+                    delete(i)
 
     if disconnect and not dry_run:
         for i in snap:
@@ -171,7 +162,7 @@ def remove_theme(name, pretty, themes, old = False , disconnect = True):
 def remove_old():
     '''Removes all of the parts of dg-gnome-theme (the old theme).'''
     for i in OLD:
-        remove_theme(i, VARIANTS["enableable"][i], OLD_NAMES, True, False)
+        remove_theme(i, VARIANTS["enableable"][i], True, False)
 
 
 def enable_old(config, themes):
@@ -204,12 +195,6 @@ def main():
         print(f"{BRED}Don't run this script as root, exiting.")
         sys.exit()
 
-    themes = {
-        'dg-yaru': ['dg-yaru', 'qualia'],
-        'dg-adw-gtk3': ['dg-adw-gtk3', 'qualia'],
-        'dg-firefox-theme': ['dg-firefox-theme', 'qualia'],
-    }
-
     available_themes = {}
     for i in VARIANTS["enableable"]:
         for theme in VARIANTS["enableable"][i]:
@@ -229,7 +214,7 @@ def main():
         if i == 'firefox':
             for f in VARIANTS["enableable"]['dg-firefox-theme']:
                 uninstalling.append(f)
-                remove_theme(f, VARIANTS["enableable"]['dg-firefox-theme'][f], themes)
+                remove_theme(f, VARIANTS["enableable"]['dg-firefox-theme'][f])
                 remove_config(f)
         if i != sys.argv[0]:
             if i.startswith('-'):
@@ -251,7 +236,7 @@ def main():
             else:
                 if i in available_themes:
                     uninstalling.append(i)
-                    remove_theme(i, available_themes[i], themes)
+                    remove_theme(i, available_themes[i])
                     remove_config(i)
                 else:
                     print(f"Unrecognized theme '{i}'.")
@@ -264,12 +249,12 @@ def main():
     if len(args) <= 1:
         uninstalling = available_themes
         for key, value in available_themes.items():
-            remove_theme(key, value, themes)
+            remove_theme(key, value)
             for key in [CONFIG_FILE, OLD_CONFIG]:
                 if os.path.isfile(key) and not dry_run:
                     os.remove(key)
 
-    remove_empty(themes)
+    remove_empty()
 
     if os.path.isfile(CONFIG_FILE) and not dry_run:
         conf = Config()
