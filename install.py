@@ -103,7 +103,7 @@ def cd(directory):
         dir (str) : The path of the directory to change to.
     '''
     if verbose:
-        print(f"Changing directory to {directory}")
+        print(f"Changing directory to '{directory}'")
     os.chdir(directory)
 
 def run_command(command, meson = False, override_verbose = None, show_ouput = False):
@@ -121,7 +121,7 @@ def run_command(command, meson = False, override_verbose = None, show_ouput = Fa
     else:
         verbose = override_verbose
     if verbose:
-        print('Running ' + ' '.join(command))
+        print("Running command '" + ' '.join(command) + "'")
     try:
         subprocess.run(command, stdout=None if verbose or show_ouput else subprocess.PIPE, stderr=subprocess.STDOUT, check=True)
     except subprocess.CalledProcessError as error:
