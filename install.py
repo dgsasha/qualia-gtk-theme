@@ -123,7 +123,7 @@ def run_command(command, meson = False, override_verbose = None, show_ouput = Fa
     if verbose:
         print('Running ' + ' '.join(command))
     try:
-        subprocess.run(command, capture_output=False if verbose or show_ouput else True, check=True)
+        subprocess.run(command, stdout=None if verbose or show_ouput else subprocess.PIPE, stderr=subprocess.STDOUT, check=True)
     except subprocess.CalledProcessError as error:
         if not (verbose or show_ouput):
             print('\n' + error.output.decode("utf-8"))
@@ -960,7 +960,7 @@ class InstallDgFirefoxTheme(InstallThread):
             run_command(['git', 'submodule', 'update', '--init', 'src/dg-firefox-theme'])
         cd(SRC['firefox'])
 
-        if self.get_version() != self.config[f'dg-firefox-theme_version'] or configure_all or force or update_color:
+        if self.get_version() != self.config['dg-firefox-theme_version'] or configure_all or force or update_color:
             run_command(['./install.sh', '-c', self.config['color'], '-f', self.directory], show_ouput=True)
         else:
             print('The qualia Firefox theme is up to date.')
@@ -1010,10 +1010,10 @@ class InstallQualiaGtkThemeSnap(InstallThread):
                 if name in line:
                     installed = True
                     print(f'Checking if {BOLD}{name}{NC} Snap can be updated.')
-                    run_command(['sudo', 'snap', 'refresh', name])
+                    run_command(['sudo', 'snap', 'refresh', name], show_ouput = True)
             if not installed:
                 print(f'{BGREEN}Installing{NC} the {BOLD}{name}{NC} Snap.')
-                run_command(['sudo', 'snap', 'install', name])
+                run_command(['sudo', 'snap', 'install', name], show_ouput = True)
 
         connections = check_output(['snap', 'connections']).split('\n')
         for line in connections:
@@ -1022,10 +1022,10 @@ class InstallQualiaGtkThemeSnap(InstallThread):
                 try:
                     if key in self.config["enabled"]:
                         if line[2] == f'gtk-common-themes:{value}-themes':
-                            run_command(['sudo', 'snap', 'connect', line[1], f'qualia-gtk-theme:{value}-themes'])
+                            run_command(['sudo', 'snap', 'connect', line[1], f'qualia-gtk-theme:{value}-themes'], show_ouput = True)
                     else:
                         if line[2] == f'qualia-gtk-theme:{value}-themes':
-                            run_command(['sudo', 'snap', 'disconnect', line[1], f'qualia-gtk-theme:{value}-themes'])
+                            run_command(['sudo', 'snap', 'disconnect', line[1], f'qualia-gtk-theme:{value}-themes'], show_ouput = True)
                 except IndexError:
                     pass
 
