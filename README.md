@@ -3,6 +3,8 @@
 # qualia GTK theme
 **A Yaru and Libadwaita inspired theme designed to provide a consistent experience across GTK desktops.**
 
+Read more about the theme [here](https://github.com/dgsasha/qualia-gtk-theme/wiki/About).
+
 **Supports GNOME 42+, Budgie 10.6+, Cinnamon, Unity7, Xfce, and Mate.**
 
 **[Other Desktop Environments](https://github.com/dgsasha/qualia-gtk-theme/wiki/Other-Desktop-Environments)**
@@ -275,7 +277,7 @@ Run './uninstall.py firefox' to remove the theme from all Firefox variants.
 
 ### [Flatpak Apps](https://github.com/dgsasha/qualia-gtk-theme/wiki/Flatpak-Apps) &nbsp; [Snap Apps](https://github.com/dgsasha/qualia-gtk-theme/wiki/Snap-Apps) &nbsp; [GDM Theme](https://github.com/dgsasha/qualia-gtk-theme/wiki/GDM-Theme) &nbsp; [Copying](https://github.com/dgsasha/qualia-gtk-theme/wiki/Copying) &nbsp; [Issues](https://github.com/dgsasha/qualia-gtk-theme/wiki/Issues) &nbsp; [Contributing](https://github.com/dgsasha/qualia-gtk-theme/wiki/Contributing)
 
-## :heart: &nbsp; Credits &nbsp; :heart:
+## :heart:&nbsp; Credits &nbsp;:heart:
 ### A huge thanks to:
 ### [Ubuntu](https://ubuntu.com/) for [Yaru](https://github.com/ubuntu/yaru), [vinceliuice](https://github.com/vinceliuice) for [WhiteSur-gtk-theme](https://github.com/vinceliuice/WhiteSur-gtk-theme), [rafaelmardojai](https://github.com/rafaelmardojai) for [firefox-gnome-theme](https://github.com/rafaelmardojai/firefox-gnome-theme), [piousdeer](https://github.com/piousdeer) for [vscode-adwaita](https://github.com/piousdeer/vscode-adwaita), and [lassekongo83](https://github.com/lassekongo83) for [adw-gtk3](https://github.com/lassekongo83/adw-gtk3).
 
