@@ -20,7 +20,7 @@ Steps to reproduce the behavior:
 **Expected behavior**
 A clear and concise description of what you expected to happen or how you expect the theme to look.
 
-**Screenshots**
+**Screenshots/Log**
 Please add screenshots to help explain your problem, or if it is with a script, run it in verbose mode and include the output with your issue. For example, if the issue is with the install script, run `./install.py --verbose > log.txt` and attach the file here.
 
 **Additional context**
