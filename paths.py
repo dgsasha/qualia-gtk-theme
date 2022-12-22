@@ -38,6 +38,11 @@ CURRENT_NAMES = {
     'dg-firefox-theme': ['qualia'],
 }
 
+VSCODE_DIR = {
+    'standard': f'{HOME}/.vscode/extensions',
+    'flatpak': f'{HOME}/.var/app/com.visualstudio.code/data/vscode/extensions',
+}
+
 def installed_paths(old_only = False, new_only = False, just_theme_dirs = False):
     '''
     Return paths of installed themes.
@@ -71,9 +76,7 @@ def installed_paths(old_only = False, new_only = False, just_theme_dirs = False)
         'metacity': [],
         'ubuntu-unity': [],
         'xfwm4': [],
-        'firefox-standard': [],
-        'firefox-snap': [],
-        'firefox-flatpak': [],
+        'firefox': [],
         'icons': [],
         'cursors': [],
         'sounds': [],
@@ -109,16 +112,17 @@ def installed_paths(old_only = False, new_only = False, just_theme_dirs = False)
                     glob(f'{prefix}/themes/{name}*/gtk-2.0')
                 ]
 
-        for key, value in FIREFOX_DIR.items():
+        for firefox_path in FIREFOX_DIR.values():
             for name in names['dg-firefox-theme']:
-                paths['firefox-' + key] += [glob(value + f'/*/chrome/{name}')]
+                paths['firefox'] += [glob(firefox_path + f'/*/chrome/{name}')]
             if not old_only:
-                paths['firefox-' + key] += [glob(value + '/*/user.js'), glob(value + '/*/chrome/userChrome.css'), glob(value + '/*/userContent.css')]
+                paths['firefox'] += [glob(firefox_path + '/*/user.js'), glob(firefox_path + '/*/chrome/userChrome.css'), glob(firefox_path + '/*/userContent.css')]
 
         if not old_only:
             paths['gtk4'] += [f'{GTK4_DIR}/mac-icons']
             paths['gtk4'] += [f'{GTK4_DIR}/gtk.css']
-            paths['vscode'] += [f'{HOME}/.vscode/extensions/qualia', f'{HOME}/.var/app/com.visualstudio.code/data/vscode/extensions/qualia']
+            for extensions_path in VSCODE_DIR.values():
+                paths['vscode'] += [f'{extensions_path}/qualia']
             for prefix in ['/usr/share', f'{HOME}/.local/share']:
                 paths['gtk4-libadwaita'] += [glob(f'{prefix}/themes/qualia*/gtk-4.0')]
 

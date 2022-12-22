@@ -28,8 +28,7 @@ HELP = f'''Usage:
 Themes:
     gtk3            gtk4-libadwaita  gnome-shell
     cinnamon-shell  metacity         ubuntu-unity
-    xfwm4           firefox          firefox-standard
-    firefox-snap    firefox-flatpak  icons
+    xfwm4           firefox          icons
     cursors         sounds           gtksourceview
     snap            vscode           gtk4-config
 
@@ -40,9 +39,7 @@ Options:
     -h, --help      Show this screen.
 
 Run '{sys.argv[0]}' followed by any number of the above themes to choose what to uninstall.
-Or run '{sys.argv[0]}' with no arguments to uninstall the entire theme.
-
-Run '{sys.argv[0]} firefox' to remove the theme from all Firefox variants.'''
+Or run '{sys.argv[0]}' with no arguments to uninstall the entire theme.'''
 
 snap = ['qualia-gtk-theme', 'dg-adw-gtk3-theme']
 

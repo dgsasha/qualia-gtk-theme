@@ -12,7 +12,7 @@ from re import sub
 from urllib.request import urlopen
 from glob import glob
 
-from paths import HOME, REPO_DIR, CONFIG_FILE, OLD_CONFIG, SRC, FIREFOX_DIR, installed_paths
+from paths import HOME, REPO_DIR, CONFIG_FILE, OLD_CONFIG, SRC, FIREFOX_DIR, VSCODE_DIR, installed_paths
 
 NC = '\033[0m'
 BOLD = '\033[1m'
@@ -64,9 +64,7 @@ VARIANTS = { # all of the possible configurations, name: pretty-name
             'gtksourceview': 'GtkSourceView'
         },
         'dg-firefox-theme': {
-            'firefox-standard': 'Standard Firefox',
-            'firefox-snap': 'Snap Firefox',
-            'firefox-flatpak': 'Flatpak Firefox',
+            'firefox': 'Firefox',
             'settings_theme': ''
         },
         'dg-vscode-adwaita': {
@@ -168,6 +166,7 @@ def main():
         sys.exit()
 
     conf = Config()
+    conf.read()
 
     # Move old config file
     if os.path.isfile(OLD_CONFIG) and not os.path.isfile(CONFIG_FILE):
@@ -180,8 +179,6 @@ def main():
         conf.configure()
         if os.path.isfile(CONFIG_FILE):
             os.remove(CONFIG_FILE)
-
-    conf.read()
 
     config = conf.ret_config()
 
@@ -250,11 +247,11 @@ def main():
                 if name in VARIANTS['enableable'][theme]:
                     pretty = VARIANTS['enableable'][theme][name]
                     if name == 'gtk4-libadwaita':
-                        message += f'{pretty} GTK4 theme{NC}.'
+                        message += f'{pretty} GTK4 theme{NC}'
                     elif name == 'gtk4':
-                        message += f'{pretty} configuration{NC}.'
+                        message += f'{pretty} configuration{NC}'
                     else:
-                        message += f'{pretty} theme{NC}.'
+                        message += f'{pretty} theme{NC}'
                     print(f"The {message} was installed previously, use './uninstall.py {name}' to remove it.")
 
         return exists
@@ -297,13 +294,12 @@ def main():
         check_path('gtk4', paths)
 
     # Install dg-firefox-theme
-    for key, value in FIREFOX_DIR.items():
-        if f'firefox-{key}' in config['enabled']:
-            firefox = InstallDgFirefoxTheme(config, value)
-            config['dg-firefox-theme_version'] = firefox.get_version()
-            conf.write(config)
-        else:
-            check_path(f'firefox-{key}', paths)
+    if 'firefox' in config['enabled']:
+        firefox = InstallDgFirefoxTheme(config)
+        config['dg-firefox-theme_version'] = firefox.get_version()
+        conf.write(config)
+    else:
+        check_path('firefox', paths)
 
     # Install dg-vscode-adwiata
     if 'vscode' in config['enabled']:
@@ -482,6 +478,8 @@ class Config:
         '''
         enableable = {}
 
+        config = self.config
+
         for parts in VARIANTS["enableable"].values():
             for part, pretty_name in parts.items():
                 enableable[part] = pretty_name
@@ -499,16 +497,22 @@ class Config:
                 if i == 'xfce':
                     del enableable['xfwm4']
 
-        if not os.path.isdir(FIREFOX_DIR['standard']):
-            del enableable['firefox-standard']
+        config['firefox'] = []
 
-        if not os.path.isdir(FIREFOX_DIR['snap']):
-            del enableable['firefox-snap']
+        for variant, path in FIREFOX_DIR.items():
+            if os.path.isdir(path):
+                config['firefox'].append(variant)
 
-        if not os.path.isdir(FIREFOX_DIR['flatpak']):
-            del enableable['firefox-flatpak']
+        if len(config['firefox']) == 0:
+            del enableable['firefox']
 
-        if shutil.which('code') is None:
+        config['vscode'] = []
+
+        for variant, path in VSCODE_DIR.items():
+            if os.path.isdir(path):
+                config['vscode'].append(variant)
+
+        if len(config['vscode']) == 0:
             del enableable['vscode']
 
         if shutil.which('snap') is None:
@@ -532,9 +536,7 @@ class Config:
 
         for key, value in config['enableable'].items():
             if key == 'settings_theme' and (update_settings or configure_all):
-                if 'firefox-default' in config['enabled'] or \
-                'firefox-snap' in config['enabled'] or \
-                'firefox-flatpak' in config['enabled']:
+                if 'firefox' in config['enabled']:
                     if self.config_yn(key, value, custom_msg=SETTINGS_MSG):
                         if key not in config['enabled']:
                             config['enabled'].append(key)
@@ -644,6 +646,9 @@ class Config:
         '''Reads config file.'''
         config = self.config
         config['old'] = {}
+        config['old_vscode'] = []
+        config['old_firefox'] = []
+
         for theme in VARIANTS['enableable']:
             if theme != 'qualia-gtk-theme-snap':
                 config[theme + '_version'] = ''
@@ -665,16 +670,24 @@ class Config:
                 if ' ' in value:
                     value = value.split(' ')
 
-                if not configured and key == 'firefox' or key == 'enabled':
-                    config['enabled'] = []
-                    prefix = 'firefox-' if key == 'firefox' else '' # old config file was a little different
+                if key == 'firefox' and len(value) > 0: # old config file was a little different
+                    config['enabled'].append(key)
+
+                if not configured and key in ('enabled', 'firefox', 'vscode'):
+                    prefix = 'old_' if key in ('firefox', 'vscode') else ''
+                    config[prefix + key] = []
                     if isinstance(value, list):
-                        for i in value:
-                            if i in config['enableable']:
-                                config['enabled'].append(prefix + i)
+                        for theme in value:
+                            if theme.startswith('firefox'):
+                                theme = 'firefox'
+                            if (theme in config['enableable'] or key != 'enabled') not in config[prefix + key]:
+                                config[prefix + key].append(theme)
                     elif isinstance(value, str):
-                        if value in config['enableable']:
-                            config['enabled'].append(prefix + value)
+                        if value.startswith('firefox'):
+                            value = 'firefox'
+                        if (value in config['enableable'] or prefix + key != 'enabled') and value not in config[prefix + key]:
+                            config[prefix + key].append(value)
+
                 elif key.startswith('old'): # Themes that were enabled before qualia
                     old = key.split('_')
                     theme = old[1]
@@ -717,6 +730,8 @@ class Config:
         f.write('enabled: ' + ' '.join(config['enabled']) + '\n')
         f.write('\n')
         f.write('gnome: ' + str(config['desktop_versions']['gnome']) + '\n')
+        f.write('firefox: ' + ' '.join(config['firefox']) + '\n')
+        f.write('vscode: ' + ' '.join(config['vscode']) + '\n')
         f.write('\n')
 
         for theme in VARIANTS['enableable']:
@@ -969,20 +984,24 @@ class InstallDgFirefoxTheme(InstallThread):
 
     Attributes:
         config (dict) : Dictionary that contains the configuration.
-        directory (str) : Directory to install to.
     '''
-    def __init__(self, config, directory):
+    def __init__(self, config):
         self.config = config
-        self.directory = directory
         super().__init__(process=self._install)
 
     def _install(self):
+        config = self.config
         if not no_update:
             run_command(['git', 'submodule', 'update', '--init', 'src/dg-firefox-theme'])
         cd(SRC['firefox'])
 
-        if self.get_version() != self.config['dg-firefox-theme_version'] or configure_all or force or update_color or update_settings:
-            command = ['./install.sh', '-c', self.config['color'], '-f', self.directory]
+        firefox_changed = False
+        for variant in config['firefox']:
+            if variant not in config['old_firefox']:
+                firefox_changed = True
+
+        if self.get_version() != config['dg-firefox-theme_version'] or configure_all or force or update_color or update_settings or firefox_changed:
+            command = ['./install.sh', '-c', self.config['color']]
             if 'settings_theme' not in self.config['enabled']:
                 command.append('-n')
             run_command(command, show_ouput=True)
@@ -1001,11 +1020,17 @@ class InstallDgVscodeAdwaita(InstallThread):
         super().__init__(process=self._install)
 
     def _install(self):
+        config = self.config
         if not no_update:
             run_command(['git', 'submodule', 'update', '--init', 'src/dg-vscode-adwaita'])
         cd(SRC['vscode'])
 
-        if self.get_version() != self.config['dg-vscode-adwaita_version'] or configure_all or force or update_syntax:
+        vscode_changed = False
+        for variant in config['vscode']:
+            if variant not in config['old_vscode']:
+                vscode_changed = True
+
+        if self.get_version() != self.config['dg-vscode-adwaita_version'] or configure_all or force or update_syntax or vscode_changed:
             if 'default_syntax' in self.config['enabled']:
                 run_command(['./install.py', '-c', self.config['color'], '-t', self.config['variant'], '-d'], show_ouput = True)
             else:
