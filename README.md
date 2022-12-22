@@ -194,6 +194,7 @@ options:
   -r, --reconfigure  reconfigure the theme
   -t, --theme        change theme variant
   -s, --syntax       change VS Code syntax highlighting
+  -F, --firefox      change Firefox settings theming
   -a, --accent       change accent color
   -f, --force        force install the theme
   -n, --no-update    don't update the submodules, useful if you made local changes
@@ -226,6 +227,8 @@ Your previous configuration will be used again unless you use the `--reconfigure
 You can also use `--accent` or `--theme` to just change the accent color or the theme variant.
 
 If you installed the VS Code theme, you can use `--syntax` to change the syntax highlighting.
+
+If you installed the Firefox theme, you can use `--firefox` to change the settings theming.
 
 <details>
 <summary>

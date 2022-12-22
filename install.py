@@ -42,7 +42,7 @@ VARIANTS = { # all of the possible configurations, name: pretty-name
     'theme': {
         'light': 'Light',
         'dark': 'Dark',
-        'auto': 'Auto'
+        'auto': f'Auto {BYELLOW} (Only recommended for GNOME or Budgie){NC}'
     },
     'enableable': {
         'dg-adw-gtk3': {
@@ -67,10 +67,11 @@ VARIANTS = { # all of the possible configurations, name: pretty-name
             'firefox-standard': 'Standard Firefox',
             'firefox-snap': 'Snap Firefox',
             'firefox-flatpak': 'Flatpak Firefox',
+            'settings_theme': ''
         },
         'dg-vscode-adwaita': {
             'vscode': 'VS Code',
-            'default_syntax': 'default syntax highlighting'
+            'default_syntax': ''
         },
         'qualia-gtk-theme-snap': {
             'snap': 'Snap'
@@ -88,8 +89,13 @@ VERSIONS = {
     'budgie': (10.6,)
 }
 
+SETTINGS_MSG = f'{BLBLUE}Do you want to theme the {NC}{BLCYAN}settings pages{NC}{BLBLUE} in {BLCYAN}Firefox{BLBLUE}?{NC}{BOLD}'
+SYNTAX_MSG = f'{BLBLUE}Do you want to keep the {NC}{BLCYAN}default syntax highlighting{NC}{BLBLUE} in {BLCYAN}VS Code{BLBLUE}?{NC}{BOLD}'
+LIBADWAITA_MSG = f'{BLBLUE}Do you want to install {BLCYAN}Libadwaita{BLBLUE} as a {NC}{BLCYAN}GTK4 theme{NC}{BLBLUE}?{NC}{BOLD}'
+GTK4_MSG = f'{BLBLUE}Do you want to install the {NC}{BLCYAN}custom GTK4 configuration{NC}{BLBLUE}?{NC}{BOLD}'
+
 # Set some things to false
-no_update = update_color = update_theme = update_syntax = reconfigure = verbose = force = configured = updated = False
+no_update = update_color = update_theme = update_settings = update_syntax = reconfigure = verbose = force = configured = updated = False
 
 #################
 ##  Functions  ##
@@ -191,7 +197,7 @@ def main():
         conf.configure()
 
     # Reconfigure color, theme variant, or syntax highlighting if user wants to
-    if update_color or update_theme or update_syntax:
+    if update_color or update_theme or update_syntax or update_settings:
         conf.configure()
 
     if configured:
@@ -523,25 +529,45 @@ class Config:
 
         if configure_all:
             config['enabled'] = []
-            for key, value in config['enableable'].items():
-                if key == 'default_syntax':
-                    if 'vscode' in config['enabled']:
-                        if self.config_yn(key, value, 'n'):
+
+        for key, value in config['enableable'].items():
+            if key == 'settings_theme' and (update_settings or configure_all):
+                if 'firefox-default' in config['enabled'] or \
+                'firefox-snap' in config['enabled'] or \
+                'firefox-flatpak' in config['enabled']:
+                    if self.config_yn(key, value, custom_msg=SETTINGS_MSG):
+                        if key not in config['enabled']:
                             config['enabled'].append(key)
+                    else:
+                        if key in config['enabled']:
+                            config['enabled'].remove(key)
+                else:
+                    print('Firefox theme is not enabled, exiting.')
+                    sys.exit()
+                continue
+            if key == 'default_syntax' and (update_syntax or configure_all):
+                if 'vscode' in config['enabled']:
+                    if self.config_yn(key, value, 'n', custom_msg=SYNTAX_MSG):
+                        if key not in config['enabled']:
+                            config['enabled'].append(key)
+                    else:
+                        if key in config['enabled']:
+                            config['enabled'].remove(key)
+                else:
+                    print('VS Code theme is not enabled, exiting.')
+                    sys.exit()
+                continue
+            if configure_all:
+                if key == 'gtk4':
+                    if self.config_yn(key, value, custom_msg=GTK4_MSG):
+                        config['enabled'].append(key)
+                    continue
+                if key == 'gtk4-libadwaita':
+                    if self.config_yn(key, value, custom_msg=LIBADWAITA_MSG):
+                        config['enabled'].append(key)
                     continue
                 if self.config_yn(key, value):
                     config['enabled'].append(key)
-        elif update_syntax and 'vscode' in config['enabled']:
-            if self.config_yn('default_syntax', 'default syntax highlighting', 'n'):
-                if 'default_syntax' not in config['enabled']:
-                    config['enabled'].append('default_syntax')
-            else:
-                if 'default_syntax' in config['enabled']:
-                    config['enabled'].remove('default_syntax')
-
-        elif update_syntax:
-            print('VS Code theme is not enabled, exiting.')
-            sys.exit()
 
         print() # blank line
         configured = True
@@ -562,8 +588,6 @@ class Config:
             name = array[i]
             pretty_name = list(options.values())[i]
             num = f'{i+1}:'
-            if name == 'auto':
-                pretty_name += f'{BYELLOW} (Only recommended for GNOME or Budgie){NC}'
 
             if (i % 2) == 0 and i != len(array) - 1:
                 print(f'  {num:<4}{pretty_name:<12}', end='')
@@ -586,22 +610,19 @@ class Config:
 
         return ret
 
-    def config_yn(self, name, pretty, default = 'y'):
+    def config_yn(self, name, pretty, default = 'y', custom_msg = None):
         '''
         Prompts user with a yes or no question.
 
         Parameters:
-            name (str) : Name of part of theme.
+            name (str) : Name of part of themye.
             pretty (str) : Name of part of theme to print.
-            default (str) : Default option [y/n].
+            default (str) : Default option, either 'y' or 'n'. Defaults to 'y'
+            custom_msg (str) : Provide a custom message to print. Defaults to None.
         '''
         while True:
-            if name == 'default_syntax':
-                question = f'{BLBLUE}Do you want to keep the {NC}{BLCYAN}{pretty}{NC}{BLBLUE}?{NC}{BOLD}'
-            elif name == 'gtk4-libadwaita':
-                question = f'{BLBLUE}Do you want to install {NC}{BLCYAN}{pretty}{NC}{BLBLUE} as a {NC}{BLCYAN}GTK4{NC}{BLBLUE} theme?{NC}{BOLD}'
-            elif name == 'gtk4':
-                question = f'{BLBLUE}Do you want to install the custom {NC}{BLCYAN}{pretty}{NC}{BLBLUE} configuration?{NC}{BOLD}'
+            if custom_msg is not None:
+                question = custom_msg
             else:
                 question = f'{BLBLUE}Do you want to install the {NC}{BLCYAN}{pretty}{NC}{BLBLUE} theme?{NC}{BOLD}'
 
@@ -960,8 +981,11 @@ class InstallDgFirefoxTheme(InstallThread):
             run_command(['git', 'submodule', 'update', '--init', 'src/dg-firefox-theme'])
         cd(SRC['firefox'])
 
-        if self.get_version() != self.config['dg-firefox-theme_version'] or configure_all or force or update_color:
-            run_command(['./install.sh', '-c', self.config['color'], '-f', self.directory], show_ouput=True)
+        if self.get_version() != self.config['dg-firefox-theme_version'] or configure_all or force or update_color or update_settings:
+            command = ['./install.sh', '-c', self.config['color'], '-f', self.directory]
+            if 'settings_theme' not in self.config['enabled']:
+                command.append('-n')
+            run_command(command, show_ouput=True)
         else:
             print('The qualia Firefox theme is up to date.')
 
@@ -981,7 +1005,7 @@ class InstallDgVscodeAdwaita(InstallThread):
             run_command(['git', 'submodule', 'update', '--init', 'src/dg-vscode-adwaita'])
         cd(SRC['vscode'])
 
-        if self.get_version() != self.config['dg-vscode-adwaita_version'] or configured or force:
+        if self.get_version() != self.config['dg-vscode-adwaita_version'] or configure_all or force or update_syntax:
             if 'default_syntax' in self.config['enabled']:
                 run_command(['./install.py', '-c', self.config['color'], '-t', self.config['variant'], '-d'], show_ouput = True)
             else:
@@ -1258,6 +1282,11 @@ if __name__ == "__main__":
         help = 'change VS Code syntax highlighting'
     )
     parser.add_argument(
+        '-F', '--firefox',
+        action = 'store_true',
+        help = 'change Firefox settings theming'
+    )
+    parser.add_argument(
         '-a', '--accent',
         action = 'store_true',
         help = 'change accent color'
@@ -1293,6 +1322,8 @@ if __name__ == "__main__":
     verbose = args.verbose
 
     force = args.force
+
+    update_settings = args.firefox
 
     configure_all = False
 
