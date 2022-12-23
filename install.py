@@ -543,7 +543,7 @@ class Config:
                     else:
                         if key in config['enabled']:
                             config['enabled'].remove(key)
-                else:
+                elif update_settings:
                     print('Firefox theme is not enabled, exiting.')
                     sys.exit()
                 continue
@@ -555,7 +555,7 @@ class Config:
                     else:
                         if key in config['enabled']:
                             config['enabled'].remove(key)
-                else:
+                elif update_syntax:
                     print('VS Code theme is not enabled, exiting.')
                     sys.exit()
                 continue
