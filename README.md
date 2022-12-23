@@ -257,8 +257,7 @@ Usage:
 Themes:
     gtk3            gtk4-libadwaita  gnome-shell
     cinnamon-shell  metacity         ubuntu-unity
-    xfwm4           firefox          firefox-standard
-    firefox-snap    firefox-flatpak  icons
+    xfwm4           firefox          icons
     cursors         sounds           gtksourceview
     snap            vscode           gtk4-config
 
@@ -270,8 +269,6 @@ Options:
 
 Run './uninstall.py' followed by any number of the above themes to choose what to uninstall.
 Or run './uninstall.py' with no arguments to uninstall the entire theme.
-
-Run './uninstall.py firefox' to remove the theme from all Firefox variants.
 ```
 
 <div align="center">
