@@ -16,9 +16,7 @@ OLD = [
     'cursors',
     'gtksourceview',
     'sounds',
-    'firefox-standard',
-    'firefox-snap',
-    'firefox-flatpak',
+    'firefox'
     'snap'
 ]
 
@@ -195,7 +193,7 @@ def main():
     available_themes = {}
     for i in VARIANTS["enableable"]:
         for theme in VARIANTS["enableable"][i]:
-            if theme != 'default_syntax':
+            if theme not in ('default_syntax', 'settings_theme'):
                 available_themes[theme] = VARIANTS["enableable"][i][theme]
 
     uninstalling = []
@@ -208,11 +206,6 @@ def main():
             i = 'ubuntu-unity'
         if i == 'gtk4-config':
             i = 'gtk4'
-        if i == 'firefox':
-            for f in VARIANTS["enableable"]['dg-firefox-theme']:
-                uninstalling.append(f)
-                remove_theme(f, VARIANTS["enableable"]['dg-firefox-theme'][f])
-                remove_config(f)
         if i != sys.argv[0]:
             if i.startswith('-'):
                 if i in ['-h', '--help']:
