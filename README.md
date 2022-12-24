@@ -225,11 +225,7 @@ Only the themes that have updates will be reinstalled, if you want to force rein
 
 Your previous configuration will be used again unless you use the `--reconfigure` option.
 
-You can also use `--accent` or `--theme` to just change the accent color or the theme variant.
-
-If you installed the VS Code theme, you can use `--syntax` to change the syntax highlighting.
-
-If you installed the Firefox theme, you can use `--firefox` to change the settings theming.
+There are other options to change parts of the configuration, all of them are listed above in the [Downloading and Installing](#downloading-and-installing) section.
 
 <details>
 <summary>
@@ -245,6 +241,11 @@ You should also probably avoid using alpha builds of GNOME because I might not h
 </details>
 
 ## Uninstalling
+
+Run the uninstall script followed by any number of the below themes to choose what to uninstall.
+
+Or run the uninstall script with no arguments to uninstall the entire theme.
+
 ```
 ./uninstall.py
 ```
@@ -266,9 +267,6 @@ Options:
     -v, --verbose   Verbose mode.
     -d, --dry-run   Similar to verbose mode, except nothing is actually deleted.
     -h, --help      Show this screen.
-
-Run './uninstall.py' followed by any number of the above themes to choose what to uninstall.
-Or run './uninstall.py' with no arguments to uninstall the entire theme.
 ```
 
 <div align="center">
