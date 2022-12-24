@@ -6,19 +6,12 @@ import sys
 import shutil
 import subprocess
 
-from install import BRED, BOLD, VARIANTS, NC, Config, Enable
-from paths import installed_paths, CONFIG_FILE, OLD_CONFIG
+from install import Config, Enable, VARIANTS
+from paths import installed, CONFIG, OLD_CONFIG
 
-OLD = [
-    'gtk3',
-    'gnome-shell',
-    'icons',
-    'cursors',
-    'gtksourceview',
-    'sounds',
-    'firefox'
-    'snap'
-]
+NC = '\033[0m'
+BOLD = '\033[1m'
+BRED = '\033[1;31m'
 
 HELP = f'''Usage:
     {sys.argv[0]} <option> <theme> ...
@@ -31,18 +24,21 @@ Themes:
     snap            vscode           gtk4-config
 
 Options:
-    -o, --old       Removes the old version of the theme (dg-gnome-theme).
-    -v, --verbose   Verbose mode.
-    -d, --dry-run   Similar to verbose mode, except nothing is actually deleted.
-    -h, --help      Show this screen.
+    -v, --verbose      Verbose mode.
+    -d, --dry-run      Similar to verbose mode, except nothing is actually deleted.
+    -h, --help         Show this screen.
 
 Run '{sys.argv[0]}' followed by any number of the above themes to choose what to uninstall.
 Or run '{sys.argv[0]}' with no arguments to uninstall the entire theme.'''
 
-snap = ['qualia-gtk-theme', 'dg-adw-gtk3-theme']
-
 verbose = False
 dry_run = False
+
+available_themes = {}
+for theme in VARIANTS['enableable']:
+    for part in VARIANTS['enableable'][theme]:
+        if part not in ('default_syntax', 'settings_theme'):
+            available_themes[part] = VARIANTS['enableable'][theme][part]
 
 def remove_config(name, version = False):
     '''
@@ -52,8 +48,8 @@ def remove_config(name, version = False):
     name (str) : The name of the theme or line to remove.
     version (bool) : True if the line that stores the git version for the theme is being removed.
     '''
-    if os.path.isfile(CONFIG_FILE) and not dry_run:
-        with open(CONFIG_FILE, 'r', encoding='UTF-8') as f:
+    if os.path.isfile(CONFIG) and not dry_run:
+        with open(CONFIG, 'r', encoding='UTF-8') as f:
             filedata = f.read()
         for line in filedata.split('\n'):
             if version and line.startswith(name):
@@ -61,7 +57,7 @@ def remove_config(name, version = False):
             elif line.startswith("enabled"):
                 newline = line.replace(f' {name}', '')
                 filedata = filedata.replace(line, newline)
-        with open(CONFIG_FILE, 'w', encoding='UTF-8') as f:
+        with open(CONFIG, 'w', encoding='UTF-8') as f:
             f.write(filedata)
 
 def delete(path):
@@ -80,31 +76,45 @@ def remove_empty():
     '''
     Removes empty theme directories.
     '''
-    theme_dirs = installed_paths(just_theme_dirs = True)
-    for i in theme_dirs:
-        if isinstance(i, list):
-            for folder in i:
-                if len(next(os.walk(folder))[1]) == 0:
-                    delete(folder)
-        elif os.path.isdir(i):
-            if len(next(os.walk(i))[1]) == 0:
-                delete(i)
+    theme_dirs = installed(just_theme_dirs = True)
+    try:
+        for i in theme_dirs:
+            if isinstance(i, list):
+                for folder in i:
+                    folders = next(os.walk(folder))[1]
+                    files = next(os.walk(folder))[2]
+                    if len(folders) == 0:
+                        contains_symlink = False
+                        for file in files:
+                            if os.path.islink(f'{folder}/{file}') and os.path.isdir(os.readlink(f'{folder}/{file}')):
+                                contains_symlink = True # Symlinks that point to directories should stay
+                                break
+                        if not contains_symlink:
+                            delete(folder)
+    except StopIteration:
+        pass
 
-def remove_theme(name, pretty, old = False , disconnect = True):
+def remove_theme(name, pretty, paths, old = False, disconnect = True, override_verbose = None):
     '''
     Removes a part of the theme.
 
     Parameters:
     name (str) : The name of the part of the theme.
     pretty (str) : The name of the part of the theme that should be printed.
+    paths (dict) : The dictionary returned by the paths.installed function.
     old (bool): Whether or not it should be printed that it is the old theme being removed.
     disconnect (bool): Whether or not the associated snap theme should be disconnected.
+    override_verbose (bool) : Override the global verbose value.
     '''
+    if override_verbose is not None:
+        global verbose
+        verbose = override_verbose
+
     shown = False
-    if not old:
-        message = f'{BRED}Removing{NC} the {BOLD}'
-    else:
+    if old:
         message = f'{BRED}Removing{NC} the {BOLD}old '
+    else:
+        message = f'{BRED}Removing{NC} the {BOLD}'
 
     if name == 'gtk4-libadwaita':
         message += f'{pretty} GTK4 theme{NC}.'
@@ -112,6 +122,8 @@ def remove_theme(name, pretty, old = False , disconnect = True):
         message += f'{pretty} configuration{NC}.'
     else:
         message += f'{pretty} theme{NC}.'
+
+    snap = ('dg-adw-gtk3-theme',) if old else ('qualia-gtk-theme', 'dg-adw-gtk3-theme')
 
     if not disconnect and not dry_run:
         if name == 'snap' and shutil.which('snap') is not None:
@@ -124,7 +136,6 @@ def remove_theme(name, pretty, old = False , disconnect = True):
                         subprocess.run(['sudo', 'snap', 'remove', i], check=True)
                         return
 
-    paths = installed_paths(old_only = old)
     if name != 'snap':
         if isinstance(paths[name], list):
             for i in paths[name]:
@@ -145,7 +156,7 @@ def remove_theme(name, pretty, old = False , disconnect = True):
 
     if disconnect and not dry_run:
         for i in snap:
-            if name in ['gtk3', 'icons', 'sounds'] and shutil.which('snap') is not None:
+            if name in ('gtk3', 'icons', 'sounds') and shutil.which('snap') is not None:
                 connections = subprocess.run(['sudo', 'snap', 'connections'], stdout=subprocess.PIPE, check=True).stdout.decode('utf-8').strip().split('\n')
                 for line in connections:
                     line = line.split()
@@ -153,12 +164,6 @@ def remove_theme(name, pretty, old = False , disconnect = True):
                         if key == name:
                             if line[2] == f'{i}:{value}-themes':
                                 subprocess.run(['sudo', 'snap', 'disconnect', line[1], f'{i}:{value}-themes'], check=True)
-
-def remove_old():
-    '''Removes all of the parts of dg-gnome-theme (the old theme).'''
-    for i in OLD:
-        remove_theme(i, VARIANTS["enableable"][i], True, False)
-
 
 def enable_old(config, themes):
     '''
@@ -190,16 +195,12 @@ def main():
         print(f"{BRED}Don't run this script as root, exiting.")
         sys.exit()
 
-    available_themes = {}
-    for i in VARIANTS["enableable"]:
-        for theme in VARIANTS["enableable"][i]:
-            if theme not in ('default_syntax', 'settings_theme'):
-                available_themes[theme] = VARIANTS["enableable"][i][theme]
-
     uninstalling = []
 
     global verbose
     global dry_run
+
+    paths = installed()
 
     for i in sys.argv:
         if i == 'unity':
@@ -208,29 +209,26 @@ def main():
             i = 'gtk4'
         if i != sys.argv[0]:
             if i.startswith('-'):
-                if i in ['-h', '--help']:
+                if i in ('-h', '--help'):
                     print(HELP)
                     sys.exit()
-                elif i in ['-v', '--verbose']:
+                elif i in ('-v', '--verbose'):
                     verbose = True
-                elif i in ['-d', '--dry-run']:
+                elif i in ('-d', '--dry-run'):
                     verbose = True
                     dry_run = True
-                elif i in ['-o', '--old']:
-                    global snap
-                    snap = ['dg-adw-gtk3-theme']
-                    remove_old()
                 else:
                     print(f"Unrecognized option '{i}'.")
                     sys.exit()
             else:
                 if i in available_themes:
                     uninstalling.append(i)
-                    remove_theme(i, available_themes[i])
+                    remove_theme(i, available_themes[i], paths)
                     remove_config(i)
                 else:
                     print(f"Unrecognized theme '{i}'.")
                     sys.exit()
+
     args = []
     for i in sys.argv:
         if not i.startswith('-'):
@@ -239,14 +237,14 @@ def main():
     if len(args) <= 1:
         uninstalling = available_themes
         for key, value in available_themes.items():
-            remove_theme(key, value)
-            for key in [CONFIG_FILE, OLD_CONFIG]:
+            remove_theme(key, value, paths)
+            for key in (CONFIG, OLD_CONFIG):
                 if os.path.isfile(key) and not dry_run:
                     os.remove(key)
 
     remove_empty()
 
-    if os.path.isfile(CONFIG_FILE) and not dry_run:
+    if os.path.isfile(CONFIG) and not dry_run:
         conf = Config()
 
         conf.read()

@@ -184,7 +184,7 @@ If you are going to install the Firefox theme, read [this](https://github.com/dg
 </div>
 
 ```
-usage: install.py [-h] [-c] [-r] [-t] [-s] [-a] [-f] [-n] [-v]
+usage: install.py [-h] [-c] [-r] [-d] [-t] [-s] [-F] [-a] [-f] [-n] [-v]
 
 This script is used to install, update, and reconfigure the theme
 
@@ -192,6 +192,7 @@ options:
   -h, --help         show this help message and exit
   -c, --clean        clean build directories and exit
   -r, --reconfigure  reconfigure the theme
+  -d, --install-dir  change install dir
   -t, --theme        change theme variant
   -s, --syntax       change VS Code syntax highlighting
   -F, --firefox      change Firefox settings theming
@@ -262,7 +263,6 @@ Themes:
     snap            vscode           gtk4-config
 
 Options:
-    -o, --old       Removes the old version of the theme (dg-gnome-theme).
     -v, --verbose   Verbose mode.
     -d, --dry-run   Similar to verbose mode, except nothing is actually deleted.
     -h, --help      Show this screen.

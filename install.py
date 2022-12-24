@@ -12,7 +12,7 @@ from re import sub
 from urllib.request import urlopen
 from glob import glob
 
-from paths import HOME, REPO_DIR, CONFIG_FILE, OLD_CONFIG, SRC, FIREFOX_DIR, VSCODE_DIR, installed_paths
+from paths import HOME, REPO_DIR, CONFIG, OLD_CONFIG, SRC, FIREFOX_DIR, VSCODE_DIR, installed
 
 NC = '\033[0m'
 BOLD = '\033[1m'
@@ -25,6 +25,11 @@ BLBLUE = '\033[1;94m'
 BLCYAN = '\033[1;96m'
 
 VARIANTS = { # all of the possible configurations, name: pretty-name
+    'dir': {
+        'default': f'Default  {BGREEN}(Recommended for most distros){NC}',
+        'root': f'/usr/share  {BYELLOW}(Do not choose if you use Flatpaks){NC}',
+        'home': f'{HOME}/.local/share  {BYELLOW}(Only recommended for immutable distros){NC}'
+    },
     'color': {
         'orange': 'Orange',
         'bark': 'Bark',
@@ -42,7 +47,7 @@ VARIANTS = { # all of the possible configurations, name: pretty-name
     'theme': {
         'light': 'Light',
         'dark': 'Dark',
-        'auto': f'Auto {BYELLOW} (Only recommended for GNOME or Budgie){NC}'
+        'auto': f'Auto  {BYELLOW}(Only recommended for GNOME or Budgie){NC}'
     },
     'enableable': {
         'dg-adw-gtk3': {
@@ -87,10 +92,26 @@ VERSIONS = {
     'budgie': (10.6,)
 }
 
+DIR_MSG = f'{BLBLUE}Where do you want to {NC}{BLCYAN}install the theme{NC}{BLBLUE}?{NC}'
 SETTINGS_MSG = f'{BLBLUE}Do you want to theme the {NC}{BLCYAN}settings pages{NC}{BLBLUE} in {BLCYAN}Firefox{BLBLUE}?{NC}{BOLD}'
 SYNTAX_MSG = f'{BLBLUE}Do you want to keep the {NC}{BLCYAN}default syntax highlighting{NC}{BLBLUE} in {BLCYAN}VS Code{BLBLUE}?{NC}{BOLD}'
 LIBADWAITA_MSG = f'{BLBLUE}Do you want to install {BLCYAN}Libadwaita{BLBLUE} as a {NC}{BLCYAN}GTK4 theme{NC}{BLBLUE}?{NC}{BOLD}'
 GTK4_MSG = f'{BLBLUE}Do you want to install the {NC}{BLCYAN}custom GTK4 configuration{NC}{BLBLUE}?{NC}{BOLD}'
+
+# dg-gnome-theme
+OLD_THEMES = [
+    'gtk3',
+    'gnome-shell',
+    'icons',
+    'cursors',
+    'gtksourceview',
+    'sounds',
+    'firefox',
+    'snap'
+]
+
+# anything in dg-yaru or dg-adw-gtk3
+MESON_THEMES = list(VARIANTS['enableable']['dg-yaru'].keys()) + list(VARIANTS['enableable']['dg-adw-gtk3'].keys())
 
 # Set some things to false
 no_update = update_color = update_theme = update_settings = update_syntax = reconfigure = verbose = force = configured = updated = False
@@ -169,16 +190,16 @@ def main():
     conf.read()
 
     # Move old config file
-    if os.path.isfile(OLD_CONFIG) and not os.path.isfile(CONFIG_FILE):
-        shutil.move(OLD_CONFIG, CONFIG_FILE)
+    if os.path.isfile(OLD_CONFIG) and not os.path.isfile(CONFIG):
+        shutil.move(OLD_CONFIG, CONFIG)
 
     # Whether or not to configure
-    if not os.path.isfile(CONFIG_FILE) or reconfigure:
+    if not os.path.isfile(CONFIG) or reconfigure:
         global configure_all
         configure_all = True
         conf.configure()
-        if os.path.isfile(CONFIG_FILE):
-            os.remove(CONFIG_FILE)
+        if os.path.isfile(CONFIG):
+            os.remove(CONFIG)
 
     config = conf.ret_config()
 
@@ -194,7 +215,7 @@ def main():
         conf.configure()
 
     # Reconfigure color, theme variant, or syntax highlighting if user wants to
-    if update_color or update_theme or update_syntax or update_settings:
+    if update_color or update_theme or update_syntax or update_settings or update_dir:
         conf.configure()
 
     if configured:
@@ -210,7 +231,7 @@ def main():
         print(f'{BYELLOW}Updating themes using previous configuration.{NC}')
         print(f"{BYELLOW}Use {BLYELLOW}'{sys.argv[0]} --reconfigure'{BYELLOW} if you want to change anything.{NC}")
 
-    paths = installed_paths(new_only = True)
+    paths = installed(new_only = True)
 
     config['suffix']='-dark' if config['color_scheme'] == 'prefer-dark' else ''
     config['variant']='dark' if config['color_scheme'] == 'prefer-dark' else 'light'
@@ -256,8 +277,18 @@ def main():
 
         return exists
 
+    theme_dirs = installed(new_only = True, just_theme_dirs = True, directory = 'home')
+
     # Install dg-adw-gtk3
     if 'gtk3' in config['enabled'] or 'gtk4-libadwaita' in config['enabled']:
+        # If user is installing in root dir, remove old symlinks if they exist
+        if config['dir'] == 'root':
+            for dirs in paths['gtk3'] + paths['gtk4-libadwaita']:
+                if isinstance(dirs, list):
+                    for subdir in dirs:
+                        if os.path.islink(subdir):
+                            run_command(['sudo', 'rm', '-rf', subdir])
+
         gtk3 = InstallDgAdwGtk3(config)
         config['dg-adw-gtk3_version'] = gtk3.get_version()
         conf.write(config)
@@ -324,28 +355,6 @@ def main():
             if 'qualia-gtk-theme' in line:
                 print("Snap theme was installed previously, use './uninstall.py snap' to remove it.")
 
-    # Symlink themes to /usr dir if using mate
-    dirs = []
-    if config['desktop_versions']['mate'] is not None:
-        theme_dirs = installed_paths(new_only = True, just_theme_dirs = True)
-        for path in theme_dirs:
-            if isinstance(path, list):
-                for i in path:
-                    dirs.append(i)
-            else:
-                dirs.append(path)
-        for directory in dirs:
-            paths = glob(f'{directory}/*')
-            for path in paths:
-                if path.startswith(f'{HOME}/.local'):
-                    target = path
-                    dest = '/usr' + target.split(f'{HOME}/.local')[1]
-                    directory = os.path.dirname(dest)
-                    if directory.startswith('/usr') and not os.path.isdir(directory):
-                        run_command(['sudo', 'mkdir', '-p', directory])
-                    if not os.path.exists(dest) and os.path.exists(target):
-                        run_command(['sudo', 'ln', '-rsf', target, dest])
-
     #####################
     ##  Enable Themes  ##
     #####################
@@ -385,18 +394,47 @@ def main():
     except subprocess.CalledProcessError:
         pass
 
-    ########################
-    #   Remove old theme   #
-    ########################
+    # Remove old theme
+    from uninstall import remove_theme, available_themes, remove_empty
 
-    old_paths = installed_paths(old_only = True)
+    old_paths = installed(old_only=True)
+    for theme in OLD_THEMES:
+        remove_theme(theme, available_themes[theme], old_paths, True, False, verbose)
 
-    for i in old_paths:
-        old_exists = check_path(i, old_paths, False)
-        if old_exists:
-            print("Removing old theme.")
-            run_command(['sudo', './uninstall.py', '--old'])
-            break
+    if config['dir'] == 'root':
+        home_paths = installed(directory='home')
+        for theme in MESON_THEMES:
+            remove_theme(theme, available_themes[theme], home_paths, True, False, verbose)
+    elif config['dir'] == 'home':
+        root_paths = installed(directory='root')
+        for theme in MESON_THEMES:
+            remove_theme(theme, available_themes[theme], root_paths, True, False, verbose)
+    elif config['dir'] == 'default':
+        non_default_paths = installed(directory='not_default')
+        for theme in MESON_THEMES:
+            remove_theme(theme, available_themes[theme], non_default_paths, True, False, verbose)
+
+    remove_empty()
+
+    # Symlink themes to /usr dir if using mate
+    dirs = []
+    if config['desktop_versions']['mate'] is not None and config['dir'] == 'default':
+        for path in theme_dirs:
+            if isinstance(path, list):
+                for i in path:
+                    dirs.append(i)
+            else:
+                dirs.append(path)
+        for directory in dirs:
+            paths = glob(f'{directory}/*')
+            for path in paths:
+                target = path
+                dest = '/usr' + target.split(f'{HOME}/.local')[1]
+                directory = os.path.dirname(dest)
+                if directory.startswith('/usr') and not os.path.isdir(directory):
+                    run_command(['sudo', 'mkdir', '-p', directory])
+                if not os.path.exists(dest) and os.path.exists(target):
+                    run_command(['sudo', 'ln', '-rsf', target, dest])
 
     if updated:
         print(f"{BYELLOW}Log out and log back in for everything to be updated.{NC}")
@@ -525,6 +563,9 @@ class Config:
         global configured
         config = self.config
 
+        if configure_all or update_dir:
+            config['dir'] = self.config_menu('', VARIANTS['dir'], custom_msg=DIR_MSG, no_columns=True)
+
         if configure_all or update_color:
             config['color'] = self.config_menu('accent color', VARIANTS['color'])
 
@@ -574,7 +615,7 @@ class Config:
         print() # blank line
         configured = True
 
-    def config_menu(self, message, options, default=1):
+    def config_menu(self, message, options, default=1, custom_msg=None, no_columns=False):
         '''
         Prompts user with a menu of options.
 
@@ -582,16 +623,22 @@ class Config:
             message (str) : Which {message} do you want?
             options (dict) : {name: pretty_name} dictionary that contains options.
             default (int) : Default option.
+            custom_msg (str) : Provide a custom message to print. Defaults to None.
+            no_colums (bool) : Each option takes up a full line.
         '''
-        print (f'{BLBLUE}Which {NC}{BLCYAN}{message}{NC}{BLBLUE} do you want?{NC}')
+        if custom_msg is not None:
+            question = custom_msg
+        else:
+            question = f'{BLBLUE}Which {NC}{BLCYAN}{message}{NC}{BLBLUE} do you want?{NC}'
+
+        print (question)
 
         for i in range(len(options)):
             array = list(options.keys())
-            name = array[i]
             pretty_name = list(options.values())[i]
             num = f'{i+1}:'
 
-            if (i % 2) == 0 and i != len(array) - 1:
+            if not no_columns and (i % 2) == 0 and i != len(array) - 1:
                 print(f'  {num:<4}{pretty_name:<12}', end='')
             else:
                 print(f'  {num:<4}{pretty_name:<12}')
@@ -606,7 +653,10 @@ class Config:
                     ret = array[int(default) - 1]
                 else:
                     continue
-            if not self.theme_variants(ret): # If auto and cant detect theme
+            try:
+                if not self.theme_variants(ret): # If auto and cant detect theme
+                    continue
+            except UnboundLocalError:
                 continue
             break
 
@@ -648,13 +698,16 @@ class Config:
         config['old'] = {}
         config['old_vscode'] = []
         config['old_firefox'] = []
+        config['dir'] = ''
+        config['color'] = ''
+        config['theme'] = ''
 
         for theme in VARIANTS['enableable']:
             if theme != 'qualia-gtk-theme-snap':
                 config[theme + '_version'] = ''
 
         try:
-            for line in open(CONFIG_FILE, encoding='UTF-8').readlines():
+            for line in open(CONFIG, encoding='UTF-8').readlines():
                 if ': ' in line:
                     line = line.strip().split(': ')
                 else:
@@ -718,15 +771,16 @@ class Config:
         Parameters:
             config (dict) : Dictionary that contains the configuration.
         '''
-        if os.path.isfile(CONFIG_FILE):
-            os.remove(CONFIG_FILE)
-        elif os.path.isdir(CONFIG_FILE):
-            shutil.rmtree(CONFIG_FILE)
+        if os.path.isfile(CONFIG):
+            os.remove(CONFIG)
+        elif os.path.isdir(CONFIG):
+            shutil.rmtree(CONFIG)
 
-        f = open(CONFIG_FILE, 'x', encoding='UTF-8')
+        f = open(CONFIG, 'x', encoding='UTF-8')
         f.write("This file is generated and used by the install script.\n")
         f.write('color: ' + config['color'] + '\n')
         f.write('theme: ' + config['theme'] + '\n')
+        f.write('dir: ' + config['dir'] + '\n')
         f.write('enabled: ' + ' '.join(config['enabled']) + '\n')
         f.write('\n')
         f.write('gnome: ' + str(config['desktop_versions']['gnome']) + '\n')
@@ -857,12 +911,15 @@ class InstallDgAdwGtk3(InstallThread):
         super().__init__(process=self._install)
 
     def _install(self):
+        config = self.config
         if not no_update:
             run_command(['git', 'submodule', 'update', '--init', 'src/dg-adw-gtk3'])
         cd(SRC['gtk3'])
 
-        options = [f'-Dprefix={HOME}/.local']
-        if 'gtk4-libadwaita' in self.config['enabled'] and 'gtk3' in self.config['enabled']:
+        install_dir = f'{HOME}/.local' if config['dir'] in ('default', 'home') else '/usr'
+
+        options = [f'-Dprefix={install_dir}']
+        if 'gtk4-libadwaita' in config['enabled'] and 'gtk3' in config['enabled']:
             pretty_string = 'qualia GTK3 and Libadwaita GTK4 themes'
             up_to_date = 'qualia GTK3 and Libadwaita GTK4 themes are'
             options += ['-Dgtk4=true', '-Dgtk3=true']
@@ -875,8 +932,8 @@ class InstallDgAdwGtk3(InstallThread):
             up_to_date = 'Libadwaita GTK4 theme is'
             options += ['-Dgtk4=true', '-Dgtk3=false']
 
-        if self.get_version() != self.config['dg-adw-gtk3_version'] or configure_all or force:
-            self.spinner = Spinner(pretty_string, f'{HOME}/.local/share/themes', self)
+        if self.get_version() != self.config['dg-adw-gtk3_version'] or configure_all or force or update_dir:
+            self.spinner = Spinner(pretty_string, f'{install_dir}/share/themes', self)
             if not os.path.isdir('build'):
                 run_command(['meson', 'build'] + options, meson=True)
             else:
@@ -903,6 +960,7 @@ class InstallDgYaru(InstallThread):
         super().__init__(process=self._install)
 
     def _install(self):
+        config = self.config
         if not no_update:
             run_command(['git', 'submodule', 'update', '--init', 'src/dg-yaru'])
 
@@ -922,11 +980,13 @@ class InstallDgYaru(InstallThread):
         else:
             pretty_string += ' theme'
 
-        if self.get_version() != self.config['dg-yaru_version'] or configure_all or force or \
-        self.config['old_gnome'] != self.config['desktop_versions']['gnome']:
-            self.spinner = Spinner(pretty_string, '/usr/share', self)
+        install_dir = f'{HOME}/.local' if config['dir'] == 'home' else '/usr'
 
-            options = []
+        if self.get_version() != config['dg-yaru_version'] or configure_all or force or update_dir or \
+        config['old_gnome'] != config['desktop_versions']['gnome']:
+            self.spinner = Spinner(pretty_string, f'{install_dir}/share', self)
+
+            options = [f'-Dprefix={install_dir}']
 
             for p in self.parts:
                 options.append('-D' + p + '=true')
@@ -935,7 +995,7 @@ class InstallDgYaru(InstallThread):
                 if i not in self.parts:
                     options.append('-D' + i + '=false')
 
-            if 'unity' in self.config['desktop_versions'] or 'mate' in self.config['desktop_versions']:
+            if 'unity' in config['desktop_versions'] or 'mate' in config['desktop_versions']:
                 options.append('-Dpanel-icons=true')
             else:
                 options.append('-Dpanel-icons=false')
@@ -1052,7 +1112,7 @@ class InstallQualiaGtkThemeSnap(InstallThread):
 
     def _install(self):
         snap_list = check_output(['snap', 'list']).split('\n')
-        for name in ['gtk-common-themes', 'qualia-gtk-theme']:
+        for name in ('gtk-common-themes', 'qualia-gtk-theme'):
             installed = False
             for line in snap_list:
                 line = line.split()
@@ -1297,6 +1357,11 @@ if __name__ == "__main__":
         help='reconfigure the theme'
     )
     parser.add_argument(
+        '-d', '--install-dir',
+        action = 'store_true',
+        help = 'change install dir'
+    )
+    parser.add_argument(
         '-t', '--theme',
         action = 'store_true',
         help = 'change theme variant'
@@ -1336,6 +1401,8 @@ if __name__ == "__main__":
 
     update_color = args.accent
 
+    update_dir = args.install_dir
+
     update_theme = args.theme
 
     update_syntax = args.syntax
@@ -1357,7 +1424,7 @@ if __name__ == "__main__":
             args = ['sudo', sys.executable] + sys.argv + [os.environ]
             os.execlpe('sudo', *args)
 
-        for i in [SRC['yaru'], SRC['gtk3']]:
+        for i in (SRC['yaru'], SRC['gtk3']):
             try:
                 shutil.rmtree(f'{i}/build')
             except NotADirectoryError:
