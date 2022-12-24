@@ -101,8 +101,8 @@ def installed(old_only = False, new_only = False, just_theme_dirs = False, direc
 
     for name in names['dg-yaru']:
         for prefix in dg_yaru_prefixes:
-            for directory in ('themes', 'icons', 'sounds', 'gnome-shell/theme'):
-                paths['theme_dirs'] += glob(f'{prefix}/{directory}/{name}*')
+            for subdir in ('themes', 'icons', 'sounds', 'gnome-shell/theme'):
+                paths['theme_dirs'] += glob(f'{prefix}/{subdir}/{name}*')
             if just_theme_dirs:
                 continue
             paths['gnome-shell'] += glob(f'{prefix}/themes/{name}*/gnome-shell') + glob(f'{prefix}/gnome-shell/theme/{name}*')
@@ -127,9 +127,9 @@ def installed(old_only = False, new_only = False, just_theme_dirs = False, direc
         if directory is None:
             for firefox_path in FIREFOX_DIR.values():
                 for name in names['dg-firefox-theme']:
-                    paths['firefox'] += glob(firefox_path + f'/*/chrome/{name}')
+                    paths['firefox'] += glob(f'{firefox_path}/*/chrome/{name}')
                 if not old_only:
-                    paths['firefox'] += glob(firefox_path + '/*/user.js') + glob(firefox_path + '/*/chrome/userChrome.css') + glob(firefox_path + '/*/userContent.css')
+                    paths['firefox'] += glob(f'{firefox_path}/*/user.js') + glob(f'{firefox_path}/*/chrome/userChrome.css') + glob(f'{firefox_path}/*/userContent.css')
 
         if not old_only:
             if directory is None:
