@@ -102,37 +102,34 @@ def installed(old_only = False, new_only = False, just_theme_dirs = False, direc
     for name in names['dg-yaru']:
         for prefix in dg_yaru_prefixes:
             for directory in ('themes', 'icons', 'sounds', 'gnome-shell/theme'):
-                paths['theme_dirs'] += [glob(f'{prefix}/{directory}/{name}*')]
+                paths['theme_dirs'] += glob(f'{prefix}/{directory}/{name}*')
             if just_theme_dirs:
                 continue
-            paths['gnome-shell'] += [glob(f'{prefix}/themes/{name}*/gnome-shell'), glob(f'{prefix}/gnome-shell/theme/{name}*')]
-            paths['metacity'] += [glob(f'{prefix}/themes/{name}*/metacity')]
-            paths['cinnamon-shell'] += [glob(f'{prefix}/themes/{name}*/cinnamon')]
-            paths['ubuntu-unity'] += [glob(f'{prefix}/themes/{name}*/unity')]
-            paths['xfwm4'] += [glob(f'{prefix}/themes/{name}*/xfwm4')]
-            paths['icons'] += [glob(f'{prefix}/icons/{name}*/*')]
+            paths['gnome-shell'] += glob(f'{prefix}/themes/{name}*/gnome-shell') + glob(f'{prefix}/gnome-shell/theme/{name}*')
+            paths['metacity'] += glob(f'{prefix}/themes/{name}*/metacity')
+            paths['cinnamon-shell'] += glob(f'{prefix}/themes/{name}*/cinnamon')
+            paths['ubuntu-unity'] += glob(f'{prefix}/themes/{name}*/unity')
+            paths['xfwm4'] += glob(f'{prefix}/themes/{name}*/xfwm4')
+            paths['icons'] += glob(f'{prefix}/icons/{name}*/*')
             paths['cursors'] += [f'{prefix}/icons/{name}/cursor.theme', f'{prefix}/icons/{name}/cursors']
             paths['sounds'] += [f'{prefix}/sounds/{name}']
             for i in ('gtksourceview-5', 'gtksourceview-4', 'gtksourceview-3.0', 'gtksourceview-2.0'):
-                paths['gtksourceview'] += [glob(f'{prefix}/{i}/styles/{name}*')]
+                paths['gtksourceview'] += glob(f'{prefix}/{i}/styles/{name}*')
 
     for name in names['dg-adw-gtk3']:
         for prefix in dg_adw_gtk3_prefixes:
-            paths['theme_dirs'] += [glob(f'{prefix}/themes/{name}*')]
+            paths['theme_dirs'] += glob(f'{prefix}/themes/{name}*')
             if just_theme_dirs:
                 continue
-            paths['gtk3'] += [
-                glob(f'{prefix}/themes/{name}*/gtk-3.0'),
-                glob(f'{prefix}/themes/{name}*/gtk-2.0')
-            ]
+            paths['gtk3'] += glob(f'{prefix}/themes/{name}*/gtk-3.0') + glob(f'{prefix}/themes/{name}*/gtk-2.0')
 
     if not just_theme_dirs:
         if directory is None:
             for firefox_path in FIREFOX_DIR.values():
                 for name in names['dg-firefox-theme']:
-                    paths['firefox'] += [glob(firefox_path + f'/*/chrome/{name}')]
+                    paths['firefox'] += glob(firefox_path + f'/*/chrome/{name}')
                 if not old_only:
-                    paths['firefox'] += [glob(firefox_path + '/*/user.js'), glob(firefox_path + '/*/chrome/userChrome.css'), glob(firefox_path + '/*/userContent.css')]
+                    paths['firefox'] += glob(firefox_path + '/*/user.js') + glob(firefox_path + '/*/chrome/userChrome.css') + glob(firefox_path + '/*/userContent.css')
 
         if not old_only:
             if directory is None:
@@ -141,7 +138,7 @@ def installed(old_only = False, new_only = False, just_theme_dirs = False, direc
                 for extensions_path in VSCODE_DIR.values():
                     paths['vscode'] += [f'{extensions_path}/qualia']
             for prefix in dg_adw_gtk3_prefixes:
-                paths['gtk4-libadwaita'] += [glob(f'{prefix}/themes/qualia*/gtk-4.0')]
+                paths['gtk4-libadwaita'] += glob(f'{prefix}/themes/qualia*/gtk-4.0')
 
         return paths
     return paths['theme_dirs']

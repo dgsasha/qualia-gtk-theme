@@ -276,17 +276,15 @@ def main():
 
         return exists
 
-    theme_dirs = installed(new_only = True, just_theme_dirs = True, directory = 'home')
-
     # Install dg-adw-gtk3
     if 'gtk3' in config['enabled'] or 'gtk4-libadwaita' in config['enabled']:
         # If user is installing in root dir, remove old symlinks if they exist
         if config['dir'] == 'root':
-            for dirs in paths['gtk3'] + paths['gtk4-libadwaita']:
-                if isinstance(dirs, list):
-                    for subdir in dirs:
-                        if os.path.islink(subdir):
-                            run_command(['sudo', 'rm', '-rf', subdir])
+            dirs = paths['gtk3'] + paths['gtk4-libadwaita']
+            if isinstance(dirs, list):
+                for directory in dirs:
+                    if os.path.islink(directory):
+                        run_command(['sudo', 'rm', '-rf', directory])
 
         gtk3 = InstallDgAdwGtk3(config)
         config['dg-adw-gtk3_version'] = gtk3.get_version()
@@ -411,29 +409,24 @@ def main():
     elif config['dir'] == 'default':
         non_default_paths = installed(directory='not_default')
         for theme in MESON_THEMES:
-            remove_theme(theme, available_themes[theme], non_default_paths, True, False, verbose)
+            remove_theme(theme, available_themes[theme], non_default_paths, True, False, verbose, True)
 
     remove_empty()
 
+    theme_dirs = installed(new_only = True, just_theme_dirs = True, directory = 'home')
+
     # Symlink themes to /usr dir if using mate
-    dirs = []
     if config['desktop_versions']['mate'] is not None and config['dir'] == 'default':
-        for path in theme_dirs:
-            if isinstance(path, list):
-                for i in path:
-                    dirs.append(i)
-            else:
-                dirs.append(path)
-        for directory in dirs:
-            paths = glob(f'{directory}/*')
-            for path in paths:
-                target = path
-                dest = '/usr' + target.split(f'{HOME}/.local')[1]
-                directory = os.path.dirname(dest)
-                if directory.startswith('/usr') and not os.path.isdir(directory):
-                    run_command(['sudo', 'mkdir', '-p', directory])
-                if not os.path.exists(dest) and os.path.exists(target):
-                    run_command(['sudo', 'ln', '-rsf', target, dest])
+        if isinstance(theme_dirs, list):
+            for directory in theme_dirs:
+                paths = glob(f'{directory}/*')
+                for target in paths:
+                    dest = '/usr' + target.split(f'{HOME}/.local')[1]
+                    directory = os.path.dirname(dest)
+                    if not os.path.isdir(directory):
+                        run_command(['sudo', 'mkdir', '-p', directory])
+                    if not os.path.exists(dest) and os.path.exists(target):
+                        run_command(['sudo', 'ln', '-rsf', target, dest])
 
     if updated:
         print(f"{BYELLOW}Log out and log back in for everything to be updated.{NC}")
@@ -855,7 +848,7 @@ class Spinner(threading.Thread):
             while self.process.is_alive():
                 for cursor in '|/-\\':
                     columns = int(os.popen('stty size', 'r').read().split()[1])
-                    sys.stdout.write(f'\r\033[?25l' + message + '   ' + f'\033[J\033[{columns - 1}G' + cursor + '\n')
+                    sys.stdout.write(f'\r\033[?25l' + message + '   ' + f'\033[J\033[{columns}G' + cursor + '\n')
                     sys.stdout.write(f'\033[{(message_len + 2) // (columns) + 1}A')
                     sys.stdout.flush()
                     time.sleep(0.1)

@@ -82,23 +82,25 @@ def remove_empty():
     '''
     theme_dirs = installed(just_theme_dirs = True)
     try:
-        for i in theme_dirs:
-            if isinstance(i, list):
-                for folder in i:
-                    folders = next(os.walk(folder))[1]
-                    files = next(os.walk(folder))[2]
-                    if len(folders) == 0:
-                        contains_symlink = False
+        if isinstance(theme_dirs, list):
+            for path in theme_dirs:
+                folders = next(os.walk(path))[1]
+                files = next(os.walk(path))[2]
+                if len(folders) == 0:
+                    if len(files) > 0:
+                        skip_dir = False
                         for file in files:
-                            if os.path.islink(f'{folder}/{file}') and os.path.isdir(os.readlink(f'{folder}/{file}')):
-                                contains_symlink = True # Symlinks that point to directories should stay
+                            if file != 'index.theme':
+                                skip_dir = True # If index.theme is the only file, delete the dir. otherwise leave it.
                                 break
-                        if not contains_symlink:
-                            delete(folder)
+                    else:
+                        skip_dir = False
+                    if not skip_dir:
+                        delete(path)
     except StopIteration:
         pass
 
-def remove_theme(name, pretty, paths, old = False, disconnect = True, override_verbose = None):
+def remove_theme(name, pretty, paths, old = False, disconnect = True, override_verbose = None, no_symlinks = False):
     '''
     Removes a part of the theme.
 
@@ -109,6 +111,7 @@ def remove_theme(name, pretty, paths, old = False, disconnect = True, override_v
     old (bool): Whether or not it should be printed that it is the old theme being removed.
     disconnect (bool): Whether or not the associated snap theme should be disconnected.
     override_verbose (bool) : Override the global verbose value.
+    no_symlinks (bool) : Don't delete symlinks (Only the ones created for Mate).
     '''
     if override_verbose is not None:
         global verbose
@@ -142,21 +145,16 @@ def remove_theme(name, pretty, paths, old = False, disconnect = True, override_v
 
     if name != 'snap':
         if isinstance(paths[name], list):
-            for i in paths[name]:
-                if isinstance(i, list):
-                    for path in i:
-                        if name == 'icons' and path in paths['cursors']:
-                            pass # Since cursors and icons are in same dir, don't remove cursors unless user wants to
-                        else:
-                            if not shown:
-                                print(message)
-                            shown = True
-                            delete(path)
-                elif os.path.exists(i):
+            for path in paths[name]:
+                if name == 'icons' and path in paths['cursors']:
+                    pass # Since cursors and icons are in same dir, don't remove cursors unless user wants to
+                elif os.path.exists(path):
+                    if no_symlinks and name in ('gtk3', 'gtk4-libadwaita') and os.path.islink(path):
+                        continue
                     if not shown:
                         print(message)
                     shown = True
-                    delete(i)
+                    delete(path)
 
     if disconnect and not dry_run:
         for i in snap:
