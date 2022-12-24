@@ -66,7 +66,7 @@ def installed(old_only = False, new_only = False, just_theme_dirs = False, direc
         dg_adw_gtk3_prefixes = dg_yaru_prefixes
     elif directory == 'not_default':
         dg_yaru_prefixes = (f'{HOME}/.local/share',)
-        dg_adw_gtk3_prefixes = ('/usr/share')
+        dg_adw_gtk3_prefixes = ('/usr/share',)
     else:
         dg_yaru_prefixes = ('/usr/share', f'{HOME}/.local/share')
         dg_adw_gtk3_prefixes = dg_yaru_prefixes
