@@ -18,7 +18,7 @@ HELP = f'''Usage:
 
 Themes:
     gtk3            gtk4-libadwaita  gnome-shell
-    cinnamon-shell  metacity         ubuntu-unity
+    cinnamon-shell  metacity         unity
     xfwm4           firefox          icons
     cursors         sounds           gtksourceview
     snap            vscode           gtk4-config
@@ -86,15 +86,25 @@ def remove_empty():
             for path in theme_dirs:
                 folders = next(os.walk(path))[1]
                 files = next(os.walk(path))[2]
-                if len(folders) == 0:
-                    if len(files) > 0:
-                        skip_dir = False
-                        for file in files:
-                            if file != 'index.theme':
+                if len(files) > 0:
+                    skip_dir = False
+                    for file in files:
+                        file_path = f'{path}/{file}'
+                        if file != 'index.theme':
+                            if os.path.islink(file_path) and not os.path.exists(os.readlink(file_path)):
+                                delete(file_path) # remove broken symlinks
+                            else:
                                 skip_dir = True # If index.theme is the only file, delete the dir. otherwise leave it.
-                                break
-                    else:
-                        skip_dir = False
+                        elif 'share/themes' in path: # Remove gtk index if gtk theme is deleted
+                            remove_index = True
+                            for subdir in ('gtk-2.0', 'gtk-3.0', 'gtk-4.0'):
+                                if subdir in folders:
+                                    remove_index = False
+                            if remove_index:
+                                delete(file_path)
+                else:
+                    skip_dir = False
+                if len(folders) == 0:
                     if not skip_dir:
                         delete(path)
     except StopIteration:

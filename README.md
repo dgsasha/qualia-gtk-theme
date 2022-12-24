@@ -257,7 +257,7 @@ Usage:
 
 Themes:
     gtk3            gtk4-libadwaita  gnome-shell
-    cinnamon-shell  metacity         ubuntu-unity
+    cinnamon-shell  metacity         unity
     xfwm4           firefox          icons
     cursors         sounds           gtksourceview
     snap            vscode           gtk4-config
