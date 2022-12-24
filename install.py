@@ -206,8 +206,7 @@ def main():
     # Reconfigure if config file has issues
     try:
         color_scheme = conf.theme_variants(config['theme'])
-        if not isinstance(config['color'], str) or not isinstance(config['theme'], str) or \
-        not isinstance(config['enabled'], list) or color_scheme is None or not config['enabled']:
+        if not isinstance(config['enabled'], list) or color_scheme is None or len(config['enabled']) == 0:
             configure_all = True
             conf.configure()
     except KeyError:
@@ -698,9 +697,9 @@ class Config:
         config['old'] = {}
         config['old_vscode'] = []
         config['old_firefox'] = []
-        config['dir'] = ''
-        config['color'] = ''
-        config['theme'] = ''
+        config['dir'] = 'default'
+        config['color'] = 'orange'
+        config['theme'] = 'light'
 
         for theme in VARIANTS['enableable']:
             if theme != 'qualia-gtk-theme-snap':
