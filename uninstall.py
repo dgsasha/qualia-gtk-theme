@@ -56,6 +56,10 @@ def remove_config(name, version = False):
                 filedata = filedata.replace(line + '\n', '')
             elif line.startswith("enabled"):
                 newline = line.replace(f' {name}', '')
+                if name == 'firefox':
+                    newline = newline.replace(f' settings_theme', '')
+                elif name == 'vscode':
+                    newline = newline.replace(f' default_syntax', '')
                 filedata = filedata.replace(line, newline)
         with open(CONFIG, 'w', encoding='UTF-8') as f:
             f.write(filedata)
@@ -125,7 +129,7 @@ def remove_theme(name, pretty, paths, old = False, disconnect = True, override_v
 
     snap = ('dg-adw-gtk3-theme',) if old else ('qualia-gtk-theme', 'dg-adw-gtk3-theme')
 
-    if not disconnect and not dry_run:
+    if not dry_run:
         if name == 'snap' and shutil.which('snap') is not None:
             for i in snap:
                 snap_list = subprocess.run(['sudo', 'snap', 'list'], stdout=subprocess.PIPE, check=True).stdout.decode('utf-8').split('\n')
@@ -223,8 +227,6 @@ def main():
             else:
                 if i in available_themes:
                     uninstalling.append(i)
-                    remove_theme(i, available_themes[i], paths)
-                    remove_config(i)
                 else:
                     print(f"Unrecognized theme '{i}'.")
                     sys.exit()
@@ -236,14 +238,8 @@ def main():
 
     if len(args) <= 1:
         uninstalling = available_themes
-        for key, value in available_themes.items():
-            remove_theme(key, value, paths)
-            for key in (CONFIG, OLD_CONFIG):
-                if os.path.isfile(key) and not dry_run:
-                    os.remove(key)
 
-    remove_empty()
-
+    # Enable old themes
     if os.path.isfile(CONFIG) and not dry_run:
         conf = Config()
 
@@ -251,16 +247,32 @@ def main():
 
         config = conf.ret_config()
 
+        if 'enabled' in config:
+            enable_old(config, uninstalling)
+
+    # Remove theme
+    for i in uninstalling:
+        remove_theme(i, available_themes[i], paths)
+        remove_config(i)
+
+    # Cleanup config file
+    if os.path.isfile(CONFIG) and not dry_run:
+        new_conf = Config()
+        new_conf.read()
+        config = new_conf.ret_config()
+
         # Remove version of theme from config file if it is fully uninstalled
-        for theme in VARIANTS['enableable']:
-            found = False
-            for part in config['enabled']:
-                if part in VARIANTS['enableable'][theme]:
-                    found = True
-            if not found:
-                remove_config(theme, True)
+        if 'enabled' in config and len(config['enabled']) > 0:
+            for theme in VARIANTS['enableable']:
+                found = False
+                for part in config['enabled']:
+                    if part in VARIANTS['enableable'][theme]:
+                        found = True
+                if not found:
+                    remove_config(theme, True)
+        else:
+            os.remove(CONFIG) # Remove config file if nothing is enabled
 
-        enable_old(config, uninstalling)
-
+    remove_empty()
 if __name__ == "__main__":
     main()

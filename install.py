@@ -27,8 +27,8 @@ BLCYAN = '\033[1;96m'
 VARIANTS = { # all of the possible configurations, name: pretty-name
     'dir': {
         'default': f'Default  {BGREEN}(Recommended for most distros){NC}',
-        'root': f'/usr/share  {BYELLOW}(Do not choose if you use Flatpaks){NC}',
-        'home': f'{HOME}/.local/share  {BYELLOW}(Only recommended for immutable distros){NC}'
+        'home': f'{HOME}/.local/share  {BYELLOW}(Only recommended for immutable distros){NC}',
+        'root': f'/usr/share  {BYELLOW}(Do not choose if you use Flatpaks){NC}'
     },
     'color': {
         'orange': 'Orange',
@@ -722,9 +722,6 @@ class Config:
 
                 if ' ' in value:
                     value = value.split(' ')
-
-                if key == 'firefox' and len(value) > 0: # old config file was a little different
-                    config['enabled'].append(key)
 
                 if not configured and key in ('enabled', 'firefox', 'vscode'):
                     prefix = 'old_' if key in ('firefox', 'vscode') else ''
