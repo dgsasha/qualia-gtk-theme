@@ -1333,7 +1333,7 @@ class Enable:
                         continue
                     if theme == 'icons' and de == 'unity' and not uninstalling:
                         # because the panel isn't always dark in the unity theme, use light icons in light theme
-                        name = data['gtk3']['theme_name']
+                        name = f"qualia{config['suffix']}"
                     else:
                         name = value['theme_name']
                     key = value['key']
