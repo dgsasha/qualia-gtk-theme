@@ -13,7 +13,7 @@ Read more about the theme [here](https://github.com/dgsasha/qualia-gtk-theme/wik
 
 ![Screenshot of the light theme](.github/images/light.png)
 
-**There is also a variant of the theme with Libadwaita style window controls**
+**There is also a variant of the theme with Libadwaita style window controls.**
 ![Screenshot of the symbolic window controls variant](.github/images/symbolic_window_controls.png)
 
 More screenshots can be seen [here](https://github.com/dgsasha/qualia-gtk-theme/wiki/Screenshots).
