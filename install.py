@@ -218,7 +218,7 @@ def main():
         conf.configure()
 
     # Reconfigure color, theme variant, or syntax highlighting if user wants to
-    if update_color or update_theme or update_syntax or update_settings or update_dir:
+    if ( update_color or update_theme or update_syntax or update_settings or update_dir ) and not configure_all:
         conf.configure()
 
     if configured:
@@ -364,7 +364,9 @@ def main():
     theme_name = f"qualia{config['suffix']}" if config['color'] == 'orange' else f"qualia-{config['color']}{config['suffix']}"
     icon_name = 'qualia-dark' if config['color'] == 'orange' else f"qualia-{config['color']}-dark"
     cursor_name = 'qualia'
-    xfwm4_name = f"qualia{config['suffix']}"
+    xfwm4_name = f"qualia{config['suffix']}-{config['window-controls']}"
+    if shutil.which('xfconf-query') is not None and check_output(['xfconf-query', '-c', 'xsettings', '-p', '/Gdk/WindowScalingFactor']) == '2':
+        xfwm4_name += '-xhdpi'
 
     cd(REPO_DIR)
 
@@ -418,14 +420,22 @@ def main():
 
     theme_dirs = installed(new_only = True, just_theme_dirs = True)
 
-    for path in theme_dirs:
-        for i in VARIANTS['window-controls']:
-            if i != config['window-controls'] and i in path:
-                delete(path)
-        for color in VARIANTS['color']:
-            if color != config['color'] and color in path:
-                delete(path)
-                break
+    for i in theme_dirs:
+        if 'share/themes' in i:
+            paths = glob(f'{i}/*')
+        else:
+            paths = [i]
+        for path in paths:
+            for variant in VARIANTS['window-controls']:
+                if variant != config['window-controls'] and variant in path:
+                    delete(path)
+                for subdir in ('gtk-3.0', 'gtk-4.0', 'xfwm4', 'metacity', 'unity'):
+                    if path.endswith(subdir) and config['window-controls'] not in path:
+                        delete(path)
+            for color in VARIANTS['color']:
+                if color != config['color'] and color in path:
+                    delete(path)
+                    break
 
     remove_empty()
 
