@@ -187,7 +187,7 @@ If you are going to install the Firefox theme, read [this](https://github.com/dg
 </div>
 
 ```
-usage: install.py [-h] [-c] [-r] [-d] [-t] [-s] [-F] [-a] [-f] [-n] [-v]
+usage: install.py [-h] [-c] [-r] [-d] [-t] [-w] [-s] [-F] [-a] [-f] [-n] [-v]
 
 This script is used to install, update, and reconfigure the theme
 
