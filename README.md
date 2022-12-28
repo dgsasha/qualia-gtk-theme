@@ -197,6 +197,7 @@ options:
   -r, --reconfigure  reconfigure the theme
   -d, --install-dir  change install dir
   -t, --theme        change theme variant
+  -w, --window       change window controls variant
   -s, --syntax       change VS Code syntax highlighting
   -F, --firefox      change Firefox settings theming
   -a, --accent       change accent color

@@ -218,7 +218,7 @@ def main():
         conf.configure()
 
     # Reconfigure color, theme variant, or syntax highlighting if user wants to
-    if ( update_color or update_theme or update_syntax or update_settings or update_dir ) and not configure_all:
+    if ( update_color or update_theme or update_syntax or update_settings or update_dir or update_window_controls ) and not configure_all:
         conf.configure()
 
     if configured:
@@ -592,6 +592,8 @@ class Config:
 
         if configure_all or update_theme:
             config['theme'] = self.config_menu('theme variant', VARIANTS['theme'])
+
+        if configure_all or update_window_controls:
             config['window-controls'] = self.config_menu('window controls variant', VARIANTS['window-controls'])
 
         if configure_all:
@@ -1062,7 +1064,7 @@ class InstallDgLibadwaita(InstallThread):
             run_command(['git', 'submodule', 'update', '--init', 'src/dg-libadwaita'])
         cd(SRC['gtk4'])
 
-        if self.get_version() != config['dg-libadwaita_version'] or reinstall:
+        if self.get_version() != config['dg-libadwaita_version'] or reinstall or update_theme:
             command = ['./install.sh', '-c', config['color'], '-t', config['variant']]
             if config['window-controls'] == 'symbolic':
                 command.append('-s')
@@ -1093,7 +1095,7 @@ class InstallDgFirefoxTheme(InstallThread):
             if variant not in config['old_firefox']:
                 firefox_changed = True
 
-        if self.get_version() != config['dg-firefox-theme_version'] or reinstall or update_settings or firefox_changed:
+        if self.get_version() != config['dg-firefox-theme_version'] or reinstall or update_settings or firefox_changed or update_theme:
             command = ['./install.sh', '-c', self.config['color']]
             if 'settings_theme' not in self.config['enabled']:
                 command.append('-n')
@@ -1125,7 +1127,7 @@ class InstallDgVscodeAdwaita(InstallThread):
             if variant not in config['old_vscode']:
                 vscode_changed = True
 
-        if self.get_version() != self.config['dg-vscode-adwaita_version'] or configure_all or force or update_syntax or vscode_changed:
+        if self.get_version() != self.config['dg-vscode-adwaita_version'] or configure_all or update_syntax or vscode_changed or update_color:
             if 'default_syntax' in self.config['enabled']:
                 run_command(['./install.py', '-c', self.config['color'], '-t', self.config['variant'], '-d'], show_ouput = True)
             else:
@@ -1402,6 +1404,11 @@ if __name__ == "__main__":
         help = 'change theme variant'
     )
     parser.add_argument(
+        '-w', '--window',
+        action = 'store_true',
+        help = 'change window controls variant'
+    )
+    parser.add_argument(
         '-s', '--syntax',
         action = 'store_true',
         help = 'change VS Code syntax highlighting'
@@ -1440,6 +1447,8 @@ if __name__ == "__main__":
 
     update_theme = args.theme
 
+    update_window_controls = args.window_controls
+
     update_syntax = args.syntax
 
     reconfigure = args.reconfigure
@@ -1472,7 +1481,7 @@ if __name__ == "__main__":
         print(f"{BRED}Don't run this script as root, exiting.")
         sys.exit()
 
-    if configure_all or force or update_color or update_theme:
+    if configure_all or force or update_color or update_window_controls:
         reinstall = True
 
     main()
