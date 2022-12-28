@@ -365,8 +365,9 @@ def main():
     icon_name = 'qualia-dark' if config['color'] == 'orange' else f"qualia-{config['color']}-dark"
     cursor_name = 'qualia'
     xfwm4_name = f"qualia{config['suffix']}-{config['window-controls']}"
-    if shutil.which('xfconf-query') is not None and check_output(['xfconf-query', '-c', 'xsettings', '-p', '/Gdk/WindowScalingFactor']) == '2':
-        xfwm4_name += '-xhdpi'
+    if shutil.which('xfconf-query') is not None:
+        if 'xsettings' in check_output(['xfconf-query', '-l']) and check_output(['xfconf-query', '-c', 'xsettings', '-p', '/Gdk/WindowScalingFactor']) == '2':
+            xfwm4_name += '-xhdpi'
 
     cd(REPO_DIR)
 
@@ -400,6 +401,8 @@ def main():
 
     # Remove old variants of the theme
     from uninstall import remove_theme, available_themes, remove_empty, delete
+
+    print('Cleaning up...')
 
     old_paths = installed(old_only=True)
     for theme in OLD_THEMES:
