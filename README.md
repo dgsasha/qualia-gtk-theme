@@ -230,6 +230,8 @@ Your previous configuration will be used again unless you use the `--reconfigure
 
 There are other options to change parts of the configuration, all of them are listed above in the [Downloading and Installing](#downloading-and-installing) section.
 
+If for some reason the update fails, try running `./install.py -c` and then run the install script again before you open an issue. This cleans the build directories, and often has to be done when there are major changes. 
+
 <details>
 <summary>
 
