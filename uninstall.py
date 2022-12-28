@@ -7,7 +7,7 @@ import shutil
 import subprocess
 
 from install import Config, Enable, VARIANTS
-from paths import installed, CONFIG, OLD_CONFIG
+from paths import installed, CONFIG
 
 NC = '\033[0m'
 BOLD = '\033[1m'
@@ -73,7 +73,7 @@ def delete(path):
     '''
     if verbose:
         print('Deleting ' + path)
-    if not dry_run:
+    if not dry_run and path != '/':
         subprocess.run(['sudo', 'rm', '-rf', path], check=True)
 
 def remove_empty():

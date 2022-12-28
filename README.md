@@ -13,6 +13,9 @@ Read more about the theme [here](https://github.com/dgsasha/qualia-gtk-theme/wik
 
 ![Screenshot of the light theme](.github/images/light.png)
 
+**There is also a variant of the theme with Libadwaita style window controls**
+![Screenshot of the symbolic window controls variant](.github/images/symbolic_window_controls.png)
+
 More screenshots can be seen [here](https://github.com/dgsasha/qualia-gtk-theme/wiki/Screenshots).
 
 **This repo contains a GTK3 theme, a configuration for Libadwaita, a Firefox theme, a VS Code theme, and themes for the desktops listed above.**
@@ -173,7 +176,7 @@ git clone --depth=1 --recurse-submodules --shallow-submodules https://github.com
 
 #### Next, run the install script to configure and install the theme.
 
-When configuring the theme you get to choose the install dir and [accent color](#available-accent-colors), choose between the light and dark variants, and choose which themes you want to install.
+When configuring the theme you get to choose the install dir and [accent color](#available-accent-colors), choose the theme variant, and choose which themes you want to install.
 
 If you are going to install the Firefox theme, read [this](https://github.com/dgsasha/qualia-gtk-theme/wiki/Firefox-Theme) first, and if you are going to install the VS Code theme, read [this](https://github.com/dgsasha/qualia-gtk-theme/wiki/VS-Code-Theme) first.
 

@@ -49,6 +49,10 @@ VARIANTS = { # all of the possible configurations, name: pretty-name
         'dark': 'Dark',
         'auto': f'Auto  {BYELLOW}(Only recommended for GNOME or Budgie){NC}'
     },
+    'window-controls': {
+        'macos': 'macOS',
+        'symbolic': 'Libadwaita',
+    },
     'enableable': {
         'dg-adw-gtk3': {
             'gtk3': 'GTK3',
@@ -114,7 +118,7 @@ OLD_THEMES = [
 MESON_THEMES = list(VARIANTS['enableable']['dg-yaru'].keys()) + list(VARIANTS['enableable']['dg-adw-gtk3'].keys())
 
 # Set some things to false
-no_update = update_color = update_theme = update_settings = update_syntax = reconfigure = verbose = force = configured = updated = False
+reinstall = no_update = update_color = update_theme = update_settings = update_syntax = reconfigure = verbose = force = configured = updated = False
 
 #################
 ##  Functions  ##
@@ -356,6 +360,7 @@ def main():
     ##  Enable Themes  ##
     #####################
 
+    gtk3_name = f"qualia{config['suffix']}-{config['window-controls']}" if config['color'] == 'orange' else f"qualia-{config['color']}{config['suffix']}-{config['window-controls']}"
     theme_name = f"qualia{config['suffix']}" if config['color'] == 'orange' else f"qualia-{config['color']}{config['suffix']}"
     icon_name = 'qualia-dark' if config['color'] == 'orange' else f"qualia-{config['color']}-dark"
     cursor_name = 'qualia'
@@ -364,7 +369,7 @@ def main():
     cd(REPO_DIR)
 
     kwargs = {
-        'gtk3': theme_name,
+        'gtk3': gtk3_name,
         'icons': icon_name,
         'cursors': cursor_name,
         'sounds': cursor_name,
@@ -391,8 +396,8 @@ def main():
     except subprocess.CalledProcessError:
         pass
 
-    # Remove old theme
-    from uninstall import remove_theme, available_themes, remove_empty
+    # Remove old variants of the theme
+    from uninstall import remove_theme, available_themes, remove_empty, delete
 
     old_paths = installed(old_only=True)
     for theme in OLD_THEMES:
@@ -410,6 +415,17 @@ def main():
         non_default_paths = installed(directory='not_default')
         for theme in MESON_THEMES:
             remove_theme(theme, available_themes[theme], non_default_paths, True, False, verbose, True)
+
+    theme_dirs = installed(new_only = True, just_theme_dirs = True)
+
+    for path in theme_dirs:
+        for i in VARIANTS['window-controls']:
+            if i != config['window-controls'] and i in path:
+                delete(path)
+        for color in VARIANTS['color']:
+            if color != config['color'] and color in path:
+                delete(path)
+                break
 
     remove_empty()
 
@@ -563,6 +579,7 @@ class Config:
 
         if configure_all or update_theme:
             config['theme'] = self.config_menu('theme variant', VARIANTS['theme'])
+            config['window-controls'] = self.config_menu('window controls variant', VARIANTS['window-controls'])
 
         if configure_all:
             config['enabled'] = []
@@ -693,6 +710,7 @@ class Config:
         config['dir'] = 'default'
         config['color'] = 'orange'
         config['theme'] = 'light'
+        config['window-controls'] = 'macos'
 
         for theme in VARIANTS['enableable']:
             if theme != 'qualia-gtk-theme-snap':
@@ -769,6 +787,7 @@ class Config:
         f.write("This file is generated and used by the install script.\n")
         f.write('color: ' + config['color'] + '\n')
         f.write('theme: ' + config['theme'] + '\n')
+        f.write('window-controls: ' + config['window-controls'] + '\n')
         f.write('dir: ' + config['dir'] + '\n')
         f.write('enabled: ' + ' '.join(config['enabled']) + '\n')
         f.write('\n')
@@ -921,8 +940,12 @@ class InstallDgAdwGtk3(InstallThread):
             up_to_date = 'Libadwaita GTK4 theme is'
             options += ['-Dgtk4=true', '-Dgtk3=false']
 
-        if self.get_version() != self.config['dg-adw-gtk3_version'] or configure_all or force or update_dir:
-            self.spinner = Spinner(pretty_string, f'{install_dir}/share/themes', self)
+        options += [f"-Dwindow-controls={config['window-controls']}"]
+
+        options += [f"-Daccent-colors={'' if config['color'] == 'orange' else config['color']}"]
+
+        if self.get_version() != self.config['dg-adw-gtk3_version'] or reinstall or update_dir:
+            self.spinner = Spinner(f"{config['color']} {pretty_string}", f'{install_dir}/share/themes', self)
             if not os.path.isdir('build'):
                 run_command(['meson', 'build'] + options, meson=True)
             else:
@@ -971,11 +994,15 @@ class InstallDgYaru(InstallThread):
 
         install_dir = f'{HOME}/.local' if config['dir'] == 'home' else '/usr'
 
-        if self.get_version() != config['dg-yaru_version'] or configure_all or force or update_dir or \
+        if self.get_version() != config['dg-yaru_version'] or reinstall or update_dir or \
         config['old_gnome'] != config['desktop_versions']['gnome']:
-            self.spinner = Spinner(pretty_string, f'{install_dir}/share', self)
+            self.spinner = Spinner(f"{config['color']} {pretty_string}", f'{install_dir}/share', self)
 
             options = [f'-Dprefix={install_dir}']
+
+            options += [f"-Daccent-colors={'' if config['color'] == 'orange' else config['color']}"]
+
+            options += [f"-Dwindow-controls={config['window-controls']}"]
 
             for p in self.parts:
                 options.append('-D' + p + '=true')
@@ -1017,12 +1044,16 @@ class InstallDgLibadwaita(InstallThread):
         super().__init__(process=self._install)
 
     def _install(self):
+        config = self.config
         if not no_update:
             run_command(['git', 'submodule', 'update', '--init', 'src/dg-libadwaita'])
         cd(SRC['gtk4'])
 
-        if self.get_version() != self.config['dg-libadwaita_version'] or configure_all or force or update_color or update_theme:
-            run_command(['./install.sh', '-c', self.config['color'], '-t', self.config['variant']], show_ouput=True)
+        if self.get_version() != config['dg-libadwaita_version'] or reinstall:
+            command = ['./install.sh', '-c', config['color'], '-t', config['variant']]
+            if config['window-controls'] == 'symbolic':
+                command.append('-s')
+            run_command(command, show_ouput=True)
             self.updated()
         else:
             print('The qualia GTK4 configuration is up to date.')
@@ -1049,10 +1080,12 @@ class InstallDgFirefoxTheme(InstallThread):
             if variant not in config['old_firefox']:
                 firefox_changed = True
 
-        if self.get_version() != config['dg-firefox-theme_version'] or configure_all or force or update_color or update_settings or firefox_changed:
+        if self.get_version() != config['dg-firefox-theme_version'] or reinstall or update_settings or firefox_changed:
             command = ['./install.sh', '-c', self.config['color']]
             if 'settings_theme' not in self.config['enabled']:
                 command.append('-n')
+            if config['window-controls'] == 'symbolic':
+                command.append('-s')
             run_command(command, show_ouput=True)
         else:
             print('The qualia Firefox theme is up to date.')
@@ -1425,5 +1458,8 @@ if __name__ == "__main__":
     if not args.clean and os.getuid() == 0:
         print(f"{BRED}Don't run this script as root, exiting.")
         sys.exit()
+
+    if configure_all or force or update_color or update_theme:
+        reinstall = True
 
     main()
