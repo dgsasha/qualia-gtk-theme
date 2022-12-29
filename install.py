@@ -1447,7 +1447,7 @@ if __name__ == "__main__":
 
     update_theme = args.theme
 
-    update_window_controls = args.window_controls
+    update_window_controls = args.window
 
     update_syntax = args.syntax
 
