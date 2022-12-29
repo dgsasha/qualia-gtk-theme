@@ -82,6 +82,12 @@ VARIANTS = { # all of the possible configurations, name: pretty-name
         },
         'qualia-gtk-theme-snap': {
             'snap': 'Snap'
+        },
+        'rounded-window-corners-extension': {
+            'rounded-window-corners': 'Rounded Window Corners extension'
+        },
+        'flatpak': {
+            'flatpak': 'Flatpak'
         }
     }
 }
@@ -101,6 +107,8 @@ SETTINGS_MSG = f'{BLBLUE}Do you want to theme the {NC}{BLCYAN}settings pages{NC}
 SYNTAX_MSG = f'{BLBLUE}Do you want to keep the {NC}{BLCYAN}default syntax highlighting{NC}{BLBLUE} in {BLCYAN}VS Code{BLBLUE}?{NC}{BOLD}'
 LIBADWAITA_MSG = f'{BLBLUE}Do you want to install {BLCYAN}Libadwaita{BLBLUE} as a {NC}{BLCYAN}GTK4 theme{NC}{BLBLUE}?{NC}{BOLD}'
 GTK4_MSG = f'{BLBLUE}Do you want to install the {NC}{BLCYAN}custom GTK4 configuration{NC}{BLBLUE}?{NC}{BOLD}'
+FLATPAK_MSG = f'{BLBLUE}Do you want to give {NC}{BLCYAN}Flatpak apps{NC}{BLBLUE} access to the {NC}{BLCYAN}GTK themes{NC}{BLBLUE}?{NC}{BOLD}'
+ROUNDED_WINDOWS_MSG = f'{BLBLUE}Do you want to enable the custom configuration for the {BLCYAN}Rounded Window Corners{BLBLUE} extension?{NC}{BOLD}'
 
 # dg-gnome-theme
 OLD_THEMES = [
@@ -399,6 +407,36 @@ def main():
     except subprocess.CalledProcessError:
         pass
 
+    if 'rounded-window-corners' in config['enabled']:
+        print('Enabling custom configuration for the Rounded Window Corners extension.')
+        base_command = ['gsettings', '--schemadir', f'{HOME}/.local/share/gnome-shell/extensions/rounded-window-corners@yilozt/schemas', 'set', 'org.gnome.shell.extensions.rounded-window-corners']
+        global_settings = '''
+          {
+            'padding': <{'left': <uint32 1>,
+            'right': <uint32 1>,
+            'top': <uint32 1>,
+            'bottom': <uint32 1>}>,
+            'keep_rounded_corners': <{'maximized': <false>, 'fullscreen': <false>}>,
+            'border_radius': <uint32 12>,
+            'smoothing': <uint32 0>,
+            'enabled': <true>
+          }
+        '''
+        if config['color_scheme'] == 'prefer-dark':
+            border_color = '(1.0, 1.0, 1.0, 0.1)'
+            border_width = '1'
+        else:
+            border_color = '(0.0, 0.0, 0.0, 0.08)'
+            border_width = '-1'
+
+        run_command(base_command + ['border-color', border_color])
+        run_command(base_command + ['border-width', border_width])
+        run_command(base_command + ['global-rounded-corner-settings', global_settings])
+
+    if 'flatpak' in config['enabled']:
+        print('Giving Flatpak apps access to the GTK themes.')
+        run_command(['flatpak', 'override', '--user', '--filesystem=xdg-config/gtk-4.0', '--filesystem=xdg-data/themes'])
+
     # Remove old variants of the theme
     from uninstall import remove_theme, available_themes, remove_empty, delete
 
@@ -577,6 +615,12 @@ class Config:
         if shutil.which('snap') is None:
             del enableable['snap']
 
+        if shutil.which('flatpak') is None:
+            del enableable['flatpak']
+
+        if shutil.which('gnome-extensions') is None or 'rounded-window-corners@yilozt' not in check_output(['gnome-extensions', 'list']):
+            del enableable['rounded-window-corners']
+
         return enableable
 
     def configure(self):
@@ -631,6 +675,14 @@ class Config:
                     continue
                 if key == 'gtk4-libadwaita':
                     if self.config_yn(key, value, custom_msg=LIBADWAITA_MSG):
+                        config['enabled'].append(key)
+                    continue
+                if key == 'flatpak':
+                    if self.config_yn(key, value, custom_msg=FLATPAK_MSG):
+                        config['enabled'].append(key)
+                    continue
+                if key == 'rounded-window-corners':
+                    if self.config_yn(key, value, custom_msg=ROUNDED_WINDOWS_MSG):
                         config['enabled'].append(key)
                     continue
                 if self.config_yn(key, value):

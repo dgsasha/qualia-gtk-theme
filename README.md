@@ -161,6 +161,12 @@ sudo eopkg install gnome-shell-extensions
 
 </details>
 
+### Rounded Window Corners Extension
+
+If you are using GNOME, it is recommended you install the [Rounded Window Corners](https://github.com/yilozt/rounded-window-corners) extension.
+
+This theme includes a configuration for this extension to make GTK3 apps look closer to Libadwaita apps.
+
 ## Downloading and Installing
 
 #### First, download the repository.
