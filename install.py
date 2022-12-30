@@ -82,6 +82,9 @@ VARIANTS = { # all of the possible configurations, name: pretty-name
         },
         'qualia-gtk-theme-snap': {
             'snap': 'Snap'
+        },
+        'extra': {
+            'flatpak': 'Flatpak'
         }
     }
 }
@@ -101,6 +104,7 @@ SETTINGS_MSG = f'{BLBLUE}Do you want to theme the {NC}{BLCYAN}settings pages{NC}
 SYNTAX_MSG = f'{BLBLUE}Do you want to keep the {NC}{BLCYAN}default syntax highlighting{NC}{BLBLUE} in {BLCYAN}VS Code{BLBLUE}?{NC}{BOLD}'
 LIBADWAITA_MSG = f'{BLBLUE}Do you want to install {BLCYAN}Libadwaita{BLBLUE} as a {NC}{BLCYAN}GTK4 theme{NC}{BLBLUE}?{NC}{BOLD}'
 GTK4_MSG = f'{BLBLUE}Do you want to install the {NC}{BLCYAN}custom GTK4 configuration{NC}{BLBLUE}?{NC}{BOLD}'
+FLATPAK_MSG = f'{BLBLUE}Do you want to give {NC}{BLCYAN}Flatpak apps{NC}{BLBLUE} access to the {NC}{BLCYAN}GTK themes{NC}{BLBLUE}?{NC}{BOLD}'
 
 # dg-gnome-theme
 OLD_THEMES = [
@@ -193,13 +197,15 @@ def main():
     conf = Config()
     conf.read()
 
+    global configure_all
+    global reinstall
+
     # Move old config file
     if os.path.isfile(OLD_CONFIG) and not os.path.isfile(CONFIG):
         shutil.move(OLD_CONFIG, CONFIG)
 
     # Whether or not to configure
     if not os.path.isfile(CONFIG) or reconfigure:
-        global configure_all
         configure_all = True
         conf.configure()
         if os.path.isfile(CONFIG):
@@ -225,6 +231,9 @@ def main():
         config = conf.ret_config()
 
     conf.write(config)
+
+    if configure_all or force or update_color or update_window_controls:
+        reinstall = True
 
     ######################
     ##  Install Themes  ##
@@ -398,6 +407,10 @@ def main():
                 subprocess.run(['gsettings', 'set', 'com.solus-project.budgie-panel', 'dark-theme', dark ], stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT, check=True)
     except subprocess.CalledProcessError:
         pass
+
+    if 'flatpak' in config['enabled']:
+        print('Giving Flatpak apps access to the GTK themes.')
+        run_command(['flatpak', 'override', '--user', '--filesystem=xdg-config/gtk-4.0', '--filesystem=xdg-data/themes'])
 
     # Remove old variants of the theme
     from uninstall import remove_theme, available_themes, remove_empty, delete
@@ -577,6 +590,9 @@ class Config:
         if shutil.which('snap') is None:
             del enableable['snap']
 
+        if shutil.which('flatpak') is None:
+            del enableable['flatpak']
+
         return enableable
 
     def configure(self):
@@ -631,6 +647,10 @@ class Config:
                     continue
                 if key == 'gtk4-libadwaita':
                     if self.config_yn(key, value, custom_msg=LIBADWAITA_MSG):
+                        config['enabled'].append(key)
+                    continue
+                if key == 'flatpak':
+                    if self.config_yn(key, value, custom_msg=FLATPAK_MSG):
                         config['enabled'].append(key)
                     continue
                 if self.config_yn(key, value):
@@ -728,7 +748,7 @@ class Config:
         config['window-controls'] = 'macos'
 
         for theme in VARIANTS['enableable']:
-            if theme != 'qualia-gtk-theme-snap':
+            if theme != 'qualia-gtk-theme-snap' and theme != 'extra':
                 config[theme + '_version'] = ''
 
         try:
@@ -800,18 +820,20 @@ class Config:
 
         f = open(CONFIG, 'x', encoding='UTF-8')
         f.write("This file is generated and used by the install script.\n")
+        f.write("You probably shouldn't edit it.\n\n")
+
         f.write('color: ' + config['color'] + '\n')
         f.write('theme: ' + config['theme'] + '\n')
         f.write('window-controls: ' + config['window-controls'] + '\n')
         f.write('dir: ' + config['dir'] + '\n')
-        f.write('enabled: ' + ' '.join(config['enabled']) + '\n')
-        f.write('\n')
+        f.write('enabled: ' + ' '.join(config['enabled']) + '\n\n')
         f.write('gnome: ' + str(config['desktop_versions']['gnome']) + '\n')
         f.write('firefox: ' + ' '.join(config['firefox']) + '\n')
-        f.write('vscode: ' + ' '.join(config['vscode']) + '\n')
-        f.write('\n')
+        f.write('vscode: ' + ' '.join(config['vscode']) + '\n\n')
 
         for theme in VARIANTS['enableable']:
+            if theme == 'extra':
+                continue
             try:
                 key = f'{theme}_version'
                 version = config[key]
@@ -1480,8 +1502,5 @@ if __name__ == "__main__":
     if not args.clean and os.getuid() == 0:
         print(f"{BRED}Don't run this script as root, exiting.")
         sys.exit()
-
-    if configure_all or force or update_color or update_window_controls:
-        reinstall = True
 
     main()

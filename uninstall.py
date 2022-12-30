@@ -36,6 +36,8 @@ dry_run = False
 
 available_themes = {}
 for theme in VARIANTS['enableable']:
+    if theme == 'extra':
+        continue
     for part in VARIANTS['enableable'][theme]:
         if part not in ('default_syntax', 'settings_theme'):
             available_themes[part] = VARIANTS['enableable'][theme][part]
