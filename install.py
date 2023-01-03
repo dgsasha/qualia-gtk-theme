@@ -232,7 +232,7 @@ def main():
 
     conf.write(config)
 
-    if configure_all or force or update_color or update_window_controls:
+    if configure_all or force or update_color:
         reinstall = True
 
     ######################
@@ -981,7 +981,7 @@ class InstallDgAdwGtk3(InstallThread):
 
         options += [f"-Daccent-colors={'' if config['color'] == 'orange' else config['color']}"]
 
-        if self.get_version() != self.config['dg-adw-gtk3_version'] or reinstall or update_dir:
+        if self.get_version() != self.config['dg-adw-gtk3_version'] or reinstall or update_dir or update_window_controls:
             self.spinner = Spinner(f"{config['color']} {pretty_string}", f'{install_dir}/share/themes', self)
             if not os.path.isdir('build'):
                 run_command(['meson', 'build'] + options, meson=True)
@@ -1032,6 +1032,7 @@ class InstallDgYaru(InstallThread):
         install_dir = f'{HOME}/.local' if config['dir'] == 'home' else '/usr'
 
         if self.get_version() != config['dg-yaru_version'] or reinstall or update_dir or \
+        (update_window_controls and ('metacity' in config['enabled'] or 'xfwm4' in config['enabled'] or 'unity' in config['enabled'])) or \
         config['old_gnome'] != config['desktop_versions']['gnome']:
             self.spinner = Spinner(f"{config['color']} {pretty_string}", f'{install_dir}/share', self)
 
@@ -1086,7 +1087,7 @@ class InstallDgLibadwaita(InstallThread):
             run_command(['git', 'submodule', 'update', '--init', 'src/dg-libadwaita'])
         cd(SRC['gtk4'])
 
-        if self.get_version() != config['dg-libadwaita_version'] or reinstall or update_theme:
+        if self.get_version() != config['dg-libadwaita_version'] or reinstall or update_theme or update_window_controls:
             command = ['./install.sh', '-c', config['color'], '-t', config['variant']]
             if config['window-controls'] == 'symbolic':
                 command.append('-s')
@@ -1117,7 +1118,7 @@ class InstallDgFirefoxTheme(InstallThread):
             if variant not in config['old_firefox']:
                 firefox_changed = True
 
-        if self.get_version() != config['dg-firefox-theme_version'] or reinstall or update_settings or firefox_changed or update_theme:
+        if self.get_version() != config['dg-firefox-theme_version'] or reinstall or update_settings or firefox_changed or update_window_controls:
             command = ['./install.sh', '-c', self.config['color']]
             if 'settings_theme' not in self.config['enabled']:
                 command.append('-n')
