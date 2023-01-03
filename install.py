@@ -1032,7 +1032,7 @@ class InstallDgYaru(InstallThread):
         install_dir = f'{HOME}/.local' if config['dir'] == 'home' else '/usr'
 
         if self.get_version() != config['dg-yaru_version'] or reinstall or update_dir or \
-        (update_window_controls and ('metacity' in config['enabled'] or 'xfwm4' in config['enabled'] or 'unity' in config['enabled'])) or \
+        (update_window_controls and ('metacity' in config['enabled'] or 'xfwm4' in config['enabled'] or 'ubuntu-unity' in config['enabled'])) or \
         config['old_gnome'] != config['desktop_versions']['gnome']:
             self.spinner = Spinner(f"{config['color']} {pretty_string}", f'{install_dir}/share', self)
 
