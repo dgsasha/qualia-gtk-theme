@@ -165,6 +165,7 @@ def run_command(command, meson = False, override_verbose = None, show_ouput = Fa
             print(f'{BRED}Something went wrong. Check the log above.{NC}')
         if meson:
             print(f"{BRED}Also, running {BLRED}'{sys.argv[0]} --clean'{BRED} might fix the issue.{NC}")
+        print('\033[?25h') # bring back cursor
         os._exit(1)
 
 def check_output(command):
