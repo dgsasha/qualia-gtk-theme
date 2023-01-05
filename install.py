@@ -1339,8 +1339,8 @@ class Enable:
             data['gtksourceview'] = {
                 'schemas': gtksourceview_schemas,
                 'key': gtksourceview_keys,
-                'property': '/general/theme',
-                'channel': 'xfwm4',
+                'property': None,
+                'channel': None,
                 'theme_name': self.names['gtksourceview']
             }
         except KeyError:
