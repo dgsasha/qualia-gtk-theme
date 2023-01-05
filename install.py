@@ -374,6 +374,7 @@ def main():
     theme_name = f"qualia{config['suffix']}" if config['color'] == 'orange' else f"qualia-{config['color']}{config['suffix']}"
     icon_name = 'qualia-dark' if config['color'] == 'orange' else f"qualia-{config['color']}-dark"
     cursor_name = 'qualia'
+    sourceview_name = f"qualia{config['suffix']}"
     xfwm4_name = f"qualia{config['suffix']}-{config['window-controls']}"
     if shutil.which('xfconf-query') is not None:
         if 'xsettings' in check_output(['xfconf-query', '-l']) and check_output(['xfconf-query', '-c', 'xsettings', '-p', '/Gdk/WindowScalingFactor']) == '2':
@@ -389,7 +390,8 @@ def main():
         'gnome-shell': theme_name,
         'cinnamon-shell': theme_name,
         'metacity': xfwm4_name,
-        'xfwm4': xfwm4_name
+        'xfwm4': xfwm4_name,
+        'gtksourceview': sourceview_name
     }
 
     enable = Enable(config, verbose, **kwargs)
@@ -1240,6 +1242,18 @@ class Enable:
             'budgie': 'org.gnome.desktop.sound'
         }
 
+        gtksourceview_schemas = {
+            'Text Editor': 'org.gnome.TextEditor',
+            'Gedit': 'org.gnome.gedit.preferences.editor',
+            'Builder': 'org.gnome.builder.editor'
+        }
+
+        gtksourceview_keys = {
+            'Text Editor': 'style-scheme',
+            'Gedit': 'scheme',
+            'Builder': 'style-scheme-name'
+        }
+
         data = {}
         try:
             data['gtk3'] = {
@@ -1321,7 +1335,16 @@ class Enable:
             }
         except KeyError:
             pass
-
+        try:
+            data['gtksourceview'] = {
+                'schemas': gtksourceview_schemas,
+                'key': gtksourceview_keys,
+                'property': '/general/theme',
+                'channel': 'xfwm4',
+                'theme_name': self.names['gtksourceview']
+            }
+        except KeyError:
+            pass
         return data
 
     def enable_theme(self, desktop='all', uninstalling = False):
@@ -1334,6 +1357,7 @@ class Enable:
         '''
         data = self.data
         config = self.config
+        schema_list = check_output(['gsettings', 'list-schemas'])
         for theme, value in data.items():
             if theme in config['enabled'] or uninstalling:
                 if value['theme_name'] is None:
@@ -1362,19 +1386,23 @@ class Enable:
                         name = f"qualia{config['suffix']}"
                     else:
                         name = value['theme_name']
-                    key = value['key']
+                    if isinstance(value['key'], dict):
+                        key = value['key'][de]
+                    else:
+                        key = value['key']
                     if shutil.which('gsettings') is not None:
-                        if config['desktop_versions'][de] is not None:
-                            de_pretty = 'GNOME' if de == 'gnome' else de.capitalize()
-                            old = check_output(['gsettings', 'get', schema, key])
-                            if theme not in config['old']:
-                                config['old'][theme] = {}
-                                config['old'][theme][de] = old
-                            elif de in config['old'][theme] and config['old'][theme][de].startswith('qualia'):
-                                config['old'][theme][de] = old
-                            if old != name:
-                                print(f'Changing {config["enableable"][theme]} theme in {de_pretty} to {BOLD}{name}{NC}.')
-                                run_command(['gsettings', 'set', schema, key, name], override_verbose = self.verbose)
+                        if schema in schema_list:
+                            if not (de in config['desktop_versions'] and config['desktop_versions'][de] is None):
+                                de_pretty = 'GNOME' if de == 'gnome' else de.capitalize()
+                                old = check_output(['gsettings', 'get', schema, key])
+                                if theme not in config['old']:
+                                    config['old'][theme] = {}
+                                    config['old'][theme][de] = old
+                                elif de in config['old'][theme] and config['old'][theme][de].startswith('qualia'):
+                                    config['old'][theme][de] = old
+                                if old != name:
+                                    print(f'Changing {config["enableable"][theme]} theme in {de_pretty} to {BOLD}{name}{NC}.')
+                                    run_command(['gsettings', 'set', schema, key, name], override_verbose = self.verbose)
                     else:
                         print(f"{BLYELLOW}'gsettings'{BYELLOW} not found, not enabling {theme} theme.{NC}")
                         break
