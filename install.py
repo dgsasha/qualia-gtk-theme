@@ -1245,13 +1245,17 @@ class Enable:
         gtksourceview_schemas = {
             'Text Editor': 'org.gnome.TextEditor',
             'Gedit': 'org.gnome.gedit.preferences.editor',
-            'Builder': 'org.gnome.builder.editor'
+            'Builder': 'org.gnome.builder.editor',
+            'mousepad': 'org.xfce.mousepad.preferences.view',
+            'pluma': 'org.mate.pluma'
         }
 
         gtksourceview_keys = {
             'Text Editor': 'style-scheme',
             'Gedit': 'scheme',
-            'Builder': 'style-scheme-name'
+            'Builder': 'style-scheme-name',
+            'mousepad': 'color-scheme',
+            'pluma': 'color-scheme'
         }
 
         data = {}
