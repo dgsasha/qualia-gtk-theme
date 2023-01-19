@@ -448,7 +448,7 @@ def main():
             for variant in VARIANTS['window-controls']:
                 if variant != config['window-controls'] and variant in path:
                     delete(path)
-                for subdir in ('gtk-3.0', 'gtk-4.0', 'xfwm4', 'metacity', 'unity'):
+                for subdir in ('gtk-2.0', 'gtk-3.0', 'gtk-4.0', 'xfwm4', 'metacity', 'unity'):
                     if path.endswith(subdir) and config['window-controls'] not in path:
                         delete(path)
             for color in VARIANTS['color']:

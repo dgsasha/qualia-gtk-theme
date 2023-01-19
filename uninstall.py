@@ -99,7 +99,7 @@ def remove_empty():
                                 skip_dir = True # If index.theme is the only file, delete the dir. otherwise leave it.
                         elif 'share/themes' in path: # Remove gtk index if gtk theme is deleted
                             remove_index = True
-                            for subdir in ('gtk-2.0', 'gtk-3.0', 'gtk-4.0'):
+                            for subdir in ('gtk-3.0', 'gtk-4.0'):
                                 if subdir in folders:
                                     remove_index = False
                             if remove_index:
