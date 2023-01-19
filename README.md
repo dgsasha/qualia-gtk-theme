@@ -40,7 +40,7 @@ A modern version of Python is required. Any currently supported version should w
 sudo pacman -S sassc git ninja meson rsync
 ```
 
-**If using GNOME, also run this and then log out and log back in:**
+**If you are going to install the GNOME Shell theme, also run this and then log out and log back in:**
 
 ```
 sudo pacman -S gnome-shell-extensions
@@ -68,7 +68,7 @@ sudo pacman -S gnome-shell-extensions
 sudo apt-get install sassc git ninja-build meson
 ```
 
-**If using GNOME, also run this and then log out and log back in:**
+**If you are going to install the GNOME Shell theme, also run this and then log out and log back in:**
 
 ```
 sudo apt-get install gnome-shell-extensions
@@ -92,10 +92,6 @@ sudo apt-get install sassc git python3-pip
 ```
 sudo pip install meson ninja
 ```
-**If using GNOME, also run this and then log out and log back in:**
-```
-sudo apt-get install gnome-shell-extensions
-```
 
 </details>
 
@@ -113,7 +109,7 @@ sudo apt-get install gnome-shell-extensions
 sudo dnf install sassc git ninja-build meson
 ```
 
-**If using GNOME, also run this and then log out and log back in:**
+**If you are going to install the GNOME Shell theme, also run this and then log out and log back in:**
 
 ```
 sudo dnf install gnome-shell-extension-user-theme
@@ -133,7 +129,7 @@ sudo dnf install gnome-shell-extension-user-theme
 sudo zypper install sassc git ninja meson
 ```
 
-**If using GNOME, also run this and then log out and log back in:**
+**If you are going to install the GNOME Shell theme, also run this and then log out and log back in:**
 
 ```
 sudo zypper install gnome-shell-extension-user-theme
@@ -153,7 +149,7 @@ sudo zypper install gnome-shell-extension-user-theme
 sudo eopkg install sassc git ninja meson rsync gnome-shell-extensions
 ```
 
-**If using GNOME, also run this and then log out and log back in:**
+**If you are going to install the GNOME Shell theme, also run this and then log out and log back in:**
 
 ```
 sudo eopkg install gnome-shell-extensions
@@ -176,7 +172,7 @@ git clone --depth=1 --recurse-submodules --shallow-submodules https://github.com
 
 #### Next, run the install script to configure and install the theme.
 
-When configuring the theme you get to choose the install directory and [accent color](#available-accent-colors), choose the theme variant, and choose which themes you want to install.
+When configuring the theme you get to choose the install directory and [accent color](#available-accent-colors), choose between the light and dark theme, choose the window controls variant, and choose which themes you want to install.
 
 If you are going to install the Firefox theme, read [this](https://github.com/dgsasha/qualia-gtk-theme/wiki/Firefox-Theme) first, and if you are going to install the VS Code theme, read [this](https://github.com/dgsasha/qualia-gtk-theme/wiki/VS-Code-Theme) first.
 
