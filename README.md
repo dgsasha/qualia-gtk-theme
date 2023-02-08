@@ -28,6 +28,12 @@ More screenshots can be seen [here](https://github.com/dgsasha/qualia-gtk-theme/
 
 A modern version of Python is required. Any currently supported version should work.
 
+If you are going to install the VS Code theme, you will need to install pyjson5 along with the other dependencies listed below.
+To install it, run this:
+```
+pip install json5
+```
+
 <details>
 <summary>
 
