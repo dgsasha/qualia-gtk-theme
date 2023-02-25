@@ -51,7 +51,7 @@ VARIANTS = { # all of the possible configurations, name: pretty-name
     },
     'window-controls': {
         'macos': 'macOS',
-        'symbolic': 'Libadwaita',
+        'symbolic': 'Libadwaita'
     },
     'enableable': {
         'dg-adw-gtk3': {
@@ -83,15 +83,12 @@ VARIANTS = { # all of the possible configurations, name: pretty-name
         'qualia-gtk-theme-snap': {
             'snap': 'Snap'
         },
-        'extra': {
-            'flatpak': 'Flatpak'
-        }
     }
 }
 
 # Supported DE versions
 VERSIONS = {
-    'gnome': (42, 43),
+    'gnome': (42, 43, 44),
     'cinnamon': (4, 5),
     'unity': (7,),
     'xfce': (4,),
@@ -411,7 +408,7 @@ def main():
     except subprocess.CalledProcessError:
         pass
 
-    if 'flatpak' in config['enabled']:
+    if config['flatpak']:
         print('Giving Flatpak apps access to the GTK themes.')
         run_command(['flatpak', 'override', '--user', '--filesystem=xdg-config/gtk-4.0', '--filesystem=xdg-data/themes'])
 
@@ -593,9 +590,6 @@ class Config:
         if shutil.which('snap') is None:
             del enableable['snap']
 
-        if shutil.which('flatpak') is None:
-            del enableable['flatpak']
-
         return enableable
 
     def configure(self):
@@ -614,6 +608,9 @@ class Config:
 
         if configure_all or update_window_controls:
             config['window-controls'] = self.config_menu('window controls variant', VARIANTS['window-controls'])
+
+        if configure_all and shutil.which('flatpak') is not None:
+            config['flatpak'] = self.config_yn('flatpak', 'Flatpak', custom_msg=FLATPAK_MSG)
 
         if configure_all:
             config['enabled'] = []
@@ -650,10 +647,6 @@ class Config:
                     continue
                 if key == 'gtk4-libadwaita':
                     if self.config_yn(key, value, custom_msg=LIBADWAITA_MSG):
-                        config['enabled'].append(key)
-                    continue
-                if key == 'flatpak':
-                    if self.config_yn(key, value, custom_msg=FLATPAK_MSG):
                         config['enabled'].append(key)
                     continue
                 if self.config_yn(key, value):
@@ -749,13 +742,15 @@ class Config:
         config['color'] = 'orange'
         config['theme'] = 'light'
         config['window-controls'] = 'macos'
+        config['flatpak'] = False
 
         for theme in VARIANTS['enableable']:
             if theme != 'qualia-gtk-theme-snap' and theme != 'extra':
                 config[theme + '_version'] = ''
 
         try:
-            for line in open(CONFIG, encoding='UTF-8').readlines():
+            config_file = open(CONFIG, encoding='UTF-8')
+            for line in config_file.readlines():
                 if ': ' in line:
                     line = line.strip().split(': ')
                 else:
@@ -806,6 +801,7 @@ class Config:
                             config[key] = value
                     except TypeError:
                         continue
+            config_file.close()
         except FileNotFoundError:
             pass
 
