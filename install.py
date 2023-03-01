@@ -773,8 +773,11 @@ class Config:
                         for theme in value:
                             if theme.startswith('firefox'):
                                 theme = 'firefox'
-                            if (theme in config['enableable'] or key != 'enabled') not in config[prefix + key]:
-                                config[prefix + key].append(theme)
+                            if (theme in config['enableable'] or key != 'enabled') and theme not in config[prefix + key]:
+                                if key == 'enabled' and theme == 'flatpak':
+                                    config['flatpak'] = True
+                                else:
+                                    config[prefix + key].append(theme)
                     elif isinstance(value, str):
                         if value.startswith('firefox'):
                             value = 'firefox'
@@ -793,6 +796,8 @@ class Config:
                         config['old_gnome'] = int(value)
                     except ValueError:
                         config['old_gnome'] = None
+                elif key == 'flatpak':
+                    config['flatpak'] = (value == 'True')
                 elif isinstance(value, str):
                     try:
                         if not configured and key in VARIANTS and value in VARIANTS[key]:
@@ -828,7 +833,8 @@ class Config:
         f.write('enabled: ' + ' '.join(config['enabled']) + '\n\n')
         f.write('gnome: ' + str(config['desktop_versions']['gnome']) + '\n')
         f.write('firefox: ' + ' '.join(config['firefox']) + '\n')
-        f.write('vscode: ' + ' '.join(config['vscode']) + '\n\n')
+        f.write('vscode: ' + ' '.join(config['vscode']) + '\n')
+        f.write(f"flatpak: {config['flatpak']}\n\n")
 
         for theme in VARIANTS['enableable']:
             if theme == 'extra':
