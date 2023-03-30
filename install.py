@@ -1155,7 +1155,7 @@ class InstallDgVscodeAdwaita(InstallThread):
             if variant not in config['old_vscode']:
                 vscode_changed = True
 
-        if self.get_version() != self.config['dg-vscode-adwaita_version'] or configure_all or update_syntax or vscode_changed or update_color:
+        if self.get_version() != self.config['dg-vscode-adwaita_version'] or reinstall or configure_all or update_syntax or vscode_changed or update_color:
             if 'default_syntax' in self.config['enabled']:
                 run_command(['./install.py', '-c', self.config['color'], '-t', self.config['variant'], '-d'], show_ouput = True)
             else:
